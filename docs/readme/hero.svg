@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="440" viewBox="0 0 1200 440" role="img" aria-labelledby="title desc">
+  <title id="title">Bachelor’s BLITZ — campus sports, in motion</title>
+  <desc id="desc">A forest-green sports court with a lime lightning mark, a large BLITZ wordmark, and animated tournament paths. Eight sports, eight teams, one campus.</desc>
+  <defs>
+    <linearGradient id="court" x2="1" y2="1"><stop stop-color="#202820"/><stop offset="1" stop-color="#315A36"/></linearGradient>
+    <radialGradient id="light"><stop stop-color="#D9F46B" stop-opacity=".2"/><stop offset="1" stop-color="#D9F46B" stop-opacity="0"/></radialGradient>
+    <clipPath id="frame"><rect width="1200" height="440" rx="24"/></clipPath>
+  </defs>
+  <style>
+    text{font-family:Arial,Helvetica,sans-serif}
+    .trace{stroke-dasharray:10 20;animation:travel 4s linear infinite}
+    .bolt{animation:glow 4s ease-in-out infinite}
+    .ball{transform-box:fill-box;transform-origin:center;animation:turn 16s linear infinite}
+    @keyframes travel{to{stroke-dashoffset:-120}}
+    @keyframes glow{0%,100%{opacity:1}50%{opacity:.65}}
+    @keyframes turn{to{transform:rotate(360deg)}}
+    @media(prefers-reduced-motion:reduce){.trace,.bolt,.ball{animation:none}}
+  </style>
+  <g clip-path="url(#frame)">
+    <rect width="1200" height="440" fill="url(#court)"/>
+    <circle cx="945" cy="180" r="340" fill="url(#light)"/>
+    <g fill="none" stroke="#F7F8F2" stroke-opacity=".09" stroke-width="2">
+      <path d="M680 24H1174V342H680Z M927 24V342"/><circle cx="927" cy="183" r="88"/>
+      <path d="M680 106H748V260H680 M1174 106H1106V260H1174"/>
+    </g>
+    <path d="M56 47H94L77 68H96L62 107L70 78H53L56 47Z" fill="#D9F46B" class="bolt"/>
+    <text x="114" y="64" fill="#F7F8F2" font-size="17" font-weight="700" letter-spacing="4">BACHELORS</text>
+    <text x="114" y="88" fill="#BDCCB6" font-size="13" letter-spacing="2">TISS MUMBAI / CAMPUS SPORTS</text>
+    <text x="47" y="253" fill="#F7F8F2" font-size="166" font-weight="900" letter-spacing="-9">BLITZ<tspan fill="#D9F46B">.</tspan></text>
+    <text x="56" y="298" fill="#F7F8F2" font-size="23">Good games. Better connections.</text>
+    <path d="M56 325H581" stroke="#D9F46B" stroke-opacity=".45"/>
+    <path d="M56 325H581" stroke="#D9F46B" stroke-width="2" class="trace"/>
+    <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <g stroke="#A4BD93" stroke-width="2">
+        <path d="M734 84H795V100H855 M734 116H795V100 M734 148H795V164H855 M734 180H795V164 M855 100H903V132H958 M855 164H903V132 M958 132H1005V196H1050 M734 212H795V228H855 M734 244H795V228 M734 276H795V292H855 M734 308H795V292 M855 228H903V260H958 M855 292H903V260 M958 260H1005V196"/>
+      </g>
+      <path d="M734 84H795V100H903V132H1005V196H1050" stroke="#D9F46B" stroke-width="3" class="trace"/>
+    </g>
+    <g fill="#F7F8F2"><circle cx="734" cy="84" r="5"/><circle cx="734" cy="116" r="5"/><circle cx="734" cy="148" r="5"/><circle cx="734" cy="180" r="5"/><circle cx="734" cy="212" r="5"/><circle cx="734" cy="244" r="5"/><circle cx="734" cy="276" r="5"/><circle cx="734" cy="308" r="5"/></g>
+    <circle cx="1082" cy="196" r="34" fill="#D9F46B"/>
+    <path d="M1075 174H1094L1082 192H1095L1072 218L1079 199H1068Z" fill="#315A36" class="bolt"/>
+    <text x="858" y="70" fill="#D9F46B" font-size="12" letter-spacing="3">BUILD YOUR TEAM.</text>
+    <g transform="translate(646 264)"><g class="ball" stroke="#202820" stroke-width="2">
+      <circle r="28" fill="#F7F8F2"/>
+      <path d="M0-12L12-3L7 11H-7L-12-3Z M-21-18L-14-18L-20-8L-27-7 M21-18L14-18L20-8L27-7 M-20 19L-15 9L-7 11L-7 26 M20 19L15 9L7 11L7 26" fill="#202820"/>
+    </g></g>
+    <rect y="366" width="1200" height="74" fill="#D9F46B"/>
+    <g fill="#202820" font-size="16" font-weight="700" letter-spacing="2">
+      <text x="56" y="410">08 SPORTS</text><text x="335" y="410">08 TEAMS</text><text x="624" y="410">ONE CAMPUS</text><text x="920" y="410">ALL IN.</text>
+    </g>
+    <g stroke="#315A36" stroke-opacity=".3"><path d="M279 386V420 M568 386V420 M864 386V420"/></g>
+  </g>
+</svg>

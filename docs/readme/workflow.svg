@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="390" viewBox="0 0 1200 390" role="img" aria-labelledby="title desc">
+  <title id="title">BLITZ participant journey</title>
+  <desc id="desc">Register as player or volunteer, complete the form and square photo crop, review, and verify email. The player branch enters the auction and reaches a team roster. The volunteer branch selects one department and stays outside the auction.</desc>
+  <style>
+    text{font-family:Arial,Helvetica,sans-serif}.heading{font-size:20px;font-weight:700;fill:#202820}.body{font-size:14px;fill:#6B7468}
+    .flow{stroke-dasharray:6 18;animation:travel 4s linear infinite}.marker{animation:pulse 4s ease-in-out infinite}
+    @keyframes travel{to{stroke-dashoffset:-96}}@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+    @media(prefers-reduced-motion:reduce){.flow,.marker{animation:none}}
+  </style>
+  <rect x="1" y="1" width="1198" height="388" rx="24" fill="#F7F8F2" stroke="#DDE4D5"/>
+  <text x="40" y="48" fill="#315A36" font-size="12" font-weight="700" letter-spacing="3">THE JOURNEY / EVERYONE HAS A ROLE</text>
+  <g fill="none" stroke="#BCCCB1" stroke-width="2"><path d="M245 183H290 M495 183H540 M745 183H785V126H830 M785 183V282H830 M975 126H1015"/></g>
+  <g fill="none" stroke="#315A36" stroke-width="2" class="flow"><path d="M245 183H290 M495 183H540 M745 183H785V126H830 M785 183V282H830 M975 126H1015"/></g>
+  <g fill="#315A36"><path d="M281 178L290 183L281 188Z M531 178L540 183L531 188Z M821 121L830 126L821 131Z M821 277L830 282L821 287Z M1006 121L1015 126L1006 131Z"/></g>
+  <g>
+    <rect x="40" y="111" width="205" height="144" rx="16" fill="white" stroke="#DDE4D5"/>
+    <circle cx="76" cy="146" r="16" fill="#EAF0DF"/><text x="76" y="151" text-anchor="middle" fill="#315A36" font-size="13" font-weight="700">01</text>
+    <text x="60" y="191" class="heading">Choose your role</text><text x="60" y="220" class="body">Player, volunteer, or both</text><text x="60" y="241" class="body">Separate registrations</text>
+    <rect x="290" y="111" width="205" height="144" rx="16" fill="white" stroke="#DDE4D5"/>
+    <circle cx="326" cy="146" r="16" fill="#EAF0DF"/><text x="326" y="151" text-anchor="middle" fill="#315A36" font-size="13" font-weight="700">02</text>
+    <text x="310" y="191" class="heading">Make it yours</text><text x="310" y="220" class="body">Identity + region + choices</text><text x="310" y="241" class="body">Square photo crop</text>
+    <rect x="540" y="111" width="205" height="144" rx="16" fill="#315A36"/>
+    <circle cx="576" cy="146" r="16" fill="#D9F46B" class="marker"/><path d="M569 146L574 151L583 141" fill="none" stroke="#315A36" stroke-width="2"/>
+    <text x="560" y="191" font-size="20" font-weight="700" fill="#F7F8F2">Review &amp; verify</text><text x="560" y="220" font-size="14" fill="#D8E5CE">Consent + submission</text><text x="560" y="241" font-size="14" fill="#D8E5CE">Institutional email link</text>
+    <text x="830" y="75" font-size="12" font-weight="700" fill="#315A36" letter-spacing="2">PLAYER</text>
+    <rect x="830" y="91" width="145" height="90" rx="16" fill="#EAF0DF" stroke="#DDE4D5"/>
+    <text x="850" y="127" class="heading">Auction</text><text x="850" y="153" class="body">Verified queue</text>
+    <rect x="1015" y="91" width="145" height="90" rx="16" fill="#D9F46B"/>
+    <text x="1035" y="127" class="heading">Your team</text><text x="1035" y="153" class="body">Saved roster</text>
+    <text x="830" y="224" font-size="12" font-weight="700" fill="#315A36" letter-spacing="2">VOLUNTEER</text>
+    <rect x="830" y="242" width="330" height="94" rx="16" fill="white" stroke="#DDE4D5"/>
+    <text x="850" y="278" class="heading">Your volunteer department</text><text x="850" y="305" class="body">One choice + contribution statement</text><text x="850" y="326" class="body">Outside the auction queue</text>
+  </g>
+  <text x="40" y="350" font-size="15" fill="#315A36">Different paths. One campus. A place for every participant.</text>
+</svg>
