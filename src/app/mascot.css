@@ -1,0 +1,760 @@
+/* Character interaction stays independent of the page's GSAP choreography. */
+.mascot {
+  isolation: isolate;
+  --bolt-look-x: 0px;
+  --bolt-look-y: 0px;
+  --bolt-ground: #e8eecf;
+  --bolt-horizon: #789356;
+}
+.mascot[data-bolt-sport="Cricket"] {
+  --bolt-ground: #e1e9ce;
+  --bolt-horizon: #4c7051;
+}
+.mascot[data-bolt-sport="Badminton"] {
+  --bolt-ground: #e0e9ee;
+  --bolt-horizon: #466da3;
+}
+.mascot[data-bolt-sport="Table tennis"] {
+  --bolt-ground: #eee3d9;
+  --bolt-horizon: #bd6039;
+}
+.mascot[data-bolt-sport="Weightlifting"] {
+  --bolt-ground: #e4e4ed;
+  --bolt-horizon: #6e638c;
+}
+.mascot[data-bolt-sport="Chess"] {
+  --bolt-ground: #ece8d8;
+  --bolt-horizon: #9b7929;
+}
+.mascot[data-bolt-sport="Tug of war"] {
+  --bolt-ground: #e2ebd0;
+  --bolt-horizon: #4c7051;
+}
+.mascot[data-bolt-sport="Dodgeball"] {
+  --bolt-ground: #f1e1d6;
+  --bolt-horizon: #bd6039;
+}
+.bolt-backdrop {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  inset: 0;
+  border-radius: 20px;
+  pointer-events: none;
+  z-index: -1;
+}
+.hero-visual .court-lines {
+  display: none;
+}
+.hero-orbit {
+  display: none;
+}
+.bolt-inline-controls {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 5px;
+  z-index: 5;
+  width: max-content;
+  max-width: 98%;
+}
+.bolt-inline-controls button {
+  border: 1px solid #c5d0b5;
+  border-radius: 999px;
+  padding: 8px 12px;
+  background: #fffff5ed;
+  color: #315a36;
+  font-size: 10px;
+  min-height: 36px;
+}
+.bolt-inline-controls button:hover {
+  background: var(--lime);
+}
+.bolt-inline-controls span {
+  padding-left: 5px;
+}
+.hero-mascot .bolt-inline-controls {
+  bottom: 10px;
+}
+.mascot-hit-target {
+  position: absolute;
+  inset: 4% 9% 4%;
+  border: 0;
+  background: transparent;
+  border-radius: 40%;
+  z-index: 3;
+  cursor: grab;
+}
+.mascot-hit-target:active {
+  cursor: grabbing;
+}
+.mascot-hit-target:focus-visible {
+  outline: 2px dashed var(--green);
+  outline-offset: -4px;
+}
+.mascot-sparkles {
+  display: none;
+  position: absolute;
+  inset: 20% 12% auto;
+  font-size: 34px;
+  color: #9c741e;
+  justify-content: space-between;
+  pointer-events: none;
+  z-index: 4;
+}
+.mascot-sparkles span {
+  margin-top: -25px;
+  font-size: 47px;
+}
+.mascot[data-mascot-action="highfive"] .mascot-sparkles,
+.mascot[data-mascot-action="celebrate"] .mascot-sparkles {
+  display: flex;
+  animation: bolt-spark 0.7s ease-in-out infinite alternate;
+}
+.bolt-arm-left {
+  transform-origin: 107px 177px;
+}
+.bolt-arm-right {
+  transform-origin: 193px 177px;
+}
+.bolt-leg-left {
+  transform-origin: 130px 230px;
+}
+.bolt-leg-right {
+  transform-origin: 170px 230px;
+}
+.bolt-head {
+  transform-origin: 150px 157px;
+}
+.bolt-eyes {
+  transform-origin: 150px 115px;
+}
+.bolt-pupils {
+  transform: translate(var(--bolt-look-x), var(--bolt-look-y));
+}
+.bolt-body,
+.bolt-arm,
+.bolt-head,
+.bolt-leg,
+.bolt-eyes {
+  transition: transform 0.35s ease;
+}
+.mascot[data-mascot-action="wave"] .bolt-arm-right {
+  animation: bolt-wave 0.7s ease-in-out infinite alternate;
+}
+.mascot[data-mascot-action="point"] .bolt-arm-right {
+  transform: rotate(-72deg);
+}
+.mascot[data-mascot-action="think"] .bolt-head {
+  transform: rotate(-8deg);
+}
+.mascot[data-mascot-action="think"] .bolt-arm-right {
+  transform: rotate(125deg);
+}
+.mascot[data-mascot-action="peek"] .bolt-eyes {
+  transform: scaleY(0.12);
+}
+.mascot[data-mascot-action="peek"] .bolt-head {
+  transform: rotate(-15deg);
+}
+.mascot[data-mascot-action="peek"] .bolt-arm-right {
+  transform: rotate(155deg);
+}
+.mascot[data-mascot-action="peek"] .bolt-arm-left {
+  transform: rotate(-155deg);
+}
+.mascot[data-mascot-action="encourage"] .bolt-head {
+  transform: rotate(9deg);
+}
+.mascot[data-mascot-action="encourage"] .bolt-arm-right {
+  transform: rotate(-38deg);
+}
+.mascot[data-mascot-action="encourage"] .bolt-arm-left {
+  transform: rotate(38deg);
+}
+.mascot[data-mascot-action="run"] .bolt-body {
+  animation: bolt-bounce 0.23s ease-in-out infinite alternate;
+}
+.mascot[data-mascot-action="run"] .bolt-leg-left,
+.mascot[data-mascot-action="run"] .bolt-arm-right {
+  animation: bolt-jog 0.3s ease-in-out infinite alternate;
+}
+.mascot[data-mascot-action="run"] .bolt-leg-right,
+.mascot[data-mascot-action="run"] .bolt-arm-left {
+  animation: bolt-jog 0.3s ease-in-out infinite alternate-reverse;
+}
+.mascot[data-mascot-action="celebrate"] .bolt-body,
+.mascot[data-mascot-action="highfive"] .bolt-body {
+  animation: bolt-bounce 0.38s ease-in-out infinite alternate;
+}
+.mascot[data-mascot-action="celebrate"] .bolt-arm-right,
+.mascot[data-mascot-action="highfive"] .bolt-arm-right {
+  transform: rotate(-160deg);
+}
+.mascot[data-mascot-action="celebrate"] .bolt-arm-left {
+  transform: rotate(160deg);
+}
+.mascot[data-mascot-action="dribble"] .bolt-ball {
+  animation: bolt-dribble 0.65s ease-in-out infinite;
+}
+.mascot[data-mascot-action="dribble"] .bolt-arm-right {
+  transform: rotate(-24deg);
+}
+.mascot[data-mascot-action="dribble"] .bolt-leg-right {
+  animation: bolt-kick 0.65s ease-in-out infinite;
+}
+.bolt-companion {
+  position: fixed;
+  right: 22px;
+  bottom: 20px;
+  z-index: 80;
+  width: 144px;
+  filter: drop-shadow(0 5px 10px #20282012);
+}
+.bolt-companion[hidden] {
+  display: none;
+}
+.bolt-companion-left {
+  right: auto;
+  left: 22px;
+}
+.companion-mascot {
+  height: 155px;
+}
+.bolt-speech {
+  position: relative;
+  width: 215px;
+  margin-left: -71px;
+  border: 1px solid #d4dfbd;
+  border-radius: 14px 14px 4px 14px;
+  background: #fffff9;
+  padding: 14px 30px 14px 15px;
+}
+.bolt-companion-left .bolt-speech {
+  margin-left: 0;
+  border-radius: 14px 14px 14px 4px;
+}
+.bolt-speech > span {
+  display: block;
+  font-size: 9px;
+  color: var(--muted);
+  margin-bottom: 5px;
+}
+.bolt-speech p {
+  font-size: 11px;
+  line-height: 1.5;
+  max-width: 165px;
+}
+.bolt-minimise {
+  position: absolute;
+  right: 2px;
+  top: 2px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--muted);
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+}
+.bolt-minimise:hover {
+  background: #edf2e2;
+}
+.bolt-controls {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  margin-top: -5px;
+}
+.bolt-controls button {
+  width: 40px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #c5d0b5;
+  border-radius: 10px;
+  background: #fffff9;
+  color: var(--green);
+  transition: background 0.2s;
+}
+.bolt-controls button:hover {
+  background: var(--lime);
+}
+.bolt-restore {
+  width: 45px;
+  height: 45px;
+  background: var(--lime);
+  border: 1px solid #b6ca75;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--green);
+}
+.bolt-companion.is-collapsed {
+  width: 45px;
+}
+.auction-player-placeholder {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  background: #e5ebd8;
+}
+.auction-player-placeholder svg {
+  width: 78%;
+  height: 100%;
+}
+.dome-entry-icon {
+  color: var(--green);
+  margin-bottom: 25px;
+}
+@keyframes bolt-wave {
+  from {
+    transform: rotate(-135deg);
+  }
+  to {
+    transform: rotate(-158deg);
+  }
+}
+@keyframes bolt-jog {
+  from {
+    transform: rotate(-18deg);
+  }
+  to {
+    transform: rotate(18deg);
+  }
+}
+@keyframes bolt-bounce {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-12px);
+  }
+}
+@keyframes bolt-dribble {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translate(-24px, -48px) rotate(-45deg);
+  }
+}
+@keyframes bolt-kick {
+  0%,
+  100% {
+    transform: rotate(-22deg);
+  }
+  50% {
+    transform: rotate(-6deg);
+  }
+}
+.tug-section {
+  padding-top: 70px;
+  padding-bottom: 85px;
+}
+.tug-arena {
+  border: 1px solid #cbd5b9;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #eef2df;
+}
+.tug-team-labels {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 24px 30px 0;
+}
+.tug-team-labels label {
+  display: grid;
+  grid-template-columns: 10px 1fr;
+  align-items: center;
+  gap: 7px;
+  font-size: 10px;
+  color: var(--muted);
+}
+.tug-team-labels select {
+  grid-column: 1 / -1;
+  color: var(--green);
+  background: #fffff5;
+  border: 1px solid #c5d0b5;
+  border-radius: 7px;
+  padding: 9px 30px 9px 10px;
+  font-weight: 600;
+  font-size: 14px;
+  max-width: 100%;
+}
+.tug-team-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--team-color);
+}
+.tug-ground {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.bolt-tug-portrait {
+  overflow: visible;
+}
+.bolt-pulling .bolt-head {
+  transform: translateX(-12px) rotate(-8deg);
+}
+.bolt-pulling .bolt-leg-left {
+  transform: rotate(15deg);
+}
+.bolt-pulling .bolt-leg-right {
+  transform: rotate(-12deg);
+}
+.tug-rope-group {
+  transition: transform 0.32s cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+.tug-arena[data-pulling="left"] .tug-squad-left .bolt-head,
+.tug-arena[data-pulling="right"] .tug-squad-right .bolt-head {
+  animation: tug-effort 0.2s ease-in-out 2;
+}
+.tug-arena[data-winner="left"] .tug-squad-left .bolt-body,
+.tug-arena[data-winner="right"] .tug-squad-right .bolt-body {
+  animation: bolt-bounce 0.45s ease-in-out 3 alternate;
+}
+.tug-score {
+  text-align: center;
+  font-size: 14px;
+  padding: 3px 15px 14px;
+  color: var(--green);
+  min-height: 35px;
+}
+.tug-meter {
+  width: min(290px, 70%);
+  height: 5px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #bd603966, #466da366);
+  margin: 0 auto 22px;
+  position: relative;
+}
+.tug-meter::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -3px;
+  height: 11px;
+  border-left: 1px solid #315a36;
+}
+.tug-meter > span {
+  position: absolute;
+  height: 12px;
+  width: 12px;
+  top: -3px;
+  background: #315a36;
+  border: 2px solid #fffff5;
+  border-radius: 50%;
+  transform: translateX(-50%);
+  transition: left 0.32s ease;
+  z-index: 1;
+}
+.tug-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  padding: 0 30px 25px;
+}
+.tug-controls .button {
+  background: color-mix(in srgb, var(--team-color), #202820 18%);
+  font-size: 12px;
+  min-height: 44px;
+  border: 0;
+  padding: 12px 16px;
+  color: #fffff5;
+}
+.tug-controls .button:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+.tug-reset {
+  background: transparent;
+  border: 0;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  min-width: 44px;
+  min-height: 44px;
+  justify-content: center;
+}
+@keyframes tug-effort {
+  from {
+    transform: translateX(-12px) rotate(-8deg);
+  }
+  to {
+    transform: translateX(-15px) rotate(-13deg);
+  }
+}
+@keyframes bolt-spark {
+  from {
+    opacity: 0.45;
+    transform: translateY(5px) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(-5px) scale(1.04);
+  }
+}
+@media (max-width: 760px) {
+  .tug-section {
+    padding-top: 45px;
+    padding-bottom: 50px;
+  }
+  .tug-team-labels {
+    padding: 18px 14px 0;
+    gap: 10px;
+  }
+  .tug-team-labels label {
+    min-width: 0;
+  }
+  .tug-team-labels select {
+    font-size: 12px;
+    width: 100%;
+  }
+  .tug-ground {
+    width: 145%;
+    max-width: none;
+    margin-left: -22.5%;
+  }
+  .tug-controls {
+    padding: 0 12px 18px;
+    gap: 6px;
+  }
+  .tug-controls .button {
+    font-size: 10px;
+    padding: 10px 9px;
+    gap: 4px;
+    flex: 1;
+  }
+  .tug-controls .button svg {
+    width: 14px;
+    flex-shrink: 0;
+  }
+  .tug-reset span {
+    display: none;
+  }
+  .bolt-inline-controls button {
+    min-height: 44px;
+  }
+  .bolt-companion {
+    width: 100px;
+    right: 12px;
+    bottom: 12px;
+  }
+  .bolt-companion-left {
+    right: auto;
+    left: 12px;
+  }
+  .companion-mascot {
+    height: 110px;
+  }
+  .bolt-speech {
+    width: 187px;
+    margin-left: -87px;
+    padding: 12px 30px 12px 12px;
+  }
+  .bolt-speech p {
+    font-size: 10px;
+  }
+  .bolt-speech > span {
+    font-size: 8px;
+  }
+  .bolt-controls {
+    gap: 3px;
+    width: 138px;
+    margin-left: -38px;
+  }
+  .bolt-companion-left .bolt-controls {
+    margin-left: 0;
+  }
+  .bolt-controls button {
+    width: 44px;
+    height: 44px;
+  }
+  .bolt-minimise {
+    width: 32px;
+    height: 32px;
+  }
+  /* The small left dock leaves the form's primary action on the right clear. */
+  .bolt-companion-left .bolt-speech {
+    width: 165px;
+  }
+  body:has(.bolt-companion) .site-footer {
+    padding-bottom: 145px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tug-arena *,
+  .bolt-inline-controls *,
+  .mascot * {
+    animation: none !important;
+    transition: none !important;
+  }
+  .mascot-sparkles {
+    animation: none !important;
+  }
+  .bolt-body,
+  .bolt-arm,
+  .bolt-leg,
+  .bolt-ball {
+    animation: none !important;
+  }
+  .mascot[data-mascot-action="wave"] .bolt-arm-right {
+    transform: rotate(-145deg);
+  }
+  .mascot[data-mascot-action="run"] .bolt-body {
+    transform: none;
+  }
+}
+
+/* Bolt's forest-and-lime speedster suit. */
+.mascot-stage { position: absolute; inset: 0; isolation: isolate; }
+.mascot[data-mascot-layout="panel"] { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; height: auto; }
+.mascot[data-mascot-layout="panel"] .mascot-stage { position: relative; inset: auto; height: 260px; overflow: hidden; border: 1px solid #fffff580; border-radius: 18px; }
+.mascot[data-mascot-layout="panel"] .bolt-inline-speech {
+  position: static;
+  inset: auto;
+  max-width: none;
+  width: 100%;
+  margin: 0;
+  padding: 12px 16px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--green);
+  border: 1px solid #315a3612;
+  border-radius: 12px;
+  background: #fffff5d9;
+}
+.mascot[data-mascot-inline][data-mascot-layout="panel"] .mascot-fallback { height: 100%; }
+.mascot[data-mascot-layout="panel"] .bolt-backdrop { opacity: .7; }
+.mascot[data-mascot-layout="panel"] .bolt-inline-controls { position: static; inset: auto; transform: none; width: 100%; max-width: none; align-items: center; justify-content: space-between; gap: 12px; }
+.mascot[data-mascot-layout="panel"] .bolt-inline-controls button { flex-shrink: 0; }
+.mascot[data-mascot-layout="panel"] .bolt-interaction-hint { padding: 0; color: var(--muted); font-size: 10px; line-height: 1.5; text-align: right; }
+.hero-visual {
+  background: radial-gradient(ellipse at 50% 42%, #f3f8e2 0%, #e6edce 62%, #dbe5ba 100%);
+  min-height: 410px;
+  border: 1px solid #315a3615;
+  border-radius: 20px;
+}
+.hero-mascot {
+  width: 100%;
+  height: 350px;
+  margin: 0;
+}
+.hero-mascot .bolt-backdrop { opacity: .45; }
+.hero-mascot .bolt-inline-controls { bottom: 0; }
+.mascot[data-mascot-inline] .mascot-fallback { height: calc(100% - 35px); }
+.registration-guide .bolt-inline-speech { display: none; }
+.bolt-inline-controls button {
+  min-height: 44px;
+  padding: 10px 19px;
+  background: var(--green);
+  border-color: var(--green);
+  color: #fffff5;
+  font-size: 11px;
+  box-shadow: 0 4px 12px #315a3620;
+  transition: background .2s, color .2s, transform .2s;
+}
+.bolt-inline-controls button:hover { background: var(--lime); color: var(--green); transform: translateY(-2px); }
+.bolt-inline-speech {
+  position: absolute;
+  top: 16px;
+  left: 18px;
+  right: 95px;
+  z-index: 4;
+  pointer-events: none;
+  font-size: 10px;
+  line-height: 1.5;
+  color: var(--green);
+  max-width: 190px;
+  padding: 9px 12px;
+  border: 1px solid #315a3610;
+  border-radius: 12px 12px 12px 2px;
+  background: #fffff5d9;
+}
+.mascot-hit-target { inset: 18% 26% 15%; }
+.bolt-arm-left { transform-origin: 111px 198px; }
+.bolt-arm-right { transform-origin: 189px 198px; }
+.bolt-leg-left { transform-origin: 132px 245px; }
+.bolt-leg-right { transform-origin: 170px 245px; }
+.bolt-head { transform-origin: 150px 183px; }
+.bolt-eyes { transform-origin: 150px 127px; }
+.bolt-speed-trails {
+  display: none;
+  position: absolute;
+  inset: 40% 14% auto;
+  z-index: 2;
+  pointer-events: none;
+  transform: rotate(-10deg);
+}
+.bolt-speed-trails i { display: block; height: 3px; margin: 11px 0; border-radius: 20px; background: linear-gradient(90deg, transparent, #d9f46b, #315a3660, transparent); }
+.bolt-speed-trails i:nth-child(2) { width: 80%; margin-left: -10%; }
+.mascot[data-mascot-action="speed"] .bolt-speed-trails { display: block; animation: bolt-trails .24s ease-in-out infinite alternate; }
+.mascot[data-mascot-action="spin"] .mascot-sparkles,
+.mascot[data-mascot-action="flip"] .mascot-sparkles { display: flex; animation: bolt-spark .7s ease-in-out infinite alternate; }
+.mascot[data-mascot-action="speed"] .bolt-body { animation: bolt-dash .7s ease-in-out infinite alternate; }
+.mascot[data-mascot-action="speed"] .bolt-leg-left,
+.mascot[data-mascot-action="speed"] .bolt-arm-right { animation: bolt-jog .15s ease-in-out infinite alternate; }
+.mascot[data-mascot-action="speed"] .bolt-leg-right,
+.mascot[data-mascot-action="speed"] .bolt-arm-left { animation: bolt-jog .15s ease-in-out infinite alternate-reverse; }
+.mascot[data-mascot-action="spin"] .bolt-body { transform-origin: 150px 190px; animation: bolt-spin 1s ease-in-out infinite; }
+.mascot[data-mascot-action="flip"] .bolt-body { transform-origin: 150px 190px; animation: bolt-flip 1.35s ease-in-out; }
+.bolt-companion { width: 132px; }
+.companion-mascot { height: 145px; }
+.bolt-controls { margin-top: -7px; width: 100%; margin-left: 0; }
+.bolt-controls button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: auto;
+  min-height: 44px;
+  padding: 9px 13px;
+  border-radius: 999px;
+  font-size: 10px;
+  white-space: nowrap;
+  box-shadow: 0 3px 8px #315a3610;
+}
+.bolt-speech { border-color: #315a3620; box-shadow: 0 5px 25px #315a3608; }
+@keyframes bolt-dash { from { transform: translateX(-24px) rotate(-8deg); } to { transform: translateX(24px) rotate(8deg); } }
+@keyframes bolt-trails { from { opacity: .35; transform: translateX(-8px) rotate(-10deg); } to { opacity: .9; transform: translateX(8px) rotate(-10deg); } }
+@keyframes bolt-spin { 0% { transform: scaleX(1) translateY(0); } 25% { transform: scaleX(.15) translateY(-8px); } 50% { transform: scaleX(-1) translateY(-12px); } 75% { transform: scaleX(-.15) translateY(-8px); } 100% { transform: scaleX(1) translateY(0); } }
+@keyframes bolt-flip { 0% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-28px) rotate(180deg); } 100% { transform: translateY(0) rotate(360deg); } }
+@media (max-width: 760px) {
+  .mascot[data-mascot-layout="panel"] .mascot-stage { height: 230px; }
+  .mascot[data-mascot-layout="panel"] .bolt-inline-speech { font-size: 11px; padding: 11px 13px; }
+  .mascot[data-mascot-layout="panel"] .bolt-interaction-hint { font-size: 9px; }
+  .hero-prefix { margin-top: 5px; margin-bottom: 2px; font-size: 18px; }
+  .hero-visual { min-height: 370px; }
+  .hero-mascot { height: 315px; }
+  .bolt-inline-speech { top: 14px; left: 14px; max-width: 163px; font-size: 9px; }
+  .registration-guide { grid-template-columns: 1fr 110px; }
+  .registration-guide .mascot { height: 145px; }
+  .registration-guide .mascot-canvas { bottom: 35px; }
+  .registration-guide .bolt-inline-controls button { padding: 8px 10px; font-size: 10px; }
+  .bolt-companion { width: 100px; }
+  .companion-mascot { height: 110px; }
+  .bolt-controls { width: 112px; margin-left: -12px; }
+  .bolt-controls button { padding: 8px 10px; }
+  .sport-art-label { top: 10px; left: 11px; right: 11px; font-size: 8px; }
+  .sports-grid { row-gap: 24px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sport-art, .sport-art::after, .sport-art > svg, .sport-arrow { transition: none !important; transform: none !important; }
+  .sport-card *, .bolt-speed-trails { animation: none !important; }
+  .mascot[data-mascot-action="speed"] .bolt-body,
+  .mascot[data-mascot-action="spin"] .bolt-body,
+  .mascot[data-mascot-action="flip"] .bolt-body { transform: none; }
+  .bolt-inline-controls button:hover { transform: none; }
+}

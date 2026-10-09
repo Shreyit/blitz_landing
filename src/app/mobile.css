@@ -1,0 +1,112 @@
+/* Shared responsive safeguards. Wide tables and the bracket scroll inside their own containers. */
+html { scroll-padding-top: calc(105px + env(safe-area-inset-top, 0px)); }
+.field-grid,
+.review-fields,
+.sport-options { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.field, .form-card, .registration-layout > *, .auction-layout > *,
+.teams-grid > *, .purse-grid > *, .review-profile > div,
+.roster-person > div, .admin-table, .admin-tabs { min-width: 0; }
+.hero-actions, .form-actions, .confirm-dialog footer { flex-wrap: wrap; }
+.review-profile h3, .review-profile p, .player-info h2,
+.team-card-body h2, .purse-card h3, .roster-person strong,
+.roster-person small, .history-row strong, .history-row > span,
+.bid-leader { overflow-wrap: anywhere; }
+.site-header { padding-top: env(safe-area-inset-top, 0px); }
+.photo-crop-dialog { max-height: calc(100vh - 32px); max-height: calc(100dvh - 32px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); }
+.confirm-dialog section { width: 100%; max-height: calc(100dvh - 48px); overflow-y: auto; overscroll-behavior: contain; }
+
+/* Switch navigation before the full link list crowds tablet widths. */
+@media (max-width: 1024px) {
+  .page-width, .site-footer { width: calc(100% - 64px - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px)); }
+  .nav-wrap { height: 72px; width: calc(100% - 40px - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px)); }
+  .brand > span { font-size: 30px; }
+  .brand > svg { width: 17px; }
+  .nav-cta { margin-left: auto; margin-right: 8px; min-height: 44px; padding: 10px 12px; gap: 8px; font-size: 11px; }
+  .menu-button { display: grid; place-items: center; min-width: 44px; min-height: 44px; }
+  .main-nav {
+    display: none;
+    position: absolute;
+    top: 100%; left: 0; right: 0;
+    flex-direction: column; align-items: stretch; gap: 0;
+    padding: 12px max(20px, env(safe-area-inset-left, 0px)) 20px max(20px, env(safe-area-inset-right, 0px));
+    max-height: calc(100vh - 72px);
+    max-height: calc(100dvh - 72px - env(safe-area-inset-top, 0px));
+    overflow-y: auto; overscroll-behavior: contain;
+    background: var(--paper); border-bottom: 1px solid var(--line);
+  }
+  .main-nav.is-open { display: flex; }
+  .main-nav a { padding: 16px; min-height: 48px; font-size: 14px; }
+  .main-nav a[aria-current="page"]:after { display: none; }
+  .registration-layout { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .registration-guide { position: static; }
+
+  /* Keep Bolt available below the page instead of covering registration/admin actions. */
+  .bolt-companion.bolt-companion-left { position: relative; left: auto; right: auto; bottom: auto; margin: 0 auto calc(24px + env(safe-area-inset-bottom, 0px)); }
+  .bolt-companion-left .bolt-speech { margin-left: calc((100% - 165px) / 2); width: 165px; }
+  body:has(.bolt-companion-left) .site-footer { padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)); }
+}
+
+/* iOS zooms focused text fields smaller than 16px. Keep browser pinch zoom enabled. */
+@media (max-width: 1024px), (pointer: coarse) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  .field input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  .field select, .tug-team-labels select, select, .field textarea, textarea { font-size: 16px; }
+  .role-selector button, .sport-options label, .played-before-options label,
+  .secondary-link, .sport-rules-link, .team-card summary,
+  .admin-tabs button, .admin-team-buttons button,
+  .region-map-message button, .photo-crop-adjust button { min-height: 44px; }
+  .region-map-zoom button, .photo-crop-close, .bolt-minimise { width: 44px; height: 44px; }
+  .photo-crop-adjust input { min-height: 44px; }
+  .bolt-speech { padding-right: 46px; }
+  .button:hover, .rule-card:is(:hover, :focus-within) { transform: none; }
+}
+
+@media (max-width: 760px) {
+  .page-width, .site-footer { width: calc(100% - 40px - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px)); }
+  .site-footer { padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)); }
+  .hero-grid > *, .about-feature > *, .spirit-section > *, .invite-main > * { min-width: 0; }
+  .hero-actions { row-gap: 14px; }
+  .sports-grid, .teams-grid, .purse-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .admin-tabs { max-width: 100%; }
+  .admin-tabs button { flex-shrink: 0; }
+  .purse-amount { flex-wrap: wrap; row-gap: 3px; }
+  .bid-amount { font-size: clamp(60px, 18vw, 86px); }
+  .history-row > * { min-width: 0; }
+  .bolt-companion { bottom: calc(12px + env(safe-area-inset-bottom, 0px)); right: calc(12px + env(safe-area-inset-right, 0px)); }
+  .form-actions > span { flex: 1 1 100px; }
+  .confirm-dialog { padding: 16px; }
+  .confirm-dialog section { padding: 24px; }
+}
+
+@media (max-width: 480px) {
+  .nav-cta { font-size: 10px; gap: 5px; padding-inline: 9px; }
+  .field-grid, .review-fields, .teams-grid { grid-template-columns: minmax(0, 1fr); }
+  .registration-guide { grid-template-columns: minmax(0, 1fr); }
+  .registration-guide h3, .registration-guide p, .registration-guide .mascot { grid-column: 1; grid-row: auto; }
+  .registration-guide .mascot { width: 100%; height: auto; display: grid; gap: 10px; }
+  .registration-guide .mascot .bolt-inline-speech { position: static; inset: auto; grid-row: auto; max-width: none; margin: 0; }
+  .registration-guide .mascot-stage { position: relative; inset: auto; height: 145px; }
+  .registration-guide .mascot .mascot-canvas { bottom: 0; }
+  .registration-guide .mascot .mascot-fallback { height: 100%; }
+  .registration-guide .bolt-inline-controls { position: static; inset: auto; transform: none; width: 100%; justify-content: center; }
+  .photo-crop-adjust { gap: 10px; }
+  .form-actions { gap: 12px; }
+  .review-profile { align-items: flex-start; gap: 14px; }
+  .review-profile img { flex-shrink: 0; width: 72px; height: 72px; }
+}
+
+@media (max-width: 380px) {
+  .sport-options { grid-template-columns: minmax(0, 1fr); }
+  .page-intro h1 { font-size: 40px; }
+  .hero-copy h2 { font-size: 40px; }
+}
+
+/* Short landscape screens still have a square preview and reachable crop actions. */
+@media (max-height: 600px) and (max-width: 1024px) {
+  .photo-crop-stage { max-width: min(340px, 42dvh); }
+  .photo-crop-dialog { padding: 16px; }
+  .photo-crop-header h2 { font-size: 21px; }
+  .photo-crop-dialog > p:not(.field-error) { margin-block: 8px 12px; }
+  .photo-crop-adjust { margin-top: 12px; }
+  .photo-crop-actions { margin-top: 12px; }
+}

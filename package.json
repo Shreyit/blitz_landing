@@ -1,0 +1,31 @@
+{
+  "name": "blitz-tiss",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --webpack --hostname 0.0.0.0",
+    "build": "next build --webpack",
+    "start": "next start --hostname 0.0.0.0",
+    "typecheck": "tsc --noEmit",
+    "test:e2e": "node --test tests/e2e.test.mjs",
+    "test:mobile": "node tests/mobile.test.mjs",
+    "test:mascot": "node --experimental-strip-types tests/mascot.test.mjs",
+    "test:registration": "node --experimental-strip-types tests/registration.test.mjs"
+  },
+  "dependencies": {
+    "next": "16.2.12",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "gsap": "3.15.0",
+    "lenis": "1.3.23",
+    "three": "0.169.0",
+    "lucide-react": "0.468.0"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "playwright-core": "1.60.0"
+  }
+}

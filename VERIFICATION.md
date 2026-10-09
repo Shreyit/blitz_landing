@@ -1,0 +1,19 @@
+# Verification
+
+The current implementation passes the Next.js production build (including TypeScript checking), 11 mascot/rules behavior tests, and 11 registration/email/map/crop tests. The latest backend verification from the registration update passed 83 Python tests against an isolated SQLite database; the mobile update changes no backend code.
+
+The mobile update adds tablet navigation, 44px touch controls, 16px text inputs, safe-area spacing, narrower registration/review/roster layouts, landscape crop sizing, native touch scrolling, and a lower WebGL pixel-density limit for touch devices. On registration and organiser screens up to 1024px wide, the companion sits below the page instead of overlaying form actions.
+
+`npm run test:mobile` supplies 12 touch-enabled Chromium checks spanning 320, 360, 390, 430, 768, and 1024px widths, plus 844 × 390 landscape. These check all public routes and the missing-page view, navigation dismissal, every sport dialog, bracket scrolling, both registration flows, actual touch crop dragging, map zoom/panning, long team/player names, and organiser tables. API and map requests are mocked; submissions never create registrations or send email. The suite was attempted here, but Chromium failed in its launch hook with `setsockopt: Operation not permitted` and SIGTRAP before any page checks ran. Its syntax check passes. Browser layout, iPhone Safari, Android Chrome, keyboard behavior, and device performance remain unverified in this environment.
+
+The mascot revamp passes eight deterministic behavior tests: Auction Dome exclusion, registration state priorities, volunteer-specific guidance, password-field classification, exact eight-sport frontend/scene parity, scene-cycle coverage, equal opposing tug pulls, and both winning directions with result locking. The backend suite now explicitly accepts each of the eight requested sports and rejects removed Basketball/Volleyball entries. Existing registration data is not rewritten.
+
+The backwards cap, swoosh sneakers, revised shaded football, and six differently shirted tug athletes were visually inspected using rasterised versions of the generated SVGs. This checks vector artwork, not browser layout or WebGL rendering. Production HTML checks confirm six tug athletes on the homepage, unique SVG identifiers, inline sports backdrops, transparent floating mascots on seven non-auction routes, and mascot exclusion from the Auction Dome.
+
+Browser tests include football tricks, scene switching, minimise/restore, page coverage, password privacy, tug pulls/rematch/team colours, mobile overflow, and the eight registration choices. They remain unexecuted under the environment’s browser restrictions.
+
+The Python suite covers bid thresholds, exact purse limits, stale and repeated commands, audited bid cancellation, every rapid-fire transition, saved random distribution for 1/7/8/9/19 players, volunteer exclusion, public email privacy, institutional domain validation, normalized image uploads, email verification and expiry, admin sessions, team configuration, CSV formula protection, and SMTP retry state.
+
+Environment restrictions prevented binding local server ports, launching Chromium, starting Docker PostgreSQL/Mailpit, and fetching packages from the network. Dependencies were recovered from local caches. Python HTTP tests used an in-process ASGI client, with a test-only periodic event-loop wakeup (`BLITZ_SANDBOX_TESTS=1`). No production code bypasses the environment restrictions.
+
+Browser tests are supplied in `tests/e2e.test.mjs` for a normal local environment. They have not been executed here. Live PostgreSQL concurrency, actual SMTP delivery, responsive visual rendering, and a supplied Rive binary still require verification before a public event. The Rive adapter is implemented; the site currently uses its SVG fallback because no authored `.riv` asset is available.
