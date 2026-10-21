@@ -1,8 +1,9 @@
-import { Admin } from "@/components/admin";
+import { RegistrationAdmin } from "@/components/registration-admin";
+import "./registrations.css";
 export const metadata = {
-  title: "Organiser dashboard",
+  title: "Registration dashboard",
   robots: { index: false, follow: false },
 };
 export default function AdminPage() {
-  return <Admin />;
+  return <RegistrationAdmin />;
 }

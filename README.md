@@ -16,7 +16,7 @@ An interactive campus sports website for the **Bachelor’s in Analytics and Sus
 | Rules & formats | Eight sport dialogs with animated entrances and glass-blurred backdrops, award points, and a connected knockout bracket. |
 | Registration | Separate player and volunteer entries, institutional email selection, demographics, a zoomable India map, and a square photo crop editor. |
 | Auction Dome | Public auction snapshots, team purses, current player, bidding history, and saved allocations. |
-| Organiser console | Signed admin sessions, registration review, CSV exports, team setup, auction controls, email status, and audit history. |
+| Registration admin | Private signed admin sessions, searchable player/volunteer roster, full profiles and photos, role filters, and CSV export. Auction controls are deferred to the next pilot phase. |
 | Team rosters | Persisted player assignments with team identities and jersey colours. |
 | Bolt | A forest-green and lime chibi speedster with a big head, high-fives, page reactions, and four tricks: keep-ups, a lightning lap, a spin, and a flip. |
 
@@ -56,18 +56,26 @@ The new backend runs on **Vercel + Supabase + an email provider**. Supabase mode
 | Accounts | Supabase Auth + private organiser allowlist | Named organiser sign-in; ordinary accounts cannot gain auction access |
 | Photos | Private Supabase Storage bucket | Normalized square JPEGs with eligibility checks |
 | Live updates | Supabase Realtime Broadcast | Change notifications followed by authoritative snapshot reads |
-| Email | Database outbox + Edge Function + Resend | Verification and assignment messages, exclusive leases, retries |
+| Email | Database outbox + Edge Function + Gmail SMTP or Resend | Designed registration receipts and team/price announcements, immediate queue wake-ups, leases and retries |
 | Local SQL checks | PGlite | Real PostgreSQL/PLpgSQL with platform service stubs |
 
 A sale saves its assignment, purse deduction, audit event, email job, next lot, and public snapshot in one transaction. Command IDs prevent repeated effects and versions reject stale commands. Browser code never determines a legal price or directly writes a purse.
 
 Private records live in the unexposed `blitz` schema. Spectators can read only a sanitized singleton projection. They receive no email addresses, verification tokens, demographic answers, or volunteer rationale. Public-channel messages are invalidations, never trusted auction data.
 
-Start with [Supabase setup](docs/SUPABASE_SETUP.md) and the [SQL walkthrough](docs/SUPABASE_SQL.md), which explains all four migrations and the manual organiser/mail operations.
+Email designs can be reviewed in [registration](docs/email-previews/registration.html) and [auction sale](docs/email-previews/assignment.html) previews. SVG source artwork is embedded as inline PNG images for Gmail compatibility. Registration is complete on submit; no email verification is required.
+
+For registration emails from the chosen Google Workspace account, follow [Gmail SMTP setup](docs/SMTP_SETUP.md).
+
+For removing the authorised dummy entries and their photos, follow [Pilot cleanup](docs/PILOT_CLEANUP.md).
+
+For the current registration-first phase, follow [Registration and admin pilot](docs/REGISTRATION_PILOT.md). It includes the exact hosted activation commands and the hidden-password admin setup.
+
+Start with [Supabase setup](docs/SUPABASE_SETUP.md) and the [SQL walkthrough](docs/SUPABASE_SQL.md), which explains all nine migrations and the manual organiser/mail operations.
 
 ## From registration to team
 
-![Participant workflow: choose player or volunteer, complete the form, crop a photo, review and verify email. Verified players enter the auction and receive a team; volunteers choose one department and remain outside the auction.](docs/readme/workflow.svg)
+![Participant workflow: choose player or volunteer, complete the form, crop a photo, review and submit. Registered players enter the auction and receive a team; volunteers choose one department and remain outside the auction.](docs/readme/workflow.svg)
 
 ### Participants
 
@@ -76,15 +84,15 @@ Start with [Supabase setup](docs/SUPABASE_SETUP.md) and the [SQL walkthrough](do
 3. Complete identity, programme/year, age, gender, state or union territory, and “Have you played Bachelor’s BLITZ before?”
 4. Players choose sports. Volunteers choose exactly one department—**Digital & Marketing, Operations, Medical, or Sustainability**—and explain their suitability and contribution.
 5. Upload a photo, drag and zoom the **1:1 crop**, then review and consent. Only the confirmed 600 × 600 JPEG is uploaded.
-6. Submit and verify your email. Verified players become eligible for the auction; volunteers stay outside its queue.
+6. Submit to complete registration and receive a confirmation email with your sports. Registered players become eligible for the auction; volunteers stay outside its queue.
 
 The India map supports zooming, panning, and all 36 states and union territories, including Andaman and Nicobar. A dropdown remains available if the external map data cannot load.
 
 ### Organisers
 
-**Configure teams → review verified players → start the auction → bid → sell or mark unsold → complete rapid rounds → allocate remaining players → review rosters and mail.**
+**Configure teams → review registered players → start the auction → bid → sell or mark unsold → complete rapid rounds → allocate remaining players → review rosters and mail.**
 
-Starting the auction closes registration and freezes its verified-player queue. The organiser explicitly closes each sale; there is no automatic closing timer. The eight team purses start at **₹2,000 each** and carry across all rounds.
+Starting the auction closes registration and freezes its registered-player queue. The organiser explicitly closes each sale; there is no automatic closing timer. The eight team purses start at **₹2,000 each** and carry across all rounds.
 
 | Round | Opening bid | Increment |
 | :--- | ---: | :--- |
@@ -129,7 +137,7 @@ ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
 npm run dev
 ```
 
-Open [the website](http://localhost:3000), [Studio](http://127.0.0.1:54323), or [the organiser console](http://localhost:3000/admin). Follow the [setup guide](docs/SUPABASE_SETUP.md) to create an authorised organiser, test registration and verification locally, and configure the mail function. The secret key remains server-only. Rebuild/restart after changing public environment variables.
+Open [the website](http://localhost:3000), [Studio](http://127.0.0.1:54323), or [the organiser console](http://localhost:3000/admin). Follow the [setup guide](docs/SUPABASE_SETUP.md) to create an authorised organiser, test registration and confirmation mail locally, and configure the mail function. The secret key remains server-only. Rebuild/restart after changing public environment variables.
 
 <details>
 <summary>Existing FastAPI development mode</summary>

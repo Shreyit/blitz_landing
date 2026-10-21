@@ -10,6 +10,7 @@ const db = new PGlite();
 const organiser = '00000000-0000-4000-8000-000000000001';
 const outsider = '00000000-0000-4000-8000-000000000002';
 let sequence = 0;
+let legacyUpgrade;
 async function scalar(sql, args = []) { return (await db.query(sql, args)).rows[0]?.value; }
 async function as(role, uid = '') {
   await db.exec(`reset role; set role ${role};`);
@@ -42,7 +43,7 @@ async function eligible(count = 1) {
 before(async () => {
   await db.exec(`
     create role anon; create role authenticated; create role service_role;
-    create schema auth; create table auth.users(id uuid primary key);
+    create schema auth; create table auth.users(id uuid primary key, email text, email_confirmed_at timestamptz);
     create function auth.uid() returns uuid language sql stable as $$
       select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid;
     $$;
@@ -55,9 +56,20 @@ before(async () => {
       language sql as $$ insert into realtime.test_messages values(payload,event,topic,private); $$;
   `);
   for (const name of (await readdir('supabase/migrations')).filter(n => n.endsWith('.sql')).sort()) {
+    if(name==='202610220006_confirmation_emails.sql') {
+      const legacyData={name:'Legacy Pilot',email:'legacy@tiss.edu',role:'player',programme:'BSASS',year:2,age:20,
+        gender:'female',region:'Maharashtra',played_before:false,sports:['Football'],consent:true};
+      await scalar('select public.blitz_register($1,$2,$3,$4,$5) as value',[randomUUID(),legacyData,'a'.repeat(64),'old-private-token','https://example.test']);
+      await scalar('select public.blitz_register($1,$2,$3,$4,$5) as value',[randomUUID(),{...legacyData,email:'already-sent@tiss.edu'},'b'.repeat(64),'old-sent-token','https://example.test']);
+      await db.exec("update blitz.email_outbox set status='sent' where recipient='already-sent@tiss.edu'");
+    }
     await db.exec(await readFile(`supabase/migrations/${name}`, 'utf8'));
+    if(name==='202610220006_confirmation_emails.sql') legacyUpgrade={
+      registrations:(await db.query('select verified,verification_hash,verification_expires from blitz.registrations')).rows,
+      jobs:(await db.query('select recipient,status,template,body,data from blitz.email_outbox order by recipient')).rows,
+    };
   }
-  await db.query('insert into auth.users values ($1),($2)', [organiser, outsider]);
+  await db.query('insert into auth.users(id) values ($1),($2)', [organiser, outsider]);
   await db.query('insert into blitz.organiser_users(user_id) values ($1)', [organiser]);
 });
 beforeEach(async () => {
@@ -94,10 +106,10 @@ test('an ordinary signed-in account cannot become an organiser', async () => {
   await assert.rejects(db.exec("select public.blitz_admin_data('registrations')"), /Organiser access/);
   await assert.rejects(db.exec(`insert into blitz.organiser_users(user_id) values ('${outsider}')`), /permission denied/);
 });
-test('intake ignores forged verification and keeps separate player and volunteer entries', async () => {
-  const player = await register('player', {email:'same@tiss.edu', verified:true});
+test('intake completes on submit and keeps separate player and volunteer entries', async () => {
+  const player = await register('player', {email:'same@tiss.edu', verified:false});
   await register('volunteer', {email:'same@tiss.edu'});
-  assert.equal(await scalar('select verified as value from blitz.registrations where id=$1',[player]), false);
+  assert.equal(await scalar('select verified as value from blitz.registrations where id=$1',[player]), true);
   await assert.rejects(register('player', {email:'same@tiss.edu'}), /unique constraint/);
 });
 test('intake rejects invalid domains, demographics, sports, department, consent and absent previous participation', async () => {
@@ -110,24 +122,21 @@ test('intake rejects invalid domains, demographics, sports, department, consent 
   await assert.rejects(register('volunteer', {volunteer_rationale:''}));
   await assert.rejects(register('volunteer', {sports:['Chess']}));
 });
-test('verification is idempotent, rejects expired links and freezes eligibility at auction start', async () => {
+test('registration needs no token or verification step and still closes when the auction starts', async () => {
   const id=await register();
-  const hash=await scalar('select verification_hash as value from blitz.registrations where id=$1',[id]);
+  const row=(await db.query('select * from blitz.registrations where id=$1',[id])).rows[0];
+  assert.equal(row.verified,true);assert.equal(row.verification_hash,null);assert.equal(row.verification_expires,null);
+  const receipt=await scalar("select data as value from blitz.email_outbox where key=$1",['registration:'+id]);
+  assert.deepEqual(receipt.sports,['Football']);assert.equal(receipt.role,'player');
+  assert.ok(!JSON.stringify(receipt).includes('verification'));
   await as('service_role');
-  assert.match((await scalar('select public.blitz_verify($1) as value',[hash])).message,/verified/);
-  assert.match((await scalar('select public.blitz_verify($1) as value',[hash])).message,/already/);
-  await as('postgres'); const late=await register();
-  const lateHash=await scalar('select verification_hash as value from blitz.registrations where id=$1',[late]);
-  await as('authenticated',organiser); await command('start');
-  await as('service_role'); await assert.rejects(scalar('select public.blitz_verify($1) as value',[lateHash]),/frozen/);
-  await as('postgres'); await db.exec("update blitz.registrations set verification_expires=now()-interval '1 hour' where not verified");
-  await as('service_role'); await assert.rejects(scalar('select public.blitz_verify($1) as value',[lateHash]),/expired/);
+  assert.match((await scalar('select public.blitz_verify($1) as value',['old-token-hash'])).message,/no longer required/);
+  await as('authenticated',organiser);assert.equal((await command('start')).total,1);
   await assert.rejects(register(),/Registration has closed/);
 });
-test('volunteers and unverified players never enter the queue or public snapshot', async () => {
+test('every completed player enters the queue while volunteer and private details stay out', async () => {
   await eligible(2); await register('volunteer'); await register();
-  await as('postgres'); await db.exec("update blitz.registrations set verified=true where role='volunteer'");
-  await as('authenticated',organiser); const s=await command('start'); assert.equal(s.total,2);
+  await as('authenticated',organiser); const s=await command('start'); assert.equal(s.total,3);
   const text=JSON.stringify(s);
   for (const privateField of ['@stud.tiss.ac.in','verification_hash','volunteer_rationale','gender','region','played_before']) assert.ok(!text.includes(privateField));
 });
@@ -238,4 +247,194 @@ test('realtime trigger sends only a version notification and rolls back on faile
   assert.equal(messages[0].event,'auction_changed'); assert.equal(messages[0].topic,'blitz:auction');
   await as('authenticated',organiser); await assert.rejects(command('sell'),/valid bid/);
   await as('postgres'); assert.equal(await scalar('select count(*)::integer as value from realtime.test_messages'),1);
+});
+
+test('first-admin bootstrap is service-only, confirmed, idempotent and cannot replace an existing organiser', async () => {
+  await db.exec('begin');
+  try {
+    await db.query('update auth.users set email=$1,email_confirmed_at=now() where id=$2', ['admin@example.test', outsider]);
+    await db.query('update auth.users set email=$1,email_confirmed_at=now() where id=$2', ['owner@example.test', organiser]);
+    for (const role of ['anon', 'authenticated']) {
+      await as(role, outsider);
+      await db.exec('savepoint denied');
+      await assert.rejects(db.query('select public.blitz_bootstrap_organiser($1,$2)', [outsider, 'admin@example.test']), /permission denied/);
+      await db.exec('rollback to savepoint denied');
+    }
+    await as('service_role');
+    await db.exec('savepoint existing');
+    await assert.rejects(db.query('select public.blitz_bootstrap_organiser($1,$2)', [outsider, 'admin@example.test']), /organiser already exists/);
+    await db.exec('rollback to savepoint existing');
+    await as('postgres'); await db.exec('delete from blitz.organiser_users');
+    await db.query('update auth.users set email_confirmed_at=null where id=$1', [outsider]);
+    await as('service_role'); await db.exec('savepoint unconfirmed');
+    await assert.rejects(db.query('select public.blitz_bootstrap_organiser($1,$2)', [outsider, 'admin@example.test']), /confirm the matching/);
+    await db.exec('rollback to savepoint unconfirmed');
+    await as('postgres'); await db.query('update auth.users set email_confirmed_at=now() where id=$1', [outsider]);
+    await as('service_role');
+    for (let i = 0; i < 2; i++) {
+      const enabled = await scalar('select public.blitz_bootstrap_organiser($1,$2) as value', [outsider, 'ADMIN@example.test']);
+      assert.equal(enabled.enabled, true);
+    }
+    await as('authenticated', outsider);
+    assert.equal((await scalar('select public.blitz_admin_me() as value')).authenticated, true);
+    await as('postgres'); assert.equal(await scalar('select count(*)::integer as value from blitz.organiser_users'), 1);
+  } finally { await db.exec('rollback'); await as('postgres'); }
+});
+
+test('admin roster includes completed registrations and all submitted details without legacy secrets', async () => {
+  const player = await register();
+  const volunteer = await register('volunteer');
+  await as('authenticated', organiser);
+  const rows = await scalar("select public.blitz_admin_data('registrations') as value");
+  assert.equal(rows.length, 2);
+  for (const row of rows) {
+    assert.ok([player, volunteer].includes(row.id));
+    assert.equal(row.verified, true);
+    assert.equal(row.photo, `/api/photos/${row.id}`);
+    for (const key of ['name','email','programme','year','age','gender','region','played_before','sports','created_at','consent_at']) assert.ok(key in row, key);
+    for (const key of ['verification_hash','verification_expires','photo_key']) assert.equal(key in row, false);
+    assert.equal(await scalar('select public.blitz_photo($1) as value', [row.id]), `${row.id}.jpg`);
+  }
+  const crew = rows.find(row => row.id === volunteer);
+  assert.equal(crew.volunteer_department, 'Operations');
+  assert.equal(crew.volunteer_rationale, 'I can coordinate the venue.');
+  await as('anon');
+  assert.equal(await scalar('select public.blitz_photo($1) as value', [volunteer]), null);
+});
+
+test('sale mail captures the sold team, exact price, sports and source once in the sale transaction',async()=>{
+  const [id]=await eligible();await command('start');await command('bid',2);
+  const version=(await state()).version,commandId=randomUUID();
+  await command('sell',null,commandId,version);await command('sell',null,commandId,version);
+  await as('postgres');
+  const rows=(await db.query("select template,data from blitz.email_outbox where key=$1",['assignment:'+id])).rows;
+  assert.equal(rows.length,1);assert.equal(rows[0].template,'assignment');
+  assert.equal(rows[0].data.team,(await state()).teams[1].name);
+  assert.equal(rows[0].data.price,20);assert.equal(rows[0].data.source,'auction');
+  assert.deepEqual(rows[0].data.sports,['Football']);
+  assert.equal(rows[0].data.website_url,'http://localhost:3000');
+  await as('service_role');
+  const claimed=await scalar('select public.blitz_mail_claim() as value');
+  assert.equal(claimed.template,'assignment');assert.equal(claimed.key,'assignment:'+id);
+});
+
+const mailPlatform=`
+  create schema vault;
+  create table vault.decrypted_secrets(name text primary key,decrypted_secret text);
+  insert into vault.decrypted_secrets values
+    ('blitz_project_url','https://fixture.supabase.co'),
+    ('blitz_mail_worker_secret','fixture-worker-secret-at-least-thirty-two-characters');
+  create schema net;
+  create table net.requests(url text,headers jsonb,body jsonb);
+  create function net.http_post(url text,headers jsonb,body jsonb,timeout_milliseconds integer)
+    returns bigint language plpgsql as $$ begin
+      insert into net.requests values(url,headers,body);return 1;
+    end $$;
+`;
+test('registration and sale enqueue authenticated worker wake-ups which roll back with the transaction',async()=>{
+  await db.exec('begin');
+  try {
+    await db.exec(mailPlatform);
+    const [id]=await eligible();
+    await as('postgres');assert.equal(await scalar('select count(*)::integer as value from net.requests'),1);
+    const first=(await db.query('select * from net.requests')).rows[0];
+    assert.equal(first.url,'https://fixture.supabase.co/functions/v1/deliver-mail');
+    assert.equal(first.headers.Authorization,'Bearer fixture-worker-secret-at-least-thirty-two-characters');
+    assert.deepEqual(first.body,{});
+    await as('authenticated',organiser);await command('start');await command('bid',1);
+    await db.exec('savepoint sale');await command('sell');
+    await as('postgres');assert.equal(await scalar('select count(*)::integer as value from net.requests'),2);
+    await db.exec('rollback to savepoint sale');await as('postgres');
+    assert.equal(await scalar('select count(*)::integer as value from net.requests'),1);
+    assert.equal(await scalar('select count(*)::integer as value from blitz.assignments'),0);
+    assert.equal(await scalar("select count(*)::integer as value from blitz.email_outbox where key=$1",['assignment:'+id]),0);
+  } finally {await db.exec('rollback');await as('postgres');}
+});
+test('a worker wake-up failure cannot lose registration, prevent a sale or delay purse updates',async()=>{
+  await db.exec('begin');
+  try {
+    await db.exec(mailPlatform);
+    await db.exec(`create or replace function net.http_post(url text,headers jsonb,body jsonb,timeout_milliseconds integer)
+      returns bigint language plpgsql as $$ begin raise exception 'Network unavailable'; end $$;`);
+    await eligible();await command('start');await command('bid',1);
+    const sold=await command('sell');assert.equal(sold.teams[0].purse,1980);assert.equal(sold.sold,1);
+    await as('postgres');assert.equal(await scalar('select count(*)::integer as value from blitz.email_outbox'),2);
+    assert.equal(await scalar("select count(*)::integer as value from blitz.email_outbox where status='pending'"),2);
+  } finally {await db.exec('rollback');await as('postgres');}
+});
+
+test('migration completes existing registrations and upgrades only queued receipts without resending accepted mail',()=>{
+  assert.ok(legacyUpgrade.registrations.every(row=>row.verified && row.verification_hash===null && row.verification_expires===null));
+  const pending=legacyUpgrade.jobs.find(row=>row.recipient==='legacy@tiss.edu');
+  assert.equal(pending.template,'registration');assert.equal(pending.status,'pending');
+  assert.deepEqual(pending.data.sports,['Football']);assert.ok(!pending.body.includes('old-private-token'));
+  const sent=legacyUpgrade.jobs.find(row=>row.recipient==='already-sent@tiss.edu');
+  assert.equal(sent.status,'sent');assert.equal(sent.template,'legacy');
+});
+
+test('pilot cleanup is service-only and preserves unrelated registrations, teams and organisers',async()=>{
+  const target=await register(),survivor=await register('volunteer');
+  await as('anon');await assert.rejects(db.exec('select public.blitz_pilot_registrations()'),/permission denied/);
+  await as('authenticated',organiser);await assert.rejects(db.query('select public.blitz_delete_pilot_registrations($1)',[[target]]),/permission denied/);
+  await as('service_role');const listed=await scalar('select public.blitz_pilot_registrations() as value');
+  assert.equal(listed.phase,'idle');assert.equal(listed.registrations.length,2);
+  const result=await scalar('select public.blitz_delete_pilot_registrations($1) as value',[[target]]);
+  assert.equal(result.deleted_registrations,1);assert.equal(result.deleted_mail_jobs,1);assert.deepEqual(result.photo_keys,[`${target}.jpg`]);
+  await as('postgres');assert.equal(await scalar('select id as value from blitz.registrations'),survivor);
+  assert.equal(await scalar('select count(*)::integer as value from blitz.email_outbox'),1);
+  assert.equal(await scalar('select count(*)::integer as value from blitz.teams where purse=2000'),8);
+  assert.equal(await scalar('select count(*)::integer as value from blitz.organiser_users'),1);
+});
+test('pilot cleanup refuses active mail leases and auction activity, and repeated cleanup is harmless',async()=>{
+  const id=await register();await as('service_role');await scalar('select public.blitz_mail_claim() as value');
+  await assert.rejects(scalar('select public.blitz_delete_pilot_registrations($1) as value',[[id]]),/being sent/);
+  await as('postgres');assert.equal(await scalar('select count(*)::integer as value from blitz.registrations'),1);
+  await db.exec("update blitz.email_outbox set status='sent',lease_until=null,lease_token=null");
+  await as('authenticated',organiser);await command('start');
+  await as('service_role');await assert.rejects(scalar('select public.blitz_delete_pilot_registrations($1) as value',[[id]]),/before the auction/);
+  await as('postgres');await db.exec("update blitz.auction set phase='idle',queue='{}',total=0");
+  await as('service_role');await scalar('select public.blitz_delete_pilot_registrations($1) as value',[[id]]);
+  const again=await scalar('select public.blitz_delete_pilot_registrations($1) as value',[[id]]);
+  assert.equal(again.deleted_registrations,0);assert.deepEqual(again.photo_keys,[]);
+  await assert.rejects(scalar('select public.blitz_delete_pilot_registrations($1) as value',[[]]),/Choose between/);
+});
+
+test('explicit pilot reset clears test auction activity, restores purses, reopens intake and keeps versions increasing',async()=>{
+  const [id]=await eligible();await command('start');await command('bid',1);await command('sell');
+  const sold=await state();assert.equal(sold.phase,'complete');assert.equal(sold.teams[0].purse,1980);
+  const teamNames=sold.teams.map(t=>[t.name,t.color]);
+  await as('authenticated',organiser);
+  await assert.rejects(db.query('select public.blitz_reset_pilot_auction($1,$2)',[[id],sold.version]),/permission denied/);
+  await as('service_role');
+  const reset=await scalar('select public.blitz_reset_pilot_auction($1,$2) as value',[[id],sold.version]);
+  assert.equal(reset.deleted_bids,1);assert.equal(reset.deleted_assignments,1);assert.equal(reset.deleted_mail_jobs,1);
+  await as('postgres');
+  const fresh=await state();assert.equal(fresh.phase,'idle');assert.equal(fresh.version,sold.version+1);
+  assert.equal(fresh.total,0);assert.equal(fresh.sold,0);assert.equal(fresh.current,null);assert.deepEqual(fresh.history,[]);
+  assert.ok(fresh.teams.every(t=>t.purse===2000 && t.players.length===0));assert.deepEqual(fresh.teams.map(t=>[t.name,t.color]),teamNames);
+  await as('service_role');
+  const removed=await scalar('select public.blitz_delete_pilot_registrations($1) as value',[[id]]);
+  assert.equal(removed.deleted_registrations,1);
+  await as('postgres');assert.equal(await scalar('select count(*)::integer as value from blitz.audit_events'),0);
+  assert.equal(await scalar('select count(*)::integer as value from blitz.organiser_users'),1);
+  await register();
+});
+test('pilot reset refuses stale versions, changed participant lists and live mail leases before changing anything',async()=>{
+  const [id]=await eligible();await command('start');await command('bid',1);
+  const before=await state();await as('service_role');
+  await assert.rejects(scalar('select public.blitz_reset_pilot_auction($1,$2) as value',[[id],before.version-1]),/auction changed/);
+  await assert.rejects(scalar('select public.blitz_reset_pilot_auction($1,$2) as value',[[],before.version]),/Registrations changed/);
+  await scalar('select public.blitz_mail_claim() as value');
+  await assert.rejects(scalar('select public.blitz_reset_pilot_auction($1,$2) as value',[[id],before.version]),/being sent/);
+  await as('postgres');assert.deepEqual(await state(),before);
+});
+
+test('the reset function satisfies hosted safe-update filtering for every data mutation',async()=>{
+  const definition=await scalar("select pg_get_functiondef('public.blitz_reset_pilot_auction(uuid[],integer)'::regprocedure) as value");
+  // PGlite cannot load Supabase's native safeupdate extension. Check the deployed
+  // function's SQL against its WHERE requirement alongside the behavioral tests.
+  const statements=definition.replace(/--[^\n]*/g,'').split(';')
+    .filter(statement=>/\b(?:delete\s+from|update)\s+blitz\./i.test(statement));
+  assert.ok(statements.length>0);
+  for(const statement of statements) assert.match(statement,/\bwhere\b/i,'Hosted safe-update rejects an unfiltered mutation.');
 });

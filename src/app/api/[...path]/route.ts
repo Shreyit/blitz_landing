@@ -1,4 +1,4 @@
-import { createHash, createHmac, randomBytes, randomUUID } from 'node:crypto';
+import { createHash, createHmac, randomUUID } from 'node:crypto';
 import sharp from 'sharp';
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
@@ -10,6 +10,22 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const hash = (s:string) => createHash('sha256').update(s).digest('hex');
+function originAllowed(origin: string | null) {
+  if (origin === null) return true; // Non-browser clients may omit Origin.
+  const normalize = (value: string) => {
+    try {
+      const url = new URL(value.trim());
+      return ['http:', 'https:'].includes(url.protocol) && !url.username && !url.password ? url.origin : null;
+    } catch { return null; }
+  };
+  const incoming = normalize(origin);
+  if (!incoming) return false;
+  // PUBLIC_URL is also trusted; an extra local/preview allowlist must not
+  // accidentally exclude the configured website. Normalize trailing slashes.
+  const configured = [process.env.PUBLIC_URL, process.env.ALLOWED_ORIGINS].filter(Boolean).join(',');
+  const allowed = configured || (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:3000,http://127.0.0.1:3000');
+  return allowed.split(',').some(value => normalize(value) === incoming);
+}
 function json(data: unknown, status = 200) {
   return NextResponse.json(data,{status,headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
 }
@@ -56,14 +72,14 @@ async function register(request: Request) {
     if(!['jpeg','png','webp'].includes(metadata.format || '') || (metadata.pages ?? 1)>1) throw new Error();
     image=await source.rotate().resize(600,600,{fit:'cover'}).jpeg({quality:85}).toBuffer();
   } catch { throw new InputError('Upload a valid JPEG, PNG or WebP photo up to 12 megapixels.'); }
-  const id=randomUUID(), token=randomBytes(32).toString('base64url'), path=`${id}.jpg`;
+  const id=randomUUID(), path=`${id}.jpg`;
   const url=process.env.PUBLIC_URL || (process.env.NODE_ENV==='production' ? '' : 'http://localhost:3000');
-  if(!url || !/^https?:\/\//.test(url)) throw new SupabaseError('Set PUBLIC_URL for registration verification links.',503);
+  if(!url || !/^https?:\/\//.test(url)) throw new SupabaseError('Set PUBLIC_URL for registration email links.',503);
   await serviceClient().request(`/storage/v1/object/blitz-photos/${path}`,{
     method:'POST',headers:{'Content-Type':'image/jpeg','x-upsert':'false'},body:new Uint8Array(image),
   });
   try {
-    return json(await serviceClient().rpc('blitz_register',{p_id:id,p_data:data,p_hash:hash(token),p_token:token,p_public_url:url}),201);
+    return json(await serviceClient().rpc('blitz_register',{p_id:id,p_data:data,p_hash:null,p_token:null,p_public_url:url}),201);
   } catch(e) {
     // Only compensate a definite database rejection. A lost response may follow
     // a committed registration; deleting its photo would corrupt that record.
@@ -76,7 +92,7 @@ async function register(request: Request) {
   }
 }
 function csv(rows:Record<string,unknown>[]) {
-  const fields=['name','email','role','programme','year','age','gender','region','played_before','sports','volunteer_department','volunteer_rationale','verified'];
+  const fields=['id','created_at','consent_at','name','email','role','programme','year','age','gender','region','played_before','sports','volunteer_department','volunteer_rationale'];
   const quote=(value:unknown) => {
     let s=Array.isArray(value) ? value.join(', ') : value == null ? '' : String(value);
     if(/^[\s]*[=+@-]|^[\t\r]/.test(s)) s="'"+s;
@@ -99,9 +115,7 @@ async function handle(request: NextRequest, context:{params:Promise<{path:string
       return new Response(response.body,{status:response.status,headers:output});
     }
     if(request.method==='POST') {
-      const origin=request.headers.get('origin');
-      const allowed=(process.env.ALLOWED_ORIGINS || process.env.PUBLIC_URL || 'http://localhost:3000').split(',').map(s=>s.trim());
-      if(origin && !allowed.includes(origin)) return json({detail:'Origin is not permitted.'},403);
+      if(!originAllowed(request.headers.get('origin'))) return json({detail:'Origin is not permitted.'},403);
     }
     if(request.method==='GET') {
       if(path==='health') { await snapshot(); return json({status:'ok',backend:'supabase'}); }

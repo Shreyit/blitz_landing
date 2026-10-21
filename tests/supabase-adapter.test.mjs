@@ -129,3 +129,70 @@ test('mail provider errors persist retry state instead of reporting success',asy
   });
   assert.deepEqual(await (await handler(workerRequest())).json(),{sent:0,retried:1});
 });
+
+test('SMTP delivery uses TLS on 465, a stable message ID and the queued recipient',async()=>{
+  const {createSmtpSender}=await import('../supabase/functions/deliver-mail/smtp.ts');
+  const messages=[];let options;
+  const sender=createSmtpSender({host:'smtp.gmail.com',port:'465',username:'sender@example.test',password:'fixture-app-password'},value=>{
+    options=value;
+    return {sendMail:async message=>{messages.push(message);return {accepted:[message.to]};}};
+  });
+  assert.ok(sender);assert.equal(options,undefined);
+  const message={from:'BLITZ <sender@example.test>',to:'student@tiss.edu',subject:'Verify',text:'Private verification link',key:'registration:fixture-id'};
+  assert.equal(await sender(message),true);assert.equal(await sender(message),true);
+  assert.equal(options.secure,true);assert.equal(options.requireTLS,true);assert.equal(options.port,465);
+  assert.equal(options.disableFileAccess,true);assert.equal(options.disableUrlAccess,true);
+  assert.equal(messages[0].messageId,messages[1].messageId);
+  assert.match(messages[0].messageId,/^<blitz-[a-f0-9]{64}@example\.test>$/);
+  assert.equal(messages[0].to,message.to);assert.equal(messages[0].text,message.text);
+  assert.equal('password' in messages[0],false);
+});
+test('SMTP config rejects missing credentials and ports blocked by hosted Edge Functions',async()=>{
+  const {createSmtpSender}=await import('../supabase/functions/deliver-mail/smtp.ts');
+  for(const extra of [{password:''},{host:''},{port:'25'},{port:'587'},{port:'NaN'},{port:'0'}]) {
+    assert.equal(createSmtpSender({host:'smtp.gmail.com',port:'465',username:'sender@example.test',password:'fixture',...extra},()=>{throw new Error('Must not create transport');}),undefined);
+  }
+});
+test('an unauthorised worker invocation cannot open an SMTP connection or claim mail',async()=>{
+  const {createSmtpSender}=await import('../supabase/functions/deliver-mail/smtp.ts');
+  const sender=createSmtpSender({host:'smtp.gmail.com',username:'sender@example.test',password:'fixture'},()=>{throw new Error('Must not open transport');});
+  const handler=createMailHandler({...config,provider:'smtp',resendKey:undefined},async()=>{throw new Error('Must not call database');},sender);
+  assert.equal((await handler(new Request('https://example.com',{method:'POST'}))).status,401);
+});
+test('SMTP worker marks accepted queued messages sent without requiring a Resend key',async()=>{
+  let claimed=false;const jobs=[],acknowledgements=[];
+  const handler=createMailHandler({...config,provider:'smtp',resendKey:undefined},async(url,init)=>{
+    assert.ok(url.startsWith(config.url));
+    if(url.endsWith('blitz_mail_claim')) {
+      if(claimed)return Response.json(null);claimed=true;
+      return Response.json({id:7,key:'registration:student',recipient:'student@tiss.edu',subject:'Verify',body:'Message',lease_token:'smtp-lease'});
+    }
+    acknowledgements.push(JSON.parse(init.body));return Response.json(true);
+  },async message=>{jobs.push(message);return true;});
+  assert.deepEqual(await (await handler(workerRequest())).json(),{sent:1,retried:0});
+  assert.equal(jobs[0].to,'student@tiss.edu');
+  assert.deepEqual(acknowledgements,[{p_id:7,p_lease_token:'smtp-lease',p_success:true}]);
+});
+test('SMTP failures leave mail for the database retry schedule',async()=>{
+  let claimed=false;
+  const handler=createMailHandler({...config,provider:'smtp',resendKey:undefined},async(url,init)=>{
+    if(url.endsWith('blitz_mail_claim')) {
+      if(claimed)return Response.json(null);claimed=true;
+      return Response.json({id:7,key:'registration:student',recipient:'student@tiss.edu',subject:'Verify',body:'Message',lease_token:'smtp-lease'});
+    }
+    assert.equal(JSON.parse(init.body).p_success,false);return Response.json(true);
+  },async()=>{throw new Error('Private SMTP diagnostic must not be returned');});
+  const response=await handler(workerRequest());
+  assert.deepEqual(await response.json(),{sent:0,retried:1});
+});
+test('an unconfigured or unknown mail provider cannot consume queued jobs',async()=>{
+  for(const provider of ['smtp','unknown']) {
+    const handler=createMailHandler({...config,provider},async()=>{throw new Error('Must not claim');});
+    assert.equal((await handler(workerRequest())).status,503);
+  }
+});
+test('SMTP recipient rejection is not mistaken for successful delivery',async()=>{
+  const {createSmtpSender}=await import('../supabase/functions/deliver-mail/smtp.ts');
+  const sender=createSmtpSender({host:'smtp.gmail.com',username:'sender@example.test',password:'fixture'},()=>({sendMail:async()=>({accepted:[]})}));
+  assert.equal(await sender({from:'BLITZ <sender@example.test>',to:'student@tiss.edu',subject:'Verify',text:'Message',key:'job'}),false);
+});

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="400" viewBox="0 0 1120 400" role="img" aria-labelledby="title desc">
+<title id="title">A new team. A new chapter.</title><desc id="desc">A golden lime trophy on a green podium, surrounded by lightning bolts, stadium lines and celebratory streamers.</desc>
+<defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#315a36"/><stop offset="1" stop-color="#172f23"/></linearGradient><linearGradient id="cup" x2="1" y2="1"><stop stop-color="#f1ffa3"/><stop offset=".6" stop-color="#d9f46b"/><stop offset="1" stop-color="#b3ce44"/></linearGradient><pattern id="grid" width="56" height="56" patternUnits="userSpaceOnUse"><path d="M56 0H0V56" fill="none" stroke="#d9f46b" stroke-opacity=".09"/></pattern></defs>
+<rect width="1120" height="400" rx="22" fill="url(#bg)"/><rect width="1120" height="400" rx="22" fill="url(#grid)"/>
+<g fill="none" stroke="#e8efd3" stroke-opacity=".18" stroke-width="2"><ellipse cx="560" cy="328" rx="430" ry="155"/><ellipse cx="560" cy="328" rx="350" ry="120"/><ellipse cx="560" cy="328" rx="270" ry="85"/><path d="M35 360H1085"/></g>
+<ellipse cx="560" cy="345" rx="170" ry="20" fill="#0f271d"/><path d="M440 303H680L705 348H415Z" fill="#477444"/><rect x="440" y="287" width="240" height="30" rx="8" fill="#628b50"/>
+<g fill="none" stroke="#c1db5c" stroke-width="19"><path d="M474 90H432V122Q432 182 499 188M646 90H688V122Q688 182 621 188"/></g>
+<path d="M471 67H649L636 152Q625 208 574 220V257H606L616 284H504L514 257H546V220Q495 208 484 152Z" fill="url(#cup)"/><path d="M489 80H631" stroke="#f4ffc1" stroke-width="5" stroke-linecap="round"/><path d="m574 106-44 58H558L546 204 593 143H565Z" fill="#315a36"/>
+<g fill="#d9f46b"><path d="m316 90-46 70H302L285 219 344 134H312Z"/><path d="m815 173-40 61H804L789 285 840 211H812Z"/><path d="m761 63 4 13 14 4-14 4-4 13-4-13-14-4 14-4zM387 241l4 13 14 4-14 4-4 13-4-13-14-4 14-4z"/></g>
+<g stroke-width="5" fill="none" stroke-linecap="round"><path d="m205 210 25-10M885 108l25 13M362 58l11 17M925 283l-9 20M192 100l14 17M722 299l18 5" stroke="#d9f46b"/><path d="m251 284 20 11M839 57l-8 17M390 174l-12 7M943 173l15-5M713 153l-9 14" stroke="#e8efd3"/><path d="M159 267q26-36 37-17t37-18M891 223q-15-29-30-13t-38-18" stroke="#82a76b"/></g>
+<g fill="#edf7b7"><circle cx="369" cy="115" r="5"/><circle cx="787" cy="126" r="5"/><circle cx="265" cy="63" r="4"/><circle cx="853" cy="322" r="5"/></g>
+</svg>

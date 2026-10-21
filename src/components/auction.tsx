@@ -69,7 +69,7 @@ export function AuctionBoard({
               {player
                 ? `${player.programme} · Year ${player.year}`
                 : state.phase === "idle"
-                  ? "Verified players will appear when the organiser starts."
+                  ? "Registered players will appear when the organiser starts."
                   : state.phase === "allocation"
                     ? "Remaining players will be assigned in a saved random draw."
                     : "Explore the squads in the Teams section."}

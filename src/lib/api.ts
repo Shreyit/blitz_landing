@@ -1,3 +1,12 @@
+export class ApiError extends Error {
+  status: number;
+  constructor(message: string, status: number) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+  }
+}
+
 export async function api<T>(
   path: string,
   options: RequestInit = {},
@@ -11,15 +20,17 @@ export async function api<T>(
   try {
     payload = await response.json();
   } catch {
-    throw new Error(
+    throw new ApiError(
       "The event server is unavailable. Please try again shortly.",
+      response.status,
     );
   }
   if (!response.ok)
-    throw new Error(
+    throw new ApiError(
       typeof payload.detail === "string"
         ? payload.detail
         : "Please check your details and try again.",
+      response.status,
     );
   return payload as T;
 }

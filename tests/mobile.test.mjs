@@ -26,7 +26,11 @@ async function mobilePage(viewport = { width: 390, height: 844 }, admin = false)
     const path = new URL(route.request().url()).pathname;
     if (path === "/api/auction") return route.fulfill({ json: state });
     if (path === "/api/admin/me") return route.fulfill({ status: admin ? 200 : 401, json: admin ? { authenticated: true } : { detail: "Sign in" } });
-    if (path === "/api/admin/registrations") return route.fulfill({ json: [{ ...player, role: "player", email: "m2024bsass027@stud.tiss.ac.in", age: 20, gender: "female", region: "Andaman and Nicobar Islands", played_before: true, verified: true, volunteer_department: null, volunteer_rationale: null }] });
+    if (path === "/api/admin/registrations") return route.fulfill({ status: admin ? 200 : 401, json: admin ? [
+      { ...player, role: "player", email: "m2024bsass027@stud.tiss.ac.in", age: 20, gender: "female", region: "Andaman and Nicobar Islands", played_before: true, verified: true, volunteer_department: null, volunteer_rationale: null },
+      { ...player, id: "volunteer-test", name: "Pilot volunteer", role: "volunteer", email: "pilot@tiss.edu", age: 21, gender: "others", region: "Maharashtra", played_before: false, sports: [], verified: false, volunteer_department: "Operations", volunteer_rationale: "I can coordinate equipment and venue setup." },
+    ] : { detail: "Sign in" } });
+    if (path === "/api/admin/logout") { admin = false; return route.fulfill({ json: { authenticated: false } }); }
     if (route.request().method() === "GET") return route.fulfill({ json: [] });
     assert.equal(path, "/api/registrations", `Unexpected mutation: ${path}`);
     return route.fulfill({ status: 201, json: { id: "mobile-registration", message: "Saved" } });
@@ -182,21 +186,40 @@ test("touch photo cropping and both registration flows fit portrait and landscap
         await submit.scrollIntoViewIfNeeded();
         assert.equal(await page.locator(".bolt-companion-left").evaluate((element) => getComputedStyle(element).position === "fixed"), false);
         await submit.tap();
-        await page.getByRole("heading", { name: "Your next stop: your inbox." }).waitFor();
+        await page.getByRole("heading", { name: "Your registration is complete." }).waitFor();
         await noOverflow(page, `${role} success`);
       } finally { await page.close(); }
     }
   }
 });
 
-test("mobile organiser tables scroll within the page and rosters remain usable", async () => {
+test("mobile admin profiles fit the screen and rosters remain usable", async () => {
   const page = await mobilePage({ width: 320, height: 568 }, true);
   try {
     await page.goto(`${base}/admin`);
-    await page.getByRole("button", { name: "Registrations", exact: true }).tap();
-    await page.locator(".admin-table tbody tr").waitFor();
+    const card = page.getByRole("button", { name: `View ${player.name}, player registration` });
+    await card.waitFor();
     await noOverflow(page, "Organiser registrations");
-    assert.equal(await page.locator(".admin-table").evaluate((element) => element.scrollWidth > element.clientWidth), true);
+    await touchTarget(card);
+    await card.tap();
+    const profile = page.getByRole("dialog");
+    await profile.waitFor();
+    assert.equal(await profile.getByText("Andaman and Nicobar Islands", { exact: true }).count(), 1);
+    await noOverflow(page, "Registration profile");
+    const close = page.getByRole("button", { name: "Close profile", exact: true });
+    await touchTarget(close);
+    await close.tap();
+    await page.getByRole("searchbox", { name: "Search registrations" }).fill("no-matching-person");
+    await page.getByRole("heading", { name: "No matching registrations." }).waitFor();
+    await page.getByRole("searchbox", { name: "Search registrations" }).fill("");
+    await page.getByLabel("Role", { exact: true }).selectOption("volunteer");
+    await page.getByRole("button", { name: "View Pilot volunteer, volunteer registration" }).tap();
+    await page.getByRole("dialog").getByText("I can coordinate equipment and venue setup.", { exact: true }).waitFor();
+    await page.getByRole("button", { name: "Close profile", exact: true }).tap();
+    await page.getByRole("button", { name: "Sign out", exact: true }).tap();
+    await page.getByLabel("Organiser password", { exact: true }).waitFor();
+    assert.equal(await page.locator(".roster-card").count(), 0);
+    assert.equal(await page.getByRole("dialog").count(), 0);
     await page.goto(`${base}/teams`);
     await page.locator(".team-card summary").first().tap();
     await page.locator(".roster-person").first().waitFor();

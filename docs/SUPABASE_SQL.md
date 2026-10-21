@@ -2,7 +2,7 @@
 
 SQL is the language used to define and query our data. PostgreSQL is the database engine. Supabase hosts PostgreSQL and adds Auth, Storage, Realtime, and Edge Functions. The SQL below is executable project code, not a diagram pretending to be a backend.
 
-Read the four migrations in order. The detailed comments in each file explain the main boundaries. This guide explains the statements, data relationships, and decisions around them.
+Read the nine migrations in order. The detailed comments in each file explain the main boundaries. This guide explains the statements, data relationships, and decisions around them.
 
 ## Vocabulary used throughout
 
@@ -25,6 +25,8 @@ Read the four migrations in order. The detailed comments in each file explain th
 | `transaction` | Changes commit together or roll back together on an unhandled error. |
 | `grant` / `revoke` | Give or remove a database privilege. |
 | RLS / `policy` | Row-level access rules applied to ordinary database roles. |
+
+Migration 006 replaces the original participant email-verification flow described in migrations 001–003. The historical files remain unchanged so already applied migrations stay reproducible. The current flow completes registration on submit and sends a designed receipt. Organiser Auth confirmation remains separate.
 
 ## Migration 001: tables and boundaries
 
@@ -141,6 +143,52 @@ The `storage.buckets` insert creates `blitz-photos` as private, JPEG-only, with 
 A public channel can receive messages from untrusted publishers. Consequently, the browser never uses a broadcast payload as auction state. A notification schedules a read of the authoritative, read-only projection. A forged message can at most request another read; it cannot change the displayed purse to an invented value. Fetches are coalesced for 50ms, and older HTTP responses cannot overwrite newer state.
 
 The Realtime protocol adapter joins, heartbeats, reconnects with backoff, and cleans up on unmount. Joining triggers a fresh snapshot to close the initial-subscription race. Four-second HTTP polling is recovery behavior when the socket or HTTP read is unhealthy. A 30-second checkpoint also repairs a silently missed notification; neither is the main live-update mechanism.
+
+## Migration 005: enabling the first organiser
+
+[Open the admin bootstrap migration](../supabase/migrations/202610220005_admin_bootstrap.sql).
+
+`create function public.blitz_bootstrap_organiser(p_user_id uuid, p_email text)` defines a narrow setup operation. The UUID identifies an existing Supabase Auth account; the email must match that account. The function checks `email_confirmed_at is not null`, so an unconfirmed identity cannot become the first admin.
+
+`security definer set search_path = ''` runs with the function owner's permissions while requiring explicit schema names. It does not make the endpoint public: `revoke execute ... from public, anon, authenticated` removes ordinary access, and `grant execute ... to service_role` permits only trusted server credentials.
+
+`pg_advisory_xact_lock(220005)` takes a lock lasting until the transaction ends. Concurrent bootstrap attempts cannot both see an empty organiser table and create two first admins. The number identifies this setup lock; it is not a password or a user ID.
+
+The first `if not exists` checks the confirmed Auth identity. The second check rejects a different account once any organiser exists. `raise exception ... using errcode` aborts the operation with a useful SQL error. `insert ... on conflict do nothing` makes rerunning setup for the same account harmless. Finally, `jsonb_build_object` returns the enabled status and UUID; it contains no password.
+
+The terminal-only `npm run setup:admin` script creates the confirmed Auth identity through Supabase's admin API, calls this function using the server secret, and then proves the account can pass the normal organiser check. The password is entered privately in the terminal. Additional admins require a deliberate manual membership grant rather than reusing this first-account bootstrap.
+
+## Migration 006: completed registration and designed receipts
+
+[Open the confirmation-mail migration](../supabase/migrations/202610220006_confirmation_emails.sql).
+
+`alter table ... alter column ... drop not null` makes the obsolete verification hash and expiry nullable. The migration clears these values and sets existing registrations complete. The `verified` column remains for older auction functions, but now represents accepted registration, not mailbox ownership. The server sets it; a forged browser value still has no effect.
+
+The two added outbox columns, `template` and `data`, separate message type from content. `template` selects `registration`, `assignment`, or the backwards-compatible `legacy` text format. `data jsonb` records the exact selected sports, form details, and (for a sale) team and price. `check` restricts the supported template names.
+
+`blitz.registration_mail_data` builds structured content with `jsonb_build_object`; `blitz.registration_mail_text` provides a readable fallback. The replacement `blitz_register` keeps the original function signature for deployed-client compatibility but ignores the old token arguments. It saves a completed registration and a receipt job together. `blitz_verify` becomes an informational compatibility response and cannot change rows.
+
+The replacement `blitz.assign_player` inserts the assignment and its announcement job in the existing sale transaction. The team and price are copied into the job, so delivery does not guess them from a later browser state. A random assignment records price zero and is worded as allocation. The unique `assignment:UUID` key continues preventing duplicate logical messages on repeated sale commands.
+
+`blitz_mail_claim` returns `template` and `data` as part of the exclusive lease and prioritises sale announcements over registration receipts. The Edge worker renders escaped HTML, a plain-text alternative, and inline PNG artwork generated from SVG. Static artwork has no runtime URL fetch or filesystem dependency. SMTP and Resend use the same renderer.
+
+The two backfill `update` statements upgrade pending/failed registration and assignment jobs. They leave already accepted messages and live worker leases alone. Completed registrations are not deleted or asked to register again.
+
+`create trigger email_outbox_wakeup after insert` calls `blitz.notify_mail`. The trigger looks up the project URL and invocation secret in Vault, then uses `net.http_post` to queue a worker wake-up. Its HTTP operation starts after commit and does not wait for SMTP. A transaction rollback also removes its queued wake-up. If the platform extensions or credentials are missing, or enqueueing fails, the mail row remains available to the scheduled recovery worker; a mail wake-up must not break a sale or registration. References: [pg_net](https://supabase.com/docs/guides/database/extensions/pg_net), [Vault](https://supabase.com/docs/guides/database/vault).
+
+`revoke execute` keeps the new helpers inaccessible to normal application callers. `create or replace` retains the grants already applied to the replaced RPCs. Supabase Auth organiser confirmation is unchanged.
+
+## Migration 007: targeted pilot cleanup
+
+[Open the cleanup migration](../supabase/migrations/202610220007_pilot_cleanup.sql). Its two RPCs are service-only: one lists the current pilot candidates, and the other deletes an exact array of registration UUIDs. Creating these functions does not itself delete anything. The SQL transaction checks idle auction state, locks the selected rows and mail jobs, refuses bid/assignment activity or live mail leases, then deletes only matching email jobs and registrations. It returns photo names for the terminal to remove through Storage's API. The terminal saves a private resumable manifest first, so a network failure cannot broaden deletion to later students. See the [command walkthrough](PILOT_CLEANUP.md).
+
+## Migration 008: explicit reset of the dummy auction
+
+[Open the reset migration](../supabase/migrations/202610220008_pilot_auction_reset.sql). This was added after the ordinary cleanup correctly refused a started auction and the user confirmed all auction activity was dummy. The new service-only function accepts a complete participant snapshot and expected auction version. It checks both under the auction lock, refuses live mail leases, deletes test bids/assignments and auction audit entries, restores ₹2,000 purses, and clears the auction state. It preserves team names, colours and organiser accounts. The version increases and `blitz.publish_snapshot()` broadcasts a coherent empty state, so old HTTP responses cannot restore the previous auction view. The terminal only calls this function with the explicit `--all --reset-auction` option, then performs profile/photo cleanup separately. Creating the function itself does not reset anything.
+
+## Migration 009: hosted safe-update compatibility
+
+[Open the scoped reset fix](../supabase/migrations/202610220009_scoped_pilot_reset.sql). Supabase's `safeupdate` protection requires a `WHERE` clause on `DELETE` and `UPDATE`. The first reset function had unfiltered bid/assignment deletion and purse restoration, so the hosted call was rejected and rolled back. `create or replace` installs the corrected function while retaining its service-only grant. `where player_id=any(p_ids)` restricts child records to the approved pilot IDs, and `where purse<>2000` restores only balances that need changing. This is a forward migration: already applied migration 008 remains unchanged. [Supabase's configuration reference](https://supabase.com/docs/guides/database/custom-postgres-config).
 
 ## Operational SQL files
 

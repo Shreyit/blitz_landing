@@ -60,6 +60,18 @@ test('cross-origin mutations and anonymous organiser access fail before any priv
   assert.equal((await route('admin/login',{email:'admin@tiss.edu',password:'password'},{origin:'https://other.example'})).status,403);
   assert.equal((await route('admin/me')).status,401); assert.equal(calls.length,0);
 });
+test('the configured website and explicit preview origins accept trailing slashes without trusting unrelated sites',async()=>{
+  process.env.PUBLIC_URL='https://blitz-landing-theta.vercel.app/';
+  process.env.ALLOWED_ORIGINS=' http://localhost:3000, https://blitz-preview.example/ ';
+  // Malformed command input reaches validation only after the origin check.
+  for (const origin of ['https://blitz-landing-theta.vercel.app','https://blitz-preview.example','http://localhost:3000']) {
+    assert.equal((await route('admin/auction/sell',{}, {origin})).status,422);
+  }
+  for (const origin of ['https://other.example','null','https://blitz-landing-theta.vercel.app.attacker.example']) {
+    assert.equal((await route('admin/auction/sell',{}, {origin})).status,403);
+  }
+  assert.equal(calls.length,0);
+});
 test('login checks the organiser allowlist before saving a session',async()=>{
   responder=async c=>{
     if(c.url.endsWith('blitz_rate_limit'))return Response.json(null);
@@ -117,7 +129,7 @@ test('registration normalizes the image and sends only validated intake to the s
   const form=await registration();form.set('verified','true');
   const response=await route('registrations',form);assert.equal(response.status,201);
   assert.equal(payload.p_data.verified,undefined);assert.equal(payload.p_data.played_before,true);
-  assert.match(payload.p_hash,/^[a-f0-9]{64}$/);assert.notEqual(payload.p_hash,payload.p_token);
+  assert.equal(payload.p_hash,null);assert.equal(payload.p_token,null);
 });
 test('definite registration rejection cleans up the uploaded photo',async()=>{
   responder=async c=>{

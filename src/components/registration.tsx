@@ -201,7 +201,7 @@ export function Registration() {
           ]
         : [
             "Looking good. One last check.",
-            "Check your details before you submit. You’ll get a link to verify your email address.",
+            "Check your details before you submit. We’ll email a confirmation with everything you signed up for.",
           ];
   return (
     <>
@@ -210,7 +210,7 @@ export function Registration() {
         <h1>{success ? "You’re on the list." : "A place for your game."}</h1>
         <p>
           {success
-            ? "One more step: verify your institutional email address."
+            ? "Your registration is complete. Welcome to Bachelor’s BLITZ."
             : "Players bring the competition. Volunteers bring it all together. Choose your role and join BLITZ."}
         </p>
       </div>
@@ -220,24 +220,24 @@ export function Registration() {
           <h3>{success ? "Check your inbox, teammate." : guide[0]}</h3>
           <p>
             {success
-              ? "Your registration is saved. Follow the verification link before the auction begins."
+              ? "You’re registered. A confirmation with your submitted details is on its way."
               : guide[1]}
           </p>
         </aside>
         {success ? (
           <div className="success-panel" role="status">
             <CheckCircle2 size={45} />
-            <h2>Your next stop: your inbox.</h2>
+            <h2>Your registration is complete.</h2>
             <p>
-              We saved your {role} registration. A confirmation and verification
-              link will be sent to <strong>{email}</strong>. Delivery
+              We saved your {role} registration. A confirmation with your submitted
+              details will be sent to <strong>{email}</strong>. Delivery
               may take a few minutes; check spam too.
             </p>
             <div className="notice">
               <Mail size={18} />
               <span>
                 {role === "player"
-                  ? "Verified players enter the auction. We’ll email your team and final price after your assignment."
+                  ? "You’re in the player pool. We’ll email your team and final price after your auction assignment."
                   : "You’re joining the volunteer crew. Volunteer registrations stay outside the auction."}
               </span>
             </div>

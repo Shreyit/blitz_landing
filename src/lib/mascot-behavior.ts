@@ -81,7 +81,7 @@ export function pageReaction(path: string): MascotReaction | null {
   if (path === "/verify")
     return {
       action: "point",
-      message: "One last step: verify your TISS email.",
+      message: "Your registration is complete. Welcome to BLITZ.",
     };
   if (path === "/about")
     return {

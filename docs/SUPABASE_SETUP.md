@@ -2,7 +2,7 @@
 
 The new backend uses Supabase PostgreSQL for data and auction commands, Supabase Auth for organiser accounts, private Storage for photos, and Realtime for auction notifications. Small Next.js routes on Vercel validate uploads and manage HttpOnly organiser sessions. A Supabase Edge Function delivers queued emails through Resend. No separate Python server is needed in Supabase mode.
 
-Nothing in this setup creates a hosted project, changes an existing database, or sends mail automatically. We are preparing locally first. The Python implementation remains available under `NEXT_PUBLIC_BACKEND_PROVIDER=fastapi`; selecting `supabase` never silently falls back to Python when credentials are missing.
+The website is deployed on Vercel. For the current registration-first phase and exact hosted activation steps, start with [Registration and admin pilot](REGISTRATION_PILOT.md). Local preparation alone does not activate hosted migrations, accounts, or mail. The Python implementation remains available under `NEXT_PUBLIC_BACKEND_PROVIDER=fastapi`; selecting `supabase` never silently falls back to Python when credentials are missing.
 
 ## 1. Run the database lessons without a Supabase account
 
@@ -65,11 +65,11 @@ Open [add_organiser.sql](../supabase/operations/add_organiser.sql), replace the 
 
 Sign in at `/admin` using that email/password. A valid Auth account without this allowlist entry is rejected. Account creation and organiser membership are separate actions. No public API can grant organiser membership.
 
-## 5. Try registration and email verification
+## 5. Try registration and confirmation mail
 
 Submit one disposable player registration and one volunteer registration. Player intake selects sports; volunteer intake selects exactly one department and a contribution statement. You can use the same institutional email for both roles.
 
-The server validates the form, normalizes the confirmed crop to a 600 × 600 JPEG without metadata, uploads it to private Storage, and calls a service-only registration function. The database saves the registration and verification email job together. Email verification is required before a player enters the auction.
+The server validates the form, normalizes the confirmed crop to a 600 × 600 JPEG without metadata, uploads it to private Storage, and calls a service-only registration function. The database completes registration immediately and saves a confirmation-email job in the same transaction. No participant verification link is generated. The email includes the submitted details and selected sports.
 
 For local development without a mail provider, inspect the queued message for your own disposable registration in the SQL editor:
 
@@ -81,9 +81,11 @@ order by id desc
 limit 1;
 ```
 
-Open its verification link. This is a local development shortcut, not a public endpoint. Message bodies contain private verification links and must not appear in browser logs, exports, or spectator state. The organiser email tab deliberately shows delivery metadata only. Local Inbucket catches Supabase Auth's own emails; our custom registration messages stay in the outbox until the Edge Function processes them.
+Review the receipt text for the disposable entry. Message bodies contain participant details and stay private. The organiser email tab deliberately shows delivery metadata only. Local Inbucket catches Supabase Auth's own emails; our custom registration messages stay in the outbox until the Edge Function processes them.
 
-## 6. Set up custom email delivery when ready
+## 6. Set up custom email delivery
+
+For the chosen Google Workspace sender, follow [Gmail SMTP activation](SMTP_SETUP.md). SMTP support and private setup helpers are now available; the Resend setup below is an alternative.
 
 The email provider must accept your chosen sender domain. Copy `supabase/functions/.env.example` to a local, ignored `supabase/functions/.env` and fill in the provider key, sender, project secret, and a random `MAIL_WORKER_SECRET` of at least 32 characters. Do not use `tiss.edu` as a sender unless the institution has authorised and verified it with the provider.
 
@@ -104,9 +106,9 @@ npx supabase secrets set --env-file supabase/functions/.env
 
 SMTP in Supabase Auth handles authentication emails separately. Configuring Auth SMTP alone does not process custom registration/assignment jobs.
 
-## 7. Rehearse the auction locally
+## 7. Rehearse the auction in the next phase
 
-With verified players ready, set the team names, start the auction, bid, sell, cancel bids, and mark players unsold. Starting closes registration and freezes the verified-player queue. Walk through all rapid rounds and final allocation. Open a spectator tab alongside the organiser dashboard.
+The current `/admin` route is focused on registration review. Restore the auction control view in the next pilot phase. With registered players ready, set the team names, start the auction, bid, sell, cancel bids, and mark players unsold. Starting closes registration and freezes the registered-player queue. Walk through all rapid rounds and final allocation. Open a spectator tab alongside the organiser dashboard.
 
 Each command locks the singleton auction row, checks permissions and the expected version, applies the change, records an audit entry, builds one coherent public snapshot, and commits. A sale deducts the purse and assigns the player in that same transaction. Assignment mail is queued, not sent during the command.
 

@@ -83,7 +83,7 @@ test("registration reviews selected details without sending real mail", async ()
   await page.getByRole("checkbox").check();
   await page.getByRole("button", { name: "Register for BLITZ" }).click();
   await page
-    .getByRole("heading", { name: "Your next stop: your inbox." })
+    .getByRole("heading", { name: "Your registration is complete." })
     .waitFor();
   assert(submitted);
   await page.close();
@@ -139,7 +139,7 @@ test("volunteers choose one department and can submit a separate player registra
   await page.locator(".review-fields").getByText("Others", { exact: true }).waitFor();
   await page.getByRole("checkbox").check();
   await page.getByRole("button", { name: "Register for BLITZ", exact: true }).click();
-  await page.getByRole("heading", { name: "Your next stop: your inbox." }).waitFor();
+  await page.getByRole("heading", { name: "Your registration is complete." }).waitFor();
   assert(submissions[0].includes('name="volunteer_department"\r\n\r\nMedical'));
   assert(submissions[0].includes('name="sports"\r\n\r\n[]'));
   await page.getByRole("button", { name: "Also register as a player" }).click();
@@ -148,7 +148,7 @@ test("volunteers choose one department and can submit a separate player registra
   assert.equal(await page.locator(".review-rationale").count(), 0);
   await page.getByRole("checkbox").check();
   await page.getByRole("button", { name: "Register for BLITZ", exact: true }).click();
-  await page.getByRole("heading", { name: "Your next stop: your inbox." }).waitFor();
+  await page.getByRole("heading", { name: "Your registration is complete." }).waitFor();
   assert.equal(submissions.length, 2);
   assert(!submissions[1].includes('name="volunteer_department"'));
   assert(submissions[1].includes("Football"));

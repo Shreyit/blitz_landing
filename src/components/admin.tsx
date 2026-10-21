@@ -239,7 +239,7 @@ export function Admin() {
                 onClick={() => {
                   if (
                     confirm(
-                      "Start the auction? This closes registration and freezes the verified player queue.",
+                      "Start the auction? This closes registration and freezes the registered player queue.",
                     )
                   )
                     action("start");
@@ -340,7 +340,7 @@ export function Admin() {
                   <th>Played BLITZ before</th>
                   <th>Sports / department</th>
                   <th>Volunteer contribution</th>
-                  <th>Email status</th>
+                  <th>Registration</th>
                 </tr>
               </thead>
               <tbody>
@@ -368,7 +368,7 @@ export function Admin() {
                     <td>{r.played_before == null ? "—" : r.played_before ? "Yes" : "No"}</td>
                     <td>{r.role === "volunteer" ? r.volunteer_department || "—" : r.sports.map(sportName).join(", ")}</td>
                     <td>{r.volunteer_rationale ? <details className="admin-volunteer-rationale"><summary>Read statement</summary><p>{r.volunteer_rationale}</p></details> : "—"}</td>
-                    <td>{r.verified ? "Verified" : "Awaiting verification"}</td>
+                    <td>{r.verified ? "Complete" : "Pending"}</td>
                   </tr>
                 ))}
               </tbody>

@@ -6,7 +6,7 @@
 
 1. Keep sport rules, award points, shared registration options, and event copy aligned.
 2. Build the responsive public experience, SVG sports scenes, mascot reactions, and accessible dialogs.
-3. Connect registration, square photo processing, email verification, and the persistent mail outbox.
+3. Connect registration, square photo processing, confirmation email, and the persistent mail outbox.
 4. Validate server-authoritative auction commands, authenticated controls, saved purses, and team rosters.
 5. Complete event-driven live updates and production load tests for the one-second update target.
 6. Add fixture management, result entry, and persisted overall standings.
@@ -16,7 +16,7 @@ Steps 1–4 have implementations with verification limits documented in [VERIFIC
 
 ## Participant registration
 
-Choose Player or Volunteer → institutional username/domain → identity and programme/year → age, gender, region, and previous participation → role-specific choices → square photo crop → review and consent → submit → verify email.
+Choose Player or Volunteer → institutional username/domain → identity and programme/year → age, gender, region, and previous participation → role-specific choices → square photo crop → review and consent → submit → registration complete → confirmation email.
 
 Players select sports. Volunteers select exactly one of Digital & Marketing, Operations, Medical, or Sustainability, then explain why they are suitable and how they can contribute. A participant can submit both roles using the same institutional email, as separate registrations. Volunteers never enter the auction queue.
 
@@ -24,11 +24,13 @@ The region field supports the zoomable India map and its dropdown fallback. The 
 
 ## Organiser workflow
 
-Start the local Supabase stack and Next.js → create an allowlisted organiser account → configure queued-mail processing or inspect disposable verification links locally → review registrations → log in at `/admin` → set eight team identities → start when verified players are ready → select a team to bid → explicitly sell or mark unsold → finish each round → allocate remaining players → inspect rosters, email status, and audit history.
+The active phase is registration review: apply hosted migrations → run `npm run setup:admin` → deploy → sign in at `/admin` → submit 2–3 pilot entries → inspect photos/full profiles and export. See [the activation guide](docs/REGISTRATION_PILOT.md). The auction sequence below is the next phase; its controls are not currently exposed on `/admin`.
+
+Start the local Supabase stack and Next.js → create an allowlisted organiser account → configure queued-mail processing → review registrations → log in at `/admin` → set eight team identities → start when registered players are ready → select a team to bid → explicitly sell or mark unsold → finish each round → allocate remaining players → inspect rosters, email status, and audit history.
 
 The explicit `fastapi` development option instead uses the existing Python API/database/SMTP worker. Supabase mode does not require those processes and never silently routes writes to them.
 
-Starting the auction freezes the verified-player queue and closes registration. A bid does not permanently deduct money: the final sale deducts the amount. Teams with insufficient purses cannot bid, and the current leader cannot bid against itself. Cancelling an active lot’s bids is audited. There is no automatic timer closing a player’s auction.
+Starting the auction freezes the registered-player queue and closes registration. A bid does not permanently deduct money: the final sale deducts the amount. Teams with insufficient purses cannot bid, and the current leader cannot bid against itself. Cancelling an active lot’s bids is audited. There is no automatic timer closing a player’s auction.
 
 Normal round → rapid ₹10/+₹5 → rapid ₹2/+₹2 → rapid ₹1/+₹1 → final free allocation → complete. Only unsold players proceed to the next round. Team purses carry across rounds. Final shuffled allocation is saved once and cannot be rerolled.
 
@@ -38,7 +40,7 @@ Normal round → rapid ₹10/+₹5 → rapid ₹2/+₹2 → rapid ₹1/+₹1 →
 - Required demographics, all states/union territories, map zoom/pan, and dropdown fallback.
 - Exactly one volunteer department, contribution rationale, and volunteer isolation from public rosters and auction queues.
 - Previous participation Yes/No; square crop dragging, zoom, cancellation, and recropping.
-- Invalid image, excessive size, expired verification link, and public email privacy.
+- Invalid image, excessive size, old confirmation-link compatibility, and public email privacy.
 - First bid ₹20; transitions ₹95→₹100→₹110 and ₹190→₹200→₹225.
 - A purse equal to the next bid is valid; a lower purse is rejected.
 - Duplicate commands, stale versions, concurrent bids, and audited cancellation.

@@ -11,7 +11,13 @@
     "test:mobile": "node tests/mobile.test.mjs",
     "test:mascot": "node --experimental-strip-types tests/mascot.test.mjs",
     "test:registration": "node --experimental-strip-types tests/registration.test.mjs",
-    "test:supabase": "node --experimental-strip-types tests/supabase.test.mjs && node --experimental-strip-types tests/supabase-adapter.test.mjs && node --experimental-strip-types tests/supabase-routes.test.mjs"
+    "test:supabase": "node --experimental-strip-types tests/supabase.test.mjs && node --experimental-strip-types tests/supabase-adapter.test.mjs && node --experimental-strip-types tests/supabase-routes.test.mjs && node tests/admin-provisioning.test.mjs && node tests/mail-setup.test.mjs && node --experimental-strip-types tests/email-templates.test.mjs && node tests/pilot-cleanup.test.mjs",
+    "setup:admin": "node --env-file=.env.local scripts/setup-admin.mjs",
+    "setup:mail": "node --env-file=.env.local scripts/prepare-mail.mjs",
+    "mail:process": "node --env-file=.env.local --env-file=supabase/functions/.env scripts/process-mail.mjs",
+    "build:email-assets": "node scripts/build-email-assets.mjs",
+    "preview:emails": "node --experimental-strip-types scripts/preview-emails.mjs",
+    "cleanup:pilot": "node --env-file=.env.local --experimental-strip-types scripts/cleanup-pilot.mjs"
   },
   "dependencies": {
     "gsap": "3.15.0",

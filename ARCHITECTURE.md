@@ -1,6 +1,6 @@
 # Architecture
 
-BLITZ contains the public sports website, player/volunteer registration, a spectator Auction Dome, an organiser console, and eight team rosters. Supabase mode is implemented for local preparation; a hosted project and production rehearsal are still pending.
+BLITZ contains the public sports website, player/volunteer registration, a spectator Auction Dome, an organiser console, and eight team rosters. Supabase mode is implemented, the hosted project exists, and the Next.js website is deployed on Vercel. Hosted database activation and production rehearsal remain pending. The current `/admin` route focuses on the registration pilot: searchable private profiles, photos, filters, and CSV export. Auction controls will be connected in the next phase.
 
 ## Supabase mode
 
@@ -33,13 +33,15 @@ The private `blitz` schema is not exposed through the Data API and normal browse
 
 Supabase Auth identifies organisers. The private `organiser_users` allowlist grants application access; simply having an account grants no auction permissions. Next.js keeps access and refresh tokens in HttpOnly, SameSite=Strict cookies and checks allowed origins for mutations. Production cookies are Secure. Server secrets stay behind `server-only` imports and never use `NEXT_PUBLIC_` names.
 
-Participants keep institutional-email verification separate from organiser accounts. Player and volunteer entries are distinct, allowing one of each per institutional email. Both require demographics, state/UT, prior participation, consent, and a square photo. Players choose sports; volunteers choose one department and give a rationale. Only verified players enter the frozen auction queue.
+The first-admin setup command creates a confirmed Supabase Auth identity and calls a service-only bootstrap RPC. The function serialises setup attempts, checks the matching confirmed identity, permits repeat setup for that organiser, and refuses a different account once an organiser exists. Credentials are entered in a hidden terminal prompt.
+
+Participant registration is complete when the form is saved; no email-verification step or participant Auth account is required. Organiser accounts retain their separate Auth checks. Player and volunteer entries are distinct, allowing one of each per institutional email. Both require demographics, state/UT, prior participation, consent, and a square photo. Players choose sports; volunteers choose one department and give a rationale. All completed player registrations enter the frozen auction queue; volunteers remain outside it. The legacy database column `verified` is retained as an accepted-registration flag, not evidence of mailbox ownership.
 
 The public snapshot includes player name, programme/year, sports, eligible photo URL, bids/leader, team identities/purses/rosters, and recent assignments. It excludes email, verification secrets, demographics, prior participation, and volunteer statements. Organiser data functions exclude verification hashes/links even in private dashboard responses. CSV export escapes cells that could execute spreadsheet formulas.
 
 ## Photos
 
-The client crops to a square JPEG; the Next.js route bounds the body, validates actual image content and pixel count, and normalizes to 600 × 600 JPEG without metadata using Sharp. The private bucket accepts JPEG only. Photo requests check player verification or organiser membership before server-credential access to bytes. Volunteer photos remain organiser-only.
+The client crops to a square JPEG; the Next.js route bounds the body, validates actual image content and pixel count, and normalizes to 600 × 600 JPEG without metadata using Sharp. The private bucket accepts JPEG only. Photo requests check accepted player registration or organiser membership before server-credential access to bytes. Volunteer photos remain organiser-only.
 
 A definite registration rejection attempts upload cleanup. An ambiguous network error intentionally leaves the private object because the database might already have committed; deleting then could corrupt a valid registration. Hosted operations should reconcile orphan objects against registrations rather than deleting on uncertain errors.
 
@@ -71,10 +73,14 @@ GSAP owns DOM choreography, Lenis owns fine-pointer smooth scrolling, and Three.
 
 ## Local verification and remaining work
 
-Four versioned SQL migrations define the schema and functions. PGlite tests run real PostgreSQL with Supabase platform stubs; adapter/route tests mock network and cookies while exercising actual application handlers. See [verification](VERIFICATION.md), [setup](docs/SUPABASE_SETUP.md), and [SQL lessons](docs/SUPABASE_SQL.md).
+Nine versioned SQL migrations define the schema and functions. PGlite tests run real PostgreSQL with Supabase platform stubs; adapter/route tests mock network and cookies while exercising actual application handlers. See [verification](VERIFICATION.md), [setup](docs/SUPABASE_SETUP.md), and [SQL lessons](docs/SUPABASE_SQL.md).
 
 Hosted service integration, a real SMTP/provider rehearsal, browser/device checks, and multi-connection/load testing remain pending. Sports fixture/result management and persisted overall standings are separate unfinished features. Existing Python/SQLite data needs an explicit import if any real event data must move to Supabase.
 
 ## Explicit FastAPI development option
 
 `NEXT_PUBLIC_BACKEND_PROVIDER=fastapi` retains the existing Python implementation. Next.js forwards HTTP to `API_INTERNAL_URL`; the browser uses `NEXT_PUBLIC_WS_URL`. The Python API owns its SQLAlchemy transactions, local JPEG storage, signed shared-password admin cookie, database-polling sockets, and separate SMTP outbox worker. SQLite remains its local fallback; production concurrency requires PostgreSQL. Supabase mode never silently falls back to these processes.
+
+The mail worker supports the chosen Google Workspace sender through Gmail SMTP on TLS port 465 (`MAIL_PROVIDER=smtp`), with Resend retained as an alternative. Both transports consume the same leased outbox after a dedicated worker-secret check. SMTP uses stable Message-IDs but does not guarantee exactly-once external delivery. [Activation and queue diagnostics](docs/SMTP_SETUP.md) remain a hosted setup step.
+
+Registration and assignment emails now render branded HTML with plain-text alternatives and inline PNG artwork derived from repository SVGs. Sale payloads capture the team and exact price in the sale transaction. An outbox-insert trigger queues a Vault-authenticated pg_net call after commit, and the minute Cron job remains a retry/recovery path. SMTP/inbox latency is separate from the atomic purse and roster update.
