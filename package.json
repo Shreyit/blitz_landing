@@ -10,22 +10,25 @@
     "test:e2e": "node --test tests/e2e.test.mjs",
     "test:mobile": "node tests/mobile.test.mjs",
     "test:mascot": "node --experimental-strip-types tests/mascot.test.mjs",
-    "test:registration": "node --experimental-strip-types tests/registration.test.mjs"
+    "test:registration": "node --experimental-strip-types tests/registration.test.mjs",
+    "test:supabase": "node --experimental-strip-types tests/supabase.test.mjs && node --experimental-strip-types tests/supabase-adapter.test.mjs && node --experimental-strip-types tests/supabase-routes.test.mjs"
   },
   "dependencies": {
+    "gsap": "3.15.0",
+    "lenis": "1.3.23",
+    "lucide-react": "0.468.0",
     "next": "16.2.12",
     "react": "19.2.7",
     "react-dom": "19.2.7",
-    "gsap": "3.15.0",
-    "lenis": "1.3.23",
     "three": "0.169.0",
-    "lucide-react": "0.468.0"
+    "sharp": "0.34.5"
   },
   "devDependencies": {
-    "typescript": "5.9.3",
+    "@electric-sql/pglite": "0.2.17",
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "playwright-core": "1.60.0"
+    "playwright-core": "1.60.0",
+    "typescript": "5.9.3"
   }
 }

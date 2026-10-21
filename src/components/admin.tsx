@@ -30,6 +30,7 @@ type AuditEvent = {
 export function Admin() {
   const { state, setState, connected, refresh } = useAuction();
   const [authenticated, setAuthenticated] = useState(false),
+    [email, setEmail] = useState(""),
     [password, setPassword] = useState(""),
     [busy, setBusy] = useState(false),
     [error, setError] = useState(""),
@@ -92,7 +93,7 @@ export function Admin() {
     setBusy(true);
     setError("");
     try {
-      await command("/admin/login", { password });
+      await command("/admin/login", { email, password });
       setAuthenticated(true);
       setPassword("");
       await refresh();
@@ -130,6 +131,11 @@ export function Admin() {
             Sign in to run the auction, review registrations, and check email
             delivery.
           </p>
+          {process.env.NEXT_PUBLIC_BACKEND_PROVIDER === 'supabase' && <label className="field">
+            Organiser email
+            <input type="email" autoComplete="username" required value={email}
+              onChange={(e) => setEmail(e.target.value)} />
+          </label>}
           <label className="field">
             Organiser password
             <input

@@ -41,22 +41,27 @@ Rules and award points are currently presentation data; fixture management, resu
 
 ## How it connects
 
-![System architecture: the Next.js browser connects to FastAPI through HTTP and WebSocket snapshots. FastAPI writes PostgreSQL and its email outbox; a separate worker delivers messages through SMTP.](docs/readme/architecture.svg)
+![BLITZ architecture: Next.js calls Supabase database functions; PostgreSQL saves auction state and mail jobs; an Edge Function delivers queued email.](docs/readme/architecture.svg)
+
+The new backend runs on **Vercel + Supabase + an email provider**. Supabase mode needs no separate Python server. The existing FastAPI backend remains an explicit local option while the Supabase integration is rehearsed.
 
 | Layer | Technology | Responsibility |
 | :--- | :--- | :--- |
 | Website | Next.js 16 · React 19 · TypeScript | Public pages, registration, organiser controls, and rosters |
-| Motion | GSAP · Lenis · Three.js | Scroll choreography, the mascot, and interactive scenes |
-| Vector guide | SVG · optional Rive adapter | Fallback artwork and optional authored animation |
-| API | Python · FastAPI | Validation, verification, sessions, and authoritative auction commands |
-| Persistence | SQLAlchemy · PostgreSQL | Registrations, auction state, purses, assignments, audit events, and email jobs |
-| Development database | SQLite | Local development and isolated tests |
-| Live updates | WebSocket snapshots · HTTP refresh | Spectator state and reconnect recovery |
-| Mail | Persistent outbox worker · SMTP | Confirmation, verification, and team-assignment messages |
+| Motion | GSAP · Lenis · Three.js · SVG | Scroll choreography, mascot, sports scenes, and fallbacks |
+| HTTP adapter | Next.js route handlers on Vercel | Input/photo validation, HttpOnly organiser sessions, and API compatibility |
+| Auction rules | Supabase PostgreSQL functions | Authoritative commands, row locks, purse changes, assignments, and audit events |
+| Accounts | Supabase Auth + private organiser allowlist | Named organiser sign-in; ordinary accounts cannot gain auction access |
+| Photos | Private Supabase Storage bucket | Normalized square JPEGs with eligibility checks |
+| Live updates | Supabase Realtime Broadcast | Change notifications followed by authoritative snapshot reads |
+| Email | Database outbox + Edge Function + Resend | Verification and assignment messages, exclusive leases, retries |
+| Local SQL checks | PGlite | Real PostgreSQL/PLpgSQL with platform service stubs |
 
-The API decides legal bids and purse changes. PostgreSQL row locks serialize auction commands; command IDs make retries idempotent, and stale versions are rejected. Selling a player saves the assignment, deducts the purse, appends an audit event, queues email, and advances the auction in one transaction.
+A sale saves its assignment, purse deduction, audit event, email job, next lot, and public snapshot in one transaction. Command IDs prevent repeated effects and versions reject stale commands. Browser code never determines a legal price or directly writes a purse.
 
-Next.js proxies HTTP requests through `/api/*`. The browser connects directly to the API’s configured WebSocket endpoint. Public snapshots omit email addresses and verification tokens; demographic answers, volunteer rationale, and previous-participation answers stay in organiser views and exports.
+Private records live in the unexposed `blitz` schema. Spectators can read only a sanitized singleton projection. They receive no email addresses, verification tokens, demographic answers, or volunteer rationale. Public-channel messages are invalidations, never trusted auction data.
+
+Start with [Supabase setup](docs/SUPABASE_SETUP.md) and the [SQL walkthrough](docs/SUPABASE_SQL.md), which explains all four migrations and the manual organiser/mail operations.
 
 ## From registration to team
 
@@ -93,82 +98,63 @@ See [WORKFLOW.md](WORKFLOW.md) for rehearsal cases and the development sequence.
 
 ## Run locally
 
-Use **Node.js 22.18+**, **Python 3.12**, and [uv](https://docs.astral.sh/uv/). Docker is optional for local PostgreSQL and Mailpit.
-
-### 1. Prepare the project
-
-Run from the repository root:
+Use **Node.js 22.18+**. To exercise the new database implementation without a Supabase account or Docker:
 
 ```bash
 npm install
-cp .env.example .env.local
-
-uv venv backend/.venv --python 3.12
-uv pip install --python backend/.venv/bin/python -r backend/requirements.txt
-cp backend/.env.example backend/.env
+npm run test:supabase
 ```
 
-Edit `backend/.env` to set a unique `ADMIN_PASSWORD` and `SESSION_SECRET`. SQLite is the development default. Environment values stay local.
+For the complete local application, start Supabase with its CLI and a running Docker-compatible runtime:
 
-### 2. Start three terminals
+```bash
+npx supabase start
+npx supabase status
+```
 
-**Website**
+Copy `.env.example` to `.env.local` if needed and select the new backend:
+
+```dotenv
+NEXT_PUBLIC_BACKEND_PROVIDER=supabase
+NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your-local-publishable-key
+SUPABASE_SECRET_KEY=your-local-server-secret
+PUBLIC_URL=http://localhost:3000
+ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
+```
 
 ```bash
 npm run dev
 ```
 
-**API**
+Open [the website](http://localhost:3000), [Studio](http://127.0.0.1:54323), or [the organiser console](http://localhost:3000/admin). Follow the [setup guide](docs/SUPABASE_SETUP.md) to create an authorised organiser, test registration and verification locally, and configure the mail function. The secret key remains server-only. Rebuild/restart after changing public environment variables.
+
+<details>
+<summary>Existing FastAPI development mode</summary>
+
+Select `NEXT_PUBLIC_BACKEND_PROVIDER=fastapi` and use Python 3.12 with uv:
+
+```bash
+uv venv backend/.venv --python 3.12
+uv pip install --python backend/.venv/bin/python -r backend/requirements.txt
+cp backend/.env.example backend/.env
+```
+
+Set unique admin/session secrets in `backend/.env`. Start the API and worker in separate terminals, alongside `npm run dev`:
 
 ```bash
 cd backend
 .venv/bin/uvicorn app.main:app --reload --port 8000
 ```
 
-**Email worker**
-
 ```bash
 cd backend
 .venv/bin/python -m app.worker
 ```
 
-Open [the website](http://localhost:3000), [the organiser console](http://localhost:3000/admin), or [the API documentation](http://localhost:8000/docs).
+SQLite is the default for this legacy local mode. `docker compose up -d db mailpit` starts optional PostgreSQL and development SMTP; the connection template is in [backend/.env.example](backend/.env.example). Mailpit's UI is at [localhost:8025](http://localhost:8025). Next.js forwards API requests to `API_INTERNAL_URL` in this mode, and the browser uses `NEXT_PUBLIC_WS_URL` for live snapshots. Without a configured API, writes fail explicitly and the auction shows its labelled preview.
 
-### 3. Add PostgreSQL and development mail
-
-From the repository root:
-
-```bash
-docker compose up -d db mailpit
-```
-
-Set this in `backend/.env`, then restart the API and worker:
-
-```dotenv
-DATABASE_URL=postgresql+psycopg://blitz:blitz_local@localhost:5432/blitz
-SMTP_HOST=localhost
-SMTP_PORT=1025
-SMTP_STARTTLS=false
-```
-
-View development emails in [Mailpit](http://localhost:8025). For real delivery, configure your provider’s SMTP host, port, sender, credentials, and TLS settings. Without a configured SMTP host, the worker skips real delivery.
-
-### Configuration reference
-
-| Variable | Where | Purpose |
-| :--- | :--- | :--- |
-| `API_INTERNAL_URL` | `.env.local` | HTTP API proxy target; default `http://127.0.0.1:8000` |
-| `NEXT_PUBLIC_WS_URL` | `.env.local` | Browser WebSocket endpoint; local `ws://localhost:8000/api/auction/live` |
-| `DATABASE_URL` | `backend/.env` | SQLite locally; PostgreSQL for production concurrency |
-| `ADMIN_PASSWORD`, `SESSION_SECRET` | `backend/.env` | Admin access and signed sessions |
-| `PUBLIC_URL`, `ALLOWED_ORIGINS` | `backend/.env` | Verification-link host and allowed frontend origins |
-| `UPLOAD_DIR` | `backend/.env` | Normalized photo storage directory |
-| `SMTP_*` | `backend/.env` | Email transport settings |
-| `PRODUCTION` | `backend/.env` | Production configuration, including secure cookies |
-| `NEXT_PUBLIC_RIVE_SRC` | `.env.local` | Optional authored `.riv` asset |
-| `NEXT_PUBLIC_RIVE_STATE_MACHINE` | `.env.local` | State-machine name in that asset |
-
-Full templates: [frontend](.env.example) and [backend](backend/.env.example). Backend deployments must include `shared/registration-options.json` alongside the `backend` directory.
+</details>
 
 ## Check the work
 
@@ -179,6 +165,7 @@ npm run typecheck
 npm run build
 npm run test:mascot
 npm run test:registration
+npm run test:supabase
 ```
 
 For browser checks, start the website and run:
@@ -213,32 +200,27 @@ blitz_landing/
 │   ├── app/                 FastAPI, auction service, persistence, and mail worker
 │   ├── tests/               API, auction, registration, and worker checks
 │   └── requirements.txt     Python dependencies
+├── supabase/
+│   ├── migrations/          Schema, permissions, auction, intake, and realtime
+│   ├── functions/           Queued-mail Edge Function
+│   └── operations/          Manual organiser bootstrap and mail scheduling
 ├── shared/                  Registration options shared by frontend and API
 ├── public/                  Website assets, map notes, and optional Rive artwork
 ├── img/                     Supplied TISS logo
-├── docs/readme/             Animated SVG documentation artwork
+├── docs/                    Supabase setup, SQL lessons, and animated SVG artwork
 ├── tests/                   Frontend behavior and browser suites
 └── docker-compose.yml       Local PostgreSQL and Mailpit
 ```
 
 ## Deployment plan
 
-The proposed production setup is **Vercel for Next.js**, **AWS EC2 in Mumbai for FastAPI and the email worker**, and **Supabase PostgreSQL in Mumbai**. Infrastructure provisioning and production rehearsal remain to be completed.
+Use **Vercel for Next.js**, **Supabase for PostgreSQL/Auth/Storage/Realtime/Edge Functions**, and a transactional email provider. No AWS account or separate backend machine is required in Supabase mode. Hosted provisioning has not been performed; this implementation is prepared and tested locally first.
 
-The live-auction target is **up to 100 spectators with updates within one second**. The current socket implementation checks database state approximately every second, while the frontend also refreshes over HTTP every four seconds. Meeting the target requires event-driven broadcasting, redundant-polling cleanup, and a load test against the chosen production setup and venue network. Current timing does not establish a one-second end-to-end guarantee.
+The live-auction target is **up to 100 spectators with updates within one second**. Supabase mode uses event notifications, a 50ms fetch-coalescing window, and authoritative snapshot reads. Healthy subscribers stop four-second polling; disconnects resume it, and a 30-second checkpoint repairs missed notifications. These intervals are recovery behavior, not a one-second delivery guarantee. Networked concurrency, hosted integration, and action-to-screen latency require a real-stack load test.
 
-An EC2 instance can be upgraded before the auction and resized afterward. Plan the required stop/start outside the event and retain a stable API endpoint. Choose the instance size from rehearsal results.
+Before opening the event, review migration targets, configure hosted Auth/SMTP, create allowlisted organisers, set Vercel environment variables and allowed origins, deploy/schedule the mail function, verify backups, and rehearse the full auction on the venue network. The server rate limiter uses shared database counters. Photos use a private bucket. Existing Python/SQLite data is not automatically imported.
 
-Before opening registration or running the event:
-
-- Configure HTTPS, explicit secrets, PostgreSQL, SMTP, allowed origins, and the final public URL.
-- Provide persistent photo storage and database backups. Private object storage integration is still pending.
-- Add versioned database migrations before deployed schema changes; startup currently bootstraps the schema and adds nullable intake columns for older records.
-- Rehearse concurrent bids, reconnects, stale commands, all auction rounds, allocation, and mail retries.
-- Add a shared/ingress rate limiter for multiple API instances; registration currently uses an in-memory limiter.
-- Complete device testing and the planned fixture, results, and overall-points backend.
-
-Admin access currently uses a shared organiser password and signed HttpOnly sessions. Named accounts and role-based permissions would be a subsequent backend change.
+Fixture/result persistence and calculated overall standings remain pending. See [verification](VERIFICATION.md) for the distinction between executed checks and remaining production rehearsal.
 
 ## Artwork and motion
 

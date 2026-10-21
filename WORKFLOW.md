@@ -12,7 +12,7 @@
 6. Add fixture management, result entry, and persisted overall standings.
 7. Provision production services, verify backups and email delivery, and rehearse the complete event.
 
-Steps 1–4 have implementations with verification limits documented in [VERIFICATION.md](VERIFICATION.md). Production performance work, match-result persistence, and infrastructure rollout remain pending.
+Steps 1–4 have implementations with verification limits documented in [VERIFICATION.md](VERIFICATION.md). The Supabase implementation also provides event-driven auction notifications, private Storage integration, named organiser accounts, and an Edge mail worker. Hosted rehearsal, latency/load testing, match-result persistence, and infrastructure rollout remain pending. Start locally with [Supabase setup](docs/SUPABASE_SETUP.md) and [the SQL walkthrough](docs/SUPABASE_SQL.md).
 
 ## Participant registration
 
@@ -24,7 +24,9 @@ The region field supports the zoomable India map and its dropdown fallback. The 
 
 ## Organiser workflow
 
-Start API, database, and SMTP worker → review registrations → log in at `/admin` → set eight team identities → start when verified players are ready → select a team to bid → explicitly sell or mark unsold → finish each round → allocate remaining players → inspect rosters, email status, and audit history.
+Start the local Supabase stack and Next.js → create an allowlisted organiser account → configure queued-mail processing or inspect disposable verification links locally → review registrations → log in at `/admin` → set eight team identities → start when verified players are ready → select a team to bid → explicitly sell or mark unsold → finish each round → allocate remaining players → inspect rosters, email status, and audit history.
+
+The explicit `fastapi` development option instead uses the existing Python API/database/SMTP worker. Supabase mode does not require those processes and never silently routes writes to them.
 
 Starting the auction freezes the verified-player queue and closes registration. A bid does not permanently deduct money: the final sale deducts the amount. Teams with insufficient purses cannot bid, and the current leader cannot bid against itself. Cancelling an active lot’s bids is audited. There is no automatic timer closing a player’s auction.
 
@@ -45,7 +47,7 @@ Normal round → rapid ₹10/+₹5 → rapid ₹2/+₹2 → rapid ₹1/+₹1 →
 - SMTP failure/retry and no accidental re-enqueue after a sale.
 - Keyboard navigation, mobile menu, every sport dialog, bracket scrolling, and reduced motion.
 
-Use an isolated database and Mailpit for rehearsal. Run production PostgreSQL concurrency tests and a spectator load test before choosing the auction-day instance size.
+Use isolated development data. Supabase mode queues custom mail for its Edge Function/provider; FastAPI mode can use Mailpit. Run real-stack PostgreSQL concurrency tests and a spectator load test before the public event.
 
 ## Assets and configuration
 

@@ -1,28 +1,46 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { api } from "./api";
 import { AuctionState, PREVIEW } from "./event";
+import { mergeAuctionState } from './auction-state';
+import { subscribeAuction } from './auction-realtime';
 export function useAuction() {
-  const [state, setState] = useState<AuctionState>(PREVIEW);
+  const [state, setRawState] = useState<AuctionState>(PREVIEW);
+  const setState=useCallback((incoming:AuctionState)=>setRawState(current=>mergeAuctionState(current,incoming)),[]);
+  const mounted=useRef(true);
+  const httpFailed=useRef(false);
   const [connected, setConnected] = useState(false);
   const [checked, setChecked] = useState(false);
   const refresh = useCallback(async () => {
     try {
       const data = await api<AuctionState>("/auction");
+      if(!mounted.current) return;
       setState(data);
+      httpFailed.current=false;
       setConnected(true);
     } catch {
-      setConnected(false);
+      httpFailed.current=true;
+      if(mounted.current) setConnected(false);
     } finally {
-      setChecked(true);
+      if(mounted.current) setChecked(true);
     }
-  }, []);
+  }, [setState]);
   useEffect(() => {
+    mounted.current=true;
     let cancelled = false,
       socket: WebSocket | null = null,
       retry: ReturnType<typeof setTimeout>;
     refresh();
-    const poll = setInterval(refresh, 4000);
+    let live=false;
+    const poll = setInterval(()=>{if(!live || httpFailed.current) refresh();}, 4000);
+    // A slow checkpoint repairs a silently missed notification without making
+    // interval polling the normal live-update path.
+    const checkpoint=setInterval(refresh,30_000);
+    let unsubscribe:(()=>void)|undefined;
+    if(process.env.NEXT_PUBLIC_BACKEND_PROVIDER==='supabase') {
+      const url=process.env.NEXT_PUBLIC_SUPABASE_URL, key=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+      if(url && key) unsubscribe=subscribeAuction({url,key,onChange:()=>{refresh();},onStatus:status=>{live=status;if(!status) refresh();}});
+    }
     function connect() {
       if (cancelled) return;
       // Use an explicit public socket URL in deployments; localhost is a development fallback.
@@ -37,7 +55,7 @@ export function useAuction() {
         try {
           const data = JSON.parse(event.data) as AuctionState;
           if (!cancelled) {
-            setState(data);
+            if(mounted.current) setState(data);
             setConnected(true);
             setChecked(true);
           }
@@ -46,17 +64,22 @@ export function useAuction() {
         }
       };
       socket.onclose = () => {
+        live=false;
         if (!cancelled) retry = setTimeout(connect, 5000);
       };
       socket.onerror = () => socket?.close();
+      socket.onopen=()=>{live=true; refresh();};
     }
-    connect();
+    if(process.env.NEXT_PUBLIC_BACKEND_PROVIDER!=='supabase') connect();
     return () => {
       cancelled = true;
+      mounted.current=false;
       clearInterval(poll);
+      clearInterval(checkpoint);
       clearTimeout(retry);
       socket?.close();
+      unsubscribe?.();
     };
-  }, [refresh]);
+  }, [refresh,setState]);
   return { state, setState, connected, checked, refresh };
 }

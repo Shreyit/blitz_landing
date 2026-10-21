@@ -1,66 +1,80 @@
 # Architecture
 
-## Product and visual system
+BLITZ contains the public sports website, player/volunteer registration, a spectator Auction Dome, an organiser console, and eight team rosters. Supabase mode is implemented for local preparation; a hosted project and production rehearsal are still pending.
 
-BLITZ has a public event site, verified player/volunteer registration, a spectator Auction Dome, an authenticated organiser console, and eight team rosters.
-
-Design tokens: paper #F7F8F2, ink #202820, court green #315A36, lime #D9F46B, clay court #E68B61, muted #6B7468. Display typography uses a heavy condensed system stack; body typography uses a clean system sans. The main visual is an oversized BLITZ wordmark and an illustrated sports court with an original lightning athlete. Quiet form layouts and scoreboard tables support that one memorable visual. Layouts are left-aligned, with a two-column desktop hero and one-column mobile flow. Borders represent actual separations; team colour represents team identity.
+## Supabase mode
 
 ```text
-Browser: Next.js / TypeScript
-  ├─ Lenis → GSAP ticker → ScrollTrigger
-  ├─ Three.js → procedural mascot / SVG fallback
-  ├─ Rive adapter → supplied .riv / SVG fallback
-  └─ same-origin /api proxy
-            ↓
-Python FastAPI ─── WebSocket snapshots
-  ├─ registration + photo validation + verification
-  ├─ signed HttpOnly admin sessions
-  ├─ server-authoritative auction service
-  └─ SQLAlchemy transactions
-            ↓
-PostgreSQL: registrations, teams, auction, bids,
-assignments, audit events, email outbox
-            ↓
-Persistent worker → SMTP → institutional inbox
+Browser: Next.js / React / TypeScript
+  ├─ pages, registration form, admin controls, and team rosters
+  ├─ GSAP + Lenis + Three.js mascot / SVG fallbacks
+  ├─ same-origin /api requests
+  │       Next.js route handlers on Vercel
+  │         ├─ bounded intake and normalized photo uploads
+  │         ├─ Supabase Auth and HttpOnly organiser sessions
+  │         └─ permission-checked PostgreSQL RPC calls
+  └─ Supabase Realtime notifications → authoritative snapshot read
+                ↓
+Supabase PostgreSQL
+  ├─ private blitz schema: registrations, auction, bids, teams,
+  │  assignments, organiser allowlist, audit, outbox, rate limits
+  ├─ restricted public RPC functions
+  └─ public read-only snapshot: lot + purse + roster, one version
+                ↓
+Supabase Storage: private normalized JPEGs
+Supabase Edge Function: leased email jobs → Resend API → inbox
 ```
 
-## Boundaries
+The frontend never determines legal prices or changes purse balances directly. `blitz_auction_command` checks organiser membership, locks the singleton auction row, checks idempotency and version, executes one action, records its audit event, and publishes a coherent snapshot in the same transaction. A sale also assigns the player, deducts the purse, and enqueues email before committing. All those effects roll back together on an unhandled failure.
 
-The frontend never determines a legal bid or writes a purse. Python calculates bids from persisted state. PostgreSQL row locks serialize every auction command; request IDs make repeated commands idempotent. Mutation responses contain the full authoritative snapshot. Public snapshots exclude email addresses and verification tokens. Admin-only registration views include email.
+## Data and access boundaries
 
-The API is the only database writer. Next.js proxies HTTP API calls; live WebSocket connections use NEXT_PUBLIC_WS_URL or the local API host. Snapshot polling is a fallback. The socket reads persisted state so reconnecting and multiple API workers do not depend on an in-memory auction broadcaster.
+The private `blitz` schema is not exposed through the Data API and normal browser roles have no schema access. RLS is enabled on its tables. Public RPC functions are SECURITY DEFINER operations with an empty search path, explicit schema qualification, restricted execution grants, and in-function permission checks.
 
-## Data
+Supabase Auth identifies organisers. The private `organiser_users` allowlist grants application access; simply having an account grants no auction permissions. Next.js keeps access and refresh tokens in HttpOnly, SameSite=Strict cookies and checks allowed origins for mutations. Production cookies are Secure. Server secrets stay behind `server-only` imports and never use `NEXT_PUBLIC_` names.
 
-- Registration: UUID, role, name, institutional email, programme, year, sports, photo identifier, verified timestamp, hashed verification token, token expiry.
-- Team: stable ID, name, colour, opening purse and remaining purse.
-- Auction: singleton row, phase, round, frozen queue, cursor, current bid, leading team, version.
-- Bid: player, team, amount, round, command ID, timestamp.
-- Assignment: one unique player, team, price, auction/random source.
-- Audit event: immutable command ID, action, actor, details and timestamp.
-- Email job: unique logical key, recipient, content, retry count, delivery state, next attempt and lease expiry.
+Participants keep institutional-email verification separate from organiser accounts. Player and volunteer entries are distinct, allowing one of each per institutional email. Both require demographics, state/UT, prior participation, consent, and a square photo. Players choose sports; volunteers choose one department and give a rationale. Only verified players enter the frozen auction queue.
 
-Sports use a validated configuration list. Amounts are integer rupees. Registration closes when the auction starts. Volunteers are never queued. A registration can have one entry per email per role.
+The public snapshot includes player name, programme/year, sports, eligible photo URL, bids/leader, team identities/purses/rosters, and recent assignments. It excludes email, verification secrets, demographics, prior participation, and volunteer statements. Organiser data functions exclude verification hashes/links even in private dashboard responses. CSV export escapes cells that could execute spreadsheet formulas.
+
+## Photos
+
+The client crops to a square JPEG; the Next.js route bounds the body, validates actual image content and pixel count, and normalizes to 600 × 600 JPEG without metadata using Sharp. The private bucket accepts JPEG only. Photo requests check player verification or organiser membership before server-credential access to bytes. Volunteer photos remain organiser-only.
+
+A definite registration rejection attempts upload cleanup. An ambiguous network error intentionally leaves the private object because the database might already have committed; deleting then could corrupt a valid registration. Hosted operations should reconcile orphan objects against registrations rather than deleting on uncertain errors.
+
+## Realtime
+
+Every successful mutation rebuilds a single sanitized JSON projection. Spectator reads do not lock the auction or rebuild roster joins. A projection-update trigger sends a version notification through Supabase Realtime.
+
+The public channel is an invalidation channel. Browser code never applies a broadcast payload as state, since public publishers are untrusted. A notification coalesces reads for 50ms and fetches the authoritative projection. The protocol adapter joins, heartbeats, detects dead sockets, reconnects with backoff, and unsubscribes on unmount. A read after joining closes the initial-load race. Monotonic version checks keep old HTTP responses from restoring an earlier purse/roster.
+
+Healthy subscribers stop four-second polling. Disconnects or HTTP failure enable four-second recovery, while a 30-second checkpoint repairs silently missed notifications. These are recovery intervals. The one-second normal-path target requires measured, hosted action-to-render testing with about 100 spectators and the venue network; it is not established by local SQL speed.
 
 ## Auction lifecycle
 
-Idle → normal queue → ₹10 queue → ₹2 queue → ₹1 queue → awaiting allocation → complete. At each round boundary the next queue contains only the previous round’s unsold players. A current lot has no bid until a team explicitly bids the round’s opening amount. Sale atomically creates an assignment, subtracts the purse, records an audit event, queues an email, and advances the lot. Unsold can advance only a lot without an active bid. Admins can cancel the current lot’s bids with an audit record before marking it unsold.
+Idle → normal queue → ₹10/+₹5 queue → ₹2/+₹2 queue → ₹1/+₹1 queue → final allocation → complete. Only unsold players move to a later round. The eight ₹2,000 purses carry across rounds. The organiser explicitly sells or marks unsold; no timer silently closes a sale.
 
-Final allocation uses a cryptographically strong shuffle of players and a new team permutation per cycle. Persisted assignments are free. The locked auction row prevents rerolls or parallel allocation.
+Idempotency keys and expected versions protect repeated/stale commands. The current leader cannot bid against itself. Insufficient purse is rejected. Bid cancellation preserves history and is audited. Final allocation shuffles remaining players and team order for each eight-player cycle, costs ₹0, persists once, and cannot be rerolled. Sold-player undo/reassignment is not exposed.
 
-## Motion ownership
+## Mail and shared rate limits
 
-Lenis owns scrolling, GSAP owns DOM animation, Three.js owns the 3D mascot, and Rive owns an optional exported vector state machine. Avoid two libraries animating the same object. Respect prefers-reduced-motion; dispose scenes, observers, tickers and runtimes on unmount. Mascot expressions communicate the current step rather than covering form controls.
+Registration and assignments create unique logical outbox jobs transactionally. A bounded Edge Function claims due jobs with `FOR UPDATE SKIP LOCKED`, a three-minute lease, and a unique attempt token. It calls the provider outside auction transactions, then acknowledges only its own lease. Failures use exponential backoff, capped at one hour, up to eight attempts. A dedicated worker secret protects the function; API keys for the browser do not authorise it.
 
-The shared `MascotProvider` coordinates deterministic page and interaction reactions. Registration, teams, verification and admin screens send typed signals; the renderer updates a jointed rig in place rather than rebuilding a scene for each reaction. Pointer tracking updates the head and eyes without React updates for each frame. Password focus holds a privacy pose until blur, and the behavior layer never reads input values. A floating companion covers routes without an inline character and appears after an inline character scrolls away. The Auction Dome excludes the companion, inline characters, and mascot loading artwork entirely. Reduced motion changes the character to SVG with static expressive poses. Team-roster reactions temporarily adopt that team’s jersey colour; the cap, socks and footwear keep their own materials.
+Delivery is at-least-once. Provider idempotency keys reduce duplicates but cannot establish exactly-once inbox delivery across every crash/provider-retention window. `sent` records provider acceptance. Hosted scheduling uses Vault-backed Cron invocation; no scheduler credentials are committed.
 
-`MascotBackdrop` renders eight original SVG sports environments for inline mascots only; floating companions remain transparent. Sport context is independent of temporary action timers so a high-five or scrolling cannot reset the active ground. Context changes on route navigation, supported sport hover/focus, registration choices, and manual scene cycling. Deep links to registration honour the selected sport on hydration. The Three.js and SVG rigs share the backwards cap, swoosh sneakers, and football identity. `FootballBall` shares the shaded SVG football between sports cards and the fallback mascot; React-generated IDs keep gradients and clipping unique across instances.
+Shared rate-limit counters live in PostgreSQL. Next.js HMACs the purpose and trusted forwarded caller IP before invoking the service-only counter. On a different hosting ingress, configure trusted client-IP forwarding explicitly.
 
-`TugOfWar` reuses `BoltPortrait` six times as vector instances rather than opening six WebGL contexts. Shirt CSS variables distinguish two selectable squads; the hat, face, gloves and sneakers remain identical. The pure `pullRope` state transition moves one unit per explicit click/keyboard activation, clamps at ±6, freezes the result after a win, and is reset on team changes or rematch. Animation is presentational and disabled for reduced motion. No backend requests are made by the mini-game.
+## Frontend motion
 
-## Operational limits
+GSAP owns DOM choreography, Lenis owns fine-pointer smooth scrolling, and Three.js owns the forest/lime chibi speedster. SVG poses cover reduced motion and unavailable WebGL. Bolt responds to context, high-fives, and four tricks. It stays out of the Auction Dome, and sits below forms on small screens. The homepage tug-of-war is browser-only and never changes official points or auction allocations. The optional Rive adapter uses SVG until an authored asset is supplied.
 
-SQLite is a single-process development/test fallback; PostgreSQL is required for production concurrency. Photo files are normalized to JPEG, stripped of metadata, and served only through API lookups. Public photos are available only for verified players, while volunteer photos remain admin-only. Sessions use SameSite=Strict, HttpOnly cookies and origin validation. Production requires secure cookies and explicit secrets. The initial implementation provides audited bid cancellation; sold-player reassignment/undo is intentionally not exposed because it must also reconcile purse balances and already-sent mail.
+## Local verification and remaining work
 
-SMTP delivery is at-least-once: outbox deduplication prevents repeated enqueueing, but a worker crash after SMTP acceptance can still cause a duplicate email. Document this instead of claiming exactly-once external delivery.
+Four versioned SQL migrations define the schema and functions. PGlite tests run real PostgreSQL with Supabase platform stubs; adapter/route tests mock network and cookies while exercising actual application handlers. See [verification](VERIFICATION.md), [setup](docs/SUPABASE_SETUP.md), and [SQL lessons](docs/SUPABASE_SQL.md).
+
+Hosted service integration, a real SMTP/provider rehearsal, browser/device checks, and multi-connection/load testing remain pending. Sports fixture/result management and persisted overall standings are separate unfinished features. Existing Python/SQLite data needs an explicit import if any real event data must move to Supabase.
+
+## Explicit FastAPI development option
+
+`NEXT_PUBLIC_BACKEND_PROVIDER=fastapi` retains the existing Python implementation. Next.js forwards HTTP to `API_INTERNAL_URL`; the browser uses `NEXT_PUBLIC_WS_URL`. The Python API owns its SQLAlchemy transactions, local JPEG storage, signed shared-password admin cookie, database-polling sockets, and separate SMTP outbox worker. SQLite remains its local fallback; production concurrency requires PostgreSQL. Supabase mode never silently falls back to these processes.

@@ -1,5 +1,19 @@
 # Verification
 
+## Supabase implementation — 21 October 2026
+
+The new Supabase backend passes the Next.js production build/type checking, 20 PostgreSQL migration/behavior tests, 10 HTTP/realtime/mail adapter tests, and 14 in-process Next.js API route tests. The existing 11 mascot/rules and 11 registration/email/map/crop tests also pass. Run `npm run test:supabase` for the 44 new checks.
+
+Database checks execute all four migrations in real PostgreSQL/PLpgSQL through PGlite. Only the Supabase platform schemas are stubbed: Auth users/identity, Storage bucket metadata, and the Realtime send function. They verify grants/RLS, organiser allowlisting, private intake, role separation, verification, bid thresholds, purse limits, stale and repeated commands, atomic sale rollback, rapid rounds, persisted allocation, rate limits, mail leases/retries, and sanitized notifications. They do not establish concurrent-session behavior on a hosted database.
+
+Adapter tests cover validation, API-key versus user-token headers, error mapping, old-response rejection, subscription handshake/heartbeat/reconnect cleanup, worker authorization, mail idempotency headers, and provider failures. Route tests invoke the real Next.js handlers with an in-memory cookie adapter and mocked upstream HTTP. They test anonymous access rejection, origin checks, named-organiser login/membership, token refresh, bounded/validated input, actual Sharp photo normalization, definite-error upload cleanup versus ambiguous failures, photo authorization/private byte serving, CSV formula protection, and explicit legacy proxy behavior. No registrations are created in a hosted project and no emails are sent.
+
+The production build compiles the `/api/[...path]` route alongside all public pages. An account/project has not yet been created: the user requested local preparation first. Network restrictions prevent package downloads; the pinned PGlite test dependency was recovered from the existing local npm cache. Docker is installed but its daemon socket is inaccessible here, so the complete local Supabase stack and CLI integration were not launched.
+
+Hosted Auth/Storage/Realtime integration, actual email delivery/Cron invocation, browser cookies, physical devices, networked PostgreSQL contention, and action-to-screen latency with 100 spectators remain unverified. No one-second guarantee is claimed. The browser uses notification-triggered reads, four-second disconnected/error recovery, a 30-second checkpoint, and monotonic auction versions. Match fixtures/results/overall standings remain unimplemented. The older FastAPI verification below is retained as historical context.
+
+## Earlier frontend and FastAPI checks
+
 The current implementation passes the Next.js production build (including TypeScript checking), 11 mascot/rules behavior tests, and 11 registration/email/map/crop tests. The latest backend verification from the registration update passed 83 Python tests against an isolated SQLite database; the mobile update changes no backend code.
 
 The mobile update adds tablet navigation, 44px touch controls, 16px text inputs, safe-area spacing, narrower registration/review/roster layouts, landscape crop sizing, native touch scrolling, and a lower WebGL pixel-density limit for touch devices. On registration and organiser screens up to 1024px wide, the companion sits below the page instead of overlaying form actions.
