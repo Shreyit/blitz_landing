@@ -112,13 +112,13 @@ Each command locks the singleton auction row, checks permissions and the expecte
 
 Realtime carries a version notification. The browser treats it as an invalidation and fetches authoritative state; it never trusts a public-channel message as a purse or roster. Once subscribed and healthy, it stops four-second polling and retains a 30-second recovery checkpoint for silently missed notifications. On disconnect or HTTP failure it resumes four-second recovery polling, reconnects, and resynchronizes. Older responses cannot overwrite newer auction versions.
 
-## 8. Create a hosted development project later
+## 8. Connect the hosted development project
 
-Create a Supabase project near your participants and Vercel function region. Keep development and production data separate. When ready to link this repository:
+The development project's URL is `https://eyufbnjknvvadsthqqed.supabase.co`, and its project reference is `eyufbnjknvvadsthqqed`. Keep development and production data separate. When ready to link this repository:
 
 ```bash
 npx supabase login
-npx supabase link --project-ref YOUR_DEVELOPMENT_PROJECT_REF
+npx supabase link --project-ref eyufbnjknvvadsthqqed
 npx supabase db push --dry-run
 ```
 
@@ -127,6 +127,15 @@ Review the target and pending migrations, then apply them with `npx supabase db 
 Configure the hosted Auth settings explicitly: `config.toml` describes the local stack and does not automatically apply all dashboard settings to a hosted project. Disable public organiser sign-up, configure SMTP, create the organiser account, and add its allowlist entry.
 
 Put the hosted URL, keys, allowed origins, and real `PUBLIC_URL` in Vercel's environment settings. Rebuild after public-variable changes. Next.js handles uploads and sessions; Supabase owns the data and auction rules. No EC2 or separate FastAPI process is needed in this mode.
+
+The current website URL is [https://blitz-landing-theta.vercel.app/](https://blitz-landing-theta.vercel.app/). In Vercel, set these values for that deployment, then redeploy:
+
+```dotenv
+PUBLIC_URL=https://blitz-landing-theta.vercel.app
+ALLOWED_ORIGINS=https://blitz-landing-theta.vercel.app
+```
+
+Keep localhost values in `.env.local` for local development. These hosted URL values control our registration verification links and allowed mutation origins; they do not apply database migrations or configure mail automatically. Configure Supabase Auth's Site URL and intended redirect URLs for the hosted website separately.
 
 ## What is still unverified
 

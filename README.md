@@ -4,6 +4,8 @@
 
 An interactive campus sports website for the **Bachelor’s in Analytics and Sustainability Studies programme at TISS Mumbai**, with player and volunteer registration, a live Auction Dome, and an organiser console.
 
+**Website:** [blitz-landing-theta.vercel.app](https://blitz-landing-theta.vercel.app/)
+
 [Experience](#the-experience) · [Setup](#run-locally) · [Architecture](#how-it-connects) · [Workflow](#from-registration-to-team) · [Verification](#check-the-work) · [Deployment](#deployment-plan)
 
 ## The experience
@@ -214,7 +216,9 @@ blitz_landing/
 
 ## Deployment plan
 
-Use **Vercel for Next.js**, **Supabase for PostgreSQL/Auth/Storage/Realtime/Edge Functions**, and a transactional email provider. No AWS account or separate backend machine is required in Supabase mode. Hosted provisioning has not been performed; this implementation is prepared and tested locally first.
+The website deployment is [blitz-landing-theta.vercel.app](https://blitz-landing-theta.vercel.app/). Hosted database migrations, account/email setup, and the full registration/auction rehearsal are tracked separately from publishing the website.
+
+Use **Vercel for Next.js**, **Supabase for PostgreSQL/Auth/Storage/Realtime/Edge Functions**, and a transactional email provider. No AWS account or separate backend machine is required in Supabase mode. The website and Supabase project have been created; database integration and hosted rehearsal remain pending.
 
 The live-auction target is **up to 100 spectators with updates within one second**. Supabase mode uses event notifications, a 50ms fetch-coalescing window, and authoritative snapshot reads. Healthy subscribers stop four-second polling; disconnects resume it, and a 30-second checkpoint repairs missed notifications. These intervals are recovery behavior, not a one-second delivery guarantee. Networked concurrency, hosted integration, and action-to-screen latency require a real-stack load test.
 
@@ -229,3 +233,11 @@ This README uses local, self-contained **SVG artwork**, with animated court trac
 Website motion belongs to GSAP/Lenis and the Three.js mascot. SVG poses provide reduced-motion and WebGL fallbacks. The floating mascot stays out of the Auction Dome. The optional Rive adapter uses its SVG fallback until an authored `.riv` file is supplied; see [animation asset notes](public/animations/README.md).
 
 The India boundary data source and licensing are documented in [map asset notes](public/maps/README.md). Technical boundaries and transaction details are in [ARCHITECTURE.md](ARCHITECTURE.md).
+
+For Vercel agent tooling, see the official [vercel/vercel-plugin](https://github.com/vercel/vercel-plugin). Install it in your coding environment with:
+
+```bash
+npx plugins add vercel/vercel-plugin
+```
+
+The plugin is development tooling; it is separate from the deployed Next.js application.
