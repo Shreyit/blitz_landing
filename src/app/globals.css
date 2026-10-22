@@ -1480,12 +1480,13 @@ svg {
   overflow: hidden;
 }
 .player-photo {
-  height: 290px;
+  aspect-ratio: 1;
   background: #e2e8d4;
   position: relative;
   overflow: hidden;
 }
 .player-photo > img {
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -2544,12 +2545,6 @@ svg {
   .auction-layout {
     grid-template-columns: 1fr;
     gap: 18px;
-  }
-  .player-photo {
-    height: 250px;
-  }
-  .player-photo > .mascot {
-    height: 250px;
   }
   .player-info {
     padding: 22px;
