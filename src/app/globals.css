@@ -607,7 +607,12 @@ svg {
 @keyframes equipment-ball { 0%,100% { transform: translateY(0) rotate(-8deg); } 50% { transform: translateY(-18px) rotate(14deg); } }
 @keyframes equipment-swing { 0%,100% { transform: rotate(-6deg); } 50% { transform: rotate(9deg) translateY(-5px); } }
 @keyframes equipment-pop { 0%,100% { transform: translateY(0); } 50% { transform: translate(6px,-21px); } }
-@keyframes equipment-tug { 0%,100% { transform: translateX(-8px) rotate(-2deg); } 50% { transform: translateX(8px) rotate(2deg); } }
+@keyframes equipment-tug { 0%,100% { transform: translateX(-10px); } 50% { transform: translateX(10px); } }
+.tug-flag { transform-origin: 150px 120px; }
+.sport-card[data-mascot-sport="Tug of war"]:is(:hover, :focus-within) .tug-flag { animation: tug-flag 1.1s ease-in-out infinite; }
+.sport-card[data-mascot-sport="Tug of war"]:is(:hover, :focus-within) .tug-arrows { animation: tug-arrows 1.1s ease-in-out infinite; }
+@keyframes tug-flag { 0%,100% { transform: rotate(6deg); } 50% { transform: rotate(-6deg); } }
+@keyframes tug-arrows { 0%,100% { opacity: .55; } 50% { opacity: .9; } }
 @keyframes equipment-shadow { 0%,100% { transform: scaleX(1); opacity: .15; } 50% { transform: scaleX(.8); opacity: .09; } }
 .sport-caption {
   display: flex;

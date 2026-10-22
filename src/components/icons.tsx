@@ -108,10 +108,16 @@ export function SportArt({
             <ellipse cy="48" rx="33" ry="7" stroke="#719166" strokeWidth="2"/>
           </g></g>
         ) : sport === "Tug of war" ? (
-          <g className="equipment-primary">
-            <path d="M25 98c39-43 202-43 240 0s-2 84-47 67-5-75-65-75-89 40-48 64 103 11 161-2" stroke="#947046" strokeWidth="19" strokeLinecap="round"/>
-            <path d="M25 95c39-43 202-43 240 0s-2 84-47 67-5-75-65-75-89 40-48 64 103 11 161-2" stroke="#ead0a0" strokeWidth="12" strokeDasharray="3 6" strokeLinecap="round"/>
-            <path d="m145 86 5 58 20-10-5-48z" fill={paint("red")}/><path d="m147 90 4 41" stroke="#f9bf91" strokeWidth="2"/>
+          <g>
+            <g stroke="#315a36" strokeLinecap="round"><path d="M150 174v20" strokeWidth="3"/><path d="M92 168v20M208 168v20" strokeWidth="2" strokeDasharray="3 4" opacity=".45"/></g>
+            <g className="equipment-primary">
+              <path d="M16 120q134 9 268 0" stroke="#947046" strokeWidth="15" strokeLinecap="round"/>
+              <path d="M16 118q134 9 268 0" stroke="#ead0a0" strokeWidth="9" strokeDasharray="4 5" strokeLinecap="round"/>
+              <path d="M10 114l-6-4m6 10H2m8 6-6 4M290 114l6-4m-6 10h8m-8 6 6 4" stroke="#947046" strokeWidth="2" strokeLinecap="round"/>
+              <g transform="translate(46 120)"><rect x="-12" y="-19" width="24" height="38" rx="10" fill={paint("green")} stroke="#193920" strokeWidth="1"/><path d="M-12-6h24M-12 4h24M-12 13h24" stroke="#fffff5" strokeWidth="1" opacity=".35"/><rect x="-12" y="15" width="24" height="5" rx="2" fill="#d9f46b"/></g><g transform="translate(78 120)"><rect x="-12" y="-19" width="24" height="38" rx="10" fill={paint("green")} stroke="#193920" strokeWidth="1"/><path d="M-12-6h24M-12 4h24M-12 13h24" stroke="#fffff5" strokeWidth="1" opacity=".35"/><rect x="-12" y="15" width="24" height="5" rx="2" fill="#d9f46b"/></g><g transform="translate(222 120) scale(-1 1)"><rect x="-12" y="-19" width="24" height="38" rx="10" fill={paint("orange")} stroke="#a75030" strokeWidth="1"/><path d="M-12-6h24M-12 4h24M-12 13h24" stroke="#fffff5" strokeWidth="1" opacity=".35"/><rect x="-12" y="15" width="24" height="5" rx="2" fill="#d9f46b"/></g><g transform="translate(254 120) scale(-1 1)"><rect x="-12" y="-19" width="24" height="38" rx="10" fill={paint("orange")} stroke="#a75030" strokeWidth="1"/><path d="M-12-6h24M-12 4h24M-12 13h24" stroke="#fffff5" strokeWidth="1" opacity=".35"/><rect x="-12" y="15" width="24" height="5" rx="2" fill="#d9f46b"/></g>
+              <g className="tug-flag"><path d="M144 122h12l-1 40-5-7-5 7z" fill={paint("red")}/><path d="M147 126v26" stroke="#f9bf91" strokeWidth="1.5" opacity=".8"/><rect x="141" y="115" width="18" height="10" rx="3" fill="#783d2b"/></g>
+            </g>
+            <g className="tug-arrows" stroke="#315a36" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" opacity=".55"><path d="M118 80H70m12-11-12 11 12 11"/><path d="M182 80h48m-12-11 12 11-12 11"/></g>
           </g>
         ) : (
           <g className="equipment-primary"><g transform="translate(150 120) rotate(-24)">
