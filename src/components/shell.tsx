@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { ArrowUpRight, Menu, X } from "lucide-react";
+import { ArrowUpRight, Github, Mail, Menu, X } from "lucide-react";
 import { Bolt } from "./icons";
 export function Header() {
   const path = usePathname();
@@ -97,6 +97,32 @@ export function Footer() {
         <Link href="/register" className="text-link">
           Find your place <ArrowUpRight size={18} />
         </Link>
+      </div>
+      <div className="footer-maintainer">
+        <div
+          className="maintainer-pill"
+          data-mascot-note="Spotted a glitch? Shreyit keeps this place running."
+          data-mascot-move="wave"
+        >
+          <span className="maintainer-label">Found something broken?</span>
+          <span className="maintainer-name">Shreyit Sinha</span>
+          <a
+            href="https://github.com/Shreyit"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-mascot-note="Peek at the code on GitHub."
+            data-mascot-move="highfive"
+          >
+            <Github size={17} /> GitHub
+          </a>
+          <a
+            href="mailto:m2024bsas027@stud.tiss.ac.in"
+            data-mascot-note="Drop a line. Bug reports welcome!"
+            data-mascot-move="celebrate"
+          >
+            <Mail size={17} /> m2024bsas027@stud.tiss.ac.in
+          </a>
+        </div>
       </div>
       <div className="footer-bottom">
         <span>Hosted by BSASS · TISS Mumbai</span>

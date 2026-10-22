@@ -11,6 +11,7 @@ import { usePathname } from "next/navigation";
 import {
   fieldReaction,
   MASCOT_EVENT,
+  MascotAction,
   MascotReaction,
   pageReaction,
   reactMascot,
@@ -24,6 +25,8 @@ const REST: MascotReaction = {
   action: "idle",
   message: "Your courtside companion.",
 };
+// Actions a [data-mascot-move] element may request on hover.
+const NOTE_ACTIONS = new Set<string>(["point", "wave", "highfive", "celebrate", "encourage", "think", "peek"]);
 const Context = createContext({
   reaction: REST,
   enabled: true,
@@ -153,7 +156,14 @@ export function MascotProvider({ children }: { children: React.ReactNode }) {
       const note = target.closest<HTMLElement>("[data-mascot-note]");
       if (note && note.dataset.mascotNote !== lastHover) {
         lastHover = note.dataset.mascotNote || "";
-        reactMascot({ action: "point", message: lastHover }, 2200);
+        const action = note.dataset.mascotMove;
+        reactMascot(
+          {
+            action: action && NOTE_ACTIONS.has(action) ? (action as MascotAction) : "point",
+            message: lastHover,
+          },
+          2200,
+        );
       }
     };
     const scroll = () => {

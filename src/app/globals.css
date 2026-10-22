@@ -789,6 +789,106 @@ svg {
   font-size: 13px;
   color: var(--muted);
 }
+.footer-maintainer {
+  position: relative;
+  border-top: 1px solid var(--line);
+  padding-block: 26px;
+  display: flex;
+  justify-content: center;
+  isolation: isolate;
+}
+.footer-maintainer::before {
+  content: "";
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: min(520px, 80%);
+  height: 84px;
+  translate: -50% -50%;
+  z-index: -1;
+  border-radius: 999px;
+  background:
+    radial-gradient(closest-side at 30% 50%, #d9f46bb3, transparent),
+    radial-gradient(closest-side at 72% 50%, #e68b6166, transparent);
+  filter: blur(18px);
+  opacity: 0.75;
+  transition: opacity 0.4s ease;
+}
+.footer-maintainer:hover::before {
+  opacity: 1;
+}
+.maintainer-pill {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px 18px;
+  max-width: 100%;
+  padding: 10px 10px 10px 26px;
+  border-radius: 999px;
+  border: 1px solid #ffffffb3;
+  background: linear-gradient(135deg, #ffffff99, #ffffff47);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  box-shadow:
+    inset 0 1px 0 #ffffffcc,
+    0 10px 30px -12px #315a3640,
+    0 2px 6px -2px #20282014;
+  font-size: 14px;
+  color: var(--muted);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.maintainer-pill:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    inset 0 1px 0 #ffffffcc,
+    0 16px 36px -14px #315a3659,
+    0 2px 6px -2px #20282014;
+}
+.maintainer-name {
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 650;
+}
+.maintainer-pill a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: #ffffff8c;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  font-weight: 550;
+  overflow-wrap: anywhere;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+.maintainer-pill a:hover,
+.maintainer-pill a:focus-visible {
+  background: var(--lime);
+  border-color: #b9d34f;
+  transform: translateY(-1px);
+}
+@media (max-width: 640px) {
+  .maintainer-pill {
+    border-radius: 28px;
+    padding: 14px 16px;
+    font-size: 13px;
+  }
+  .maintainer-label {
+    flex-basis: 100%;
+    text-align: center;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .maintainer-pill,
+  .maintainer-pill a {
+    transition: none;
+  }
+  .maintainer-pill:hover,
+  .maintainer-pill a:hover {
+    transform: none;
+  }
+}
 .footer-bottom {
   border-top: 1px solid var(--line);
   padding-block: 22px;
