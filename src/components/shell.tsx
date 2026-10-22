@@ -41,7 +41,7 @@ export function Header() {
     <header className="site-header" ref={header}>
       <div className="nav-wrap">
         <Link className="brand" href="/" aria-label="Bachelor’s BLITZ home" onClick={() => setOpen(false)}>
-          <Bolt />
+          <img className="brand-logo" src="/brand/blitz-logo.webp" alt="" width={76} height={76} />
           <span>
             <small>Bachelor’s</small>
             BLITZ<span className="brand-dot">.</span>
@@ -104,7 +104,7 @@ export function Footer() {
           data-mascot-note="Spotted a glitch? Shreyit keeps this place running."
           data-mascot-move="wave"
         >
-          <span className="maintainer-label">Found something broken?</span>
+          <span className="maintainer-label">Contact maintainer</span>
           <span className="maintainer-name">Shreyit Sinha</span>
           <a
             href="https://github.com/Shreyit"

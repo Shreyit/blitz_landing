@@ -105,6 +105,7 @@ test("both tug teams can win; a finished round ignores further pulls", () => {
 
 test("Bolt stays outside the Auction Dome and welcomes every other page", () => {
   assert.equal(pageReaction("/auction"), null);
+  assert.equal(pageReaction("/admin/auction"), null);
   assert.equal(pageReaction("/auction/live"), null);
   for (const path of [
     "/",

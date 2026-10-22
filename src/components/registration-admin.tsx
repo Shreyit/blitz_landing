@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Download, LogOut, RefreshCw, Search, ShieldCheck, Users, X } from "lucide-react";
+import Link from "next/link";
+import { Download, Gavel, LogOut, RefreshCw, Search, ShieldCheck, Users, X } from "lucide-react";
 import { api, ApiError, command } from "@/lib/api";
 import { genderLabel } from "@/lib/registration-options";
 import { sportName } from "@/lib/sport-rules";
@@ -107,7 +108,8 @@ function Roster({ expired, logout }: { expired: () => void; logout: () => Promis
   const returning = rows.filter(row => row.played_before === true).length;
   return <div className="page-width roster-page">
     <header className="roster-heading"><div className="page-intro"><span className="section-kicker">Private organiser access</span><h1>Your BLITZ roster.</h1><p>Players, volunteers, and every detail they shared.</p></div>
-      <button className="button button-outline button-small" onClick={() => { void logout().catch(handleError); }}><LogOut size={16} /> Sign out</button></header>
+      <div className="roster-heading-actions"><Link className="button button-small" href="/admin/auction"><Gavel size={16} /> Auction controls</Link>
+      <button className="button button-outline button-small" onClick={() => { void logout().catch(handleError); }}><LogOut size={16} /> Sign out</button></div></header>
     <div className="roster-stats" aria-label="Registration totals">{[["Total registrations", rows.length], ["Players", players], ["Volunteers", rows.length - players], ["Returning participants", returning]].map(([label, count]) => <div key={label}><span>{label}</span><strong>{busy && !updated ? "—" : count}</strong></div>)}</div>
     <p className="roster-note">Player and volunteer entries are counted separately. Registration is complete when the form is saved; email delivery runs separately.</p>
     <div className="roster-toolbar">

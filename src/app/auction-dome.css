@@ -1,0 +1,710 @@
+/* Auction Dome: team purse KPIs, player on the floor, team bid grid, bid bar. */
+.dome {
+  display: grid;
+  gap: 18px;
+  padding-bottom: 48px;
+}
+
+/* ── Team purse KPIs: all eight teams on one line ── */
+.dome-kpis {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 8px;
+}
+.dome-kpi {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  column-gap: 8px;
+  align-items: center;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+.dome-kpi .dome-badge {
+  grid-row: span 2;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  font-size: 14px;
+}
+.dome-kpi-name {
+  overflow: hidden;
+  font-size: 10.5px;
+  color: var(--muted);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.dome-kpi strong {
+  font-size: 15px;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+.dome-kpi.is-leading {
+  border-color: var(--team-color);
+  background: color-mix(in srgb, var(--team-color) 10%, #fff);
+}
+
+/* Team logo (or colour + initials) used across the Dome. */
+.dome-badge {
+  display: grid;
+  place-items: center;
+  flex: none;
+  overflow: hidden;
+  color: #fff;
+  font-family: var(--font-display);
+  font-weight: 800;
+  line-height: 1;
+}
+.dome-badge img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.dome-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.dome-status {
+  color: var(--green);
+  font-weight: 600;
+}
+
+/* ── Player on the floor ── */
+.dome-stage {
+  display: grid;
+  grid-template-columns: minmax(220px, 340px) minmax(0, 1fr) minmax(250px, 300px);
+  gap: 32px;
+  align-items: center;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: linear-gradient(135deg, #fff, #f1f5e6);
+}
+.dome-photo {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 16px;
+  background: #e2e8d4;
+}
+.dome-photo > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.dome-live {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 11px;
+  border-radius: 999px;
+  background: #17271dcc;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 550;
+}
+.dome-live::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #ff5a4f;
+  animation: dome-pulse 1.4s ease-in-out infinite;
+}
+@keyframes dome-pulse {
+  50% { opacity: 0.3; }
+}
+.dome-player h2 {
+  margin-top: 8px;
+  font-size: clamp(30px, 4vw, 52px);
+  font-weight: 650;
+  letter-spacing: -1.5px;
+  line-height: 1.02;
+  overflow-wrap: anywhere;
+}
+.dome-note {
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 14px;
+}
+.dome-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 20px 0 0;
+}
+.dome-facts > div {
+  min-width: 96px;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+}
+.dome-facts dt,
+.dome-sports > span {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.dome-facts dd {
+  margin: 3px 0 0;
+  font-size: 17px;
+  font-weight: 650;
+}
+.dome-sports {
+  margin-top: 18px;
+}
+.dome-sports .tags {
+  margin-top: 8px;
+}
+
+/* ── Team grid: 2 rows × 4; buttons for the auctioneer ── */
+.dome-teams {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+.dome-team {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #fff;
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  transition: transform 0.15s ease, border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+button.dome-team {
+  cursor: pointer;
+}
+button.dome-team:not(:disabled):hover {
+  transform: translateY(-2px);
+  border-color: var(--team-color);
+  box-shadow: 0 14px 28px -20px color-mix(in srgb, var(--team-color) 80%, #000);
+}
+button.dome-team:not(:disabled):active {
+  transform: scale(0.97);
+}
+button.dome-team:disabled:not(.is-leading) {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+/* The leading team can't outbid itself, but it should look highlighted, not disabled. */
+button.dome-team.is-leading:disabled {
+  opacity: 1;
+  cursor: default;
+}
+.dome-team .dome-badge {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  font-size: 20px;
+}
+.dome-team-text {
+  min-width: 0;
+}
+.dome-team-text strong,
+.dome-team-text small {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.dome-team-text strong {
+  font-size: 14px;
+  font-weight: 650;
+}
+.dome-team-text small {
+  margin-top: 2px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.dome-team-tag:empty {
+  display: none;
+}
+.dome-team-tag {
+  grid-column: 1 / -1;
+  justify-self: start;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--team-color) 12%, #fff);
+  color: color-mix(in srgb, var(--team-color) 80%, #000);
+  font-size: 11px;
+  font-weight: 600;
+}
+.dome-team.is-leading {
+  border-color: var(--team-color);
+  background: color-mix(in srgb, var(--team-color) 12%, #fff);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--team-color) 25%, transparent);
+}
+.dome-team.is-leading .dome-team-tag {
+  background: var(--team-color);
+  color: #fff;
+}
+
+/* ── Bid panel: right column of the stage ── */
+.dome-bar {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 20px;
+  border-radius: 16px;
+  background: #17271d;
+  color: #fff;
+  box-shadow: 0 20px 40px -24px #17271d99;
+}
+.dome-bid span {
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #ffffffa6;
+}
+.dome-bid strong {
+  display: block;
+  margin-top: 4px;
+  font-family: var(--font-display);
+  font-size: 64px;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--lime);
+  font-variant-numeric: tabular-nums;
+}
+.dome-leader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.dome-leader .dome-badge {
+  width: 44px;
+  height: 44px;
+  border-radius: 11px;
+  font-size: 18px;
+}
+.dome-leader strong,
+.dome-leader small {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.dome-leader strong {
+  font-size: 16px;
+}
+.dome-leader small,
+.dome-waiting {
+  font-size: 12px;
+  color: #ffffffa6;
+}
+.dome-leader {
+  padding-top: 16px;
+  border-top: 1px solid #ffffff1f;
+}
+.dome-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: auto;
+}
+.dome-sell {
+  grid-column: 1 / -1;
+  order: -1;
+}
+.dome-secondary,
+.dome-sell {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 0;
+  font: inherit;
+  cursor: pointer;
+}
+.dome-secondary {
+  white-space: nowrap;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid #ffffff33;
+  border-radius: 12px;
+  background: transparent;
+  color: #fff;
+  font-size: 12px;
+}
+.dome-secondary:not(:disabled):hover {
+  background: #ffffff14;
+}
+.dome-sell {
+  min-height: 58px;
+  padding: 0 30px;
+  border-radius: 14px;
+  background: var(--lime);
+  color: #17271d;
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  box-shadow: 0 8px 22px -8px #d9f46b99;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+.dome-sell:not(:disabled):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px -8px #d9f46bb3;
+}
+.dome-sell:not(:disabled):active {
+  transform: scale(0.96);
+}
+.dome-sell:disabled,
+.dome-secondary:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* ── Sold celebration ── */
+.dome-sold {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  overflow: hidden;
+  background: #10181259;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  pointer-events: none;
+  animation: dome-sold-fade 3.2s ease forwards;
+}
+@keyframes dome-sold-fade {
+  0% { opacity: 0; }
+  8%, 88% { opacity: 1; }
+  100% { opacity: 0; }
+}
+.dome-sold-card {
+  position: relative;
+  width: min(420px, 100%);
+  padding: 30px 26px 26px;
+  border-radius: 26px;
+  background: #fff;
+  text-align: center;
+  box-shadow: 0 30px 80px -20px #00000080;
+  animation: dome-sold-pop 0.5s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+}
+@keyframes dome-sold-pop {
+  from { opacity: 0; transform: scale(0.7) translateY(20px); }
+}
+.dome-sold-stamp {
+  position: absolute;
+  top: -22px;
+  left: 50%;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 22px;
+  border-radius: 12px;
+  background: var(--team-color);
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transform: translateX(-50%) rotate(-6deg);
+  box-shadow: 0 10px 24px -8px color-mix(in srgb, var(--team-color) 80%, #000);
+  animation: dome-stamp 0.45s 0.15s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+}
+@keyframes dome-stamp {
+  from { opacity: 0; transform: translateX(-50%) rotate(-6deg) scale(2.4); }
+}
+.dome-sold-people {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 12px;
+}
+.dome-sold-photo,
+.dome-sold-team {
+  display: grid;
+  place-items: center;
+  width: 96px;
+  height: 96px;
+  overflow: hidden;
+  border-radius: 20px;
+  background: #e2e8d4;
+  color: var(--green);
+}
+.dome-sold-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.dome-sold-team {
+  font-size: 34px;
+}
+.dome-sold-arrow {
+  font-size: 26px;
+  color: var(--muted);
+}
+.dome-sold-card h2 {
+  margin-top: 16px;
+  font-size: 26px;
+  letter-spacing: -0.6px;
+  overflow-wrap: anywhere;
+}
+.dome-sold-card p {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 14px;
+}
+.dome-sold-card p strong {
+  color: var(--ink);
+}
+.dome-sold-price {
+  display: block;
+  margin-top: 10px;
+  font-family: var(--font-display);
+  font-size: 52px;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--team-color);
+}
+.dome-confetti i {
+  position: absolute;
+  top: -20px;
+  left: var(--x);
+  width: 9px;
+  height: 15px;
+  border-radius: 2px;
+  animation: dome-confetti var(--fall) var(--delay) cubic-bezier(0.25, 0.6, 0.5, 1) forwards;
+}
+.dome-confetti i:nth-child(3n) {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+}
+@keyframes dome-confetti {
+  to { transform: translate(var(--drift), 110vh) rotate(var(--spin)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dome-confetti {
+    display: none;
+  }
+}
+
+/* ── Tablet ── */
+@media (max-width: 1000px) {
+  .dome-kpi {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    row-gap: 4px;
+    padding: 8px 4px;
+    text-align: center;
+  }
+  .dome-kpi .dome-badge {
+    grid-row: auto;
+  }
+  .dome-kpi-name {
+    display: none;
+  }
+  .dome-kpi strong {
+    font-size: 12px;
+  }
+  .dome-team {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    gap: 6px;
+    text-align: center;
+  }
+  .dome-team-text {
+    width: 100%;
+  }
+  .dome-team-tag {
+    justify-self: center;
+  }
+  .dome-stage {
+    grid-template-columns: minmax(200px, 300px) minmax(0, 1fr);
+  }
+  .dome-bar {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: 14px 20px;
+  }
+  .dome-leader {
+    padding-top: 0;
+    border-top: 0;
+  }
+  .dome-bid strong {
+    font-size: 48px;
+  }
+  .dome-actions {
+    grid-column: 1 / -1;
+    grid-template-columns: auto auto minmax(0, 1fr);
+  }
+  .dome-sell {
+    grid-column: auto;
+    order: 0;
+  }
+}
+
+/* ── Phones ── */
+@media (max-width: 600px) {
+  .dome {
+    gap: 12px;
+  }
+  .dome-kpis {
+    gap: 4px;
+  }
+  .dome-kpi {
+    padding: 6px 2px;
+    border-radius: 9px;
+  }
+  .dome-kpi .dome-badge {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    font-size: 11px;
+  }
+  .dome-kpi strong {
+    font-size: 9.5px;
+  }
+  .dome-meta {
+    font-size: 10.5px;
+  }
+  .dome-stage {
+    grid-template-columns: 42% minmax(0, 1fr);
+    gap: 14px;
+    padding: 10px;
+    border-radius: 16px;
+  }
+  .dome-photo {
+    border-radius: 11px;
+  }
+  .dome-live {
+    top: 6px;
+    left: 6px;
+    padding: 4px 7px;
+    font-size: 8.5px;
+  }
+  .dome-player h2 {
+    margin-top: 4px;
+    font-size: 21px;
+    letter-spacing: -0.5px;
+  }
+  .dome-facts {
+    gap: 5px;
+    margin-top: 10px;
+  }
+  .dome-facts > div {
+    min-width: 0;
+    padding: 6px 8px;
+    border-radius: 9px;
+  }
+  .dome-facts dt,
+  .dome-sports > span {
+    font-size: 8.5px;
+  }
+  .dome-facts dd {
+    font-size: 12.5px;
+  }
+  .dome-sports {
+    margin-top: 10px;
+  }
+  .dome-sports .tags {
+    gap: 4px;
+    margin-top: 5px;
+  }
+  .dome-sports .tag {
+    padding: 4px 8px;
+    font-size: 10px;
+  }
+  .dome-teams {
+    gap: 6px;
+  }
+  .dome-team {
+    padding: 7px 4px;
+    border-radius: 11px;
+  }
+  .dome-team .dome-badge {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    font-size: 16px;
+  }
+  .dome-team-text strong {
+    font-size: 10.5px;
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+  .dome-team-text small {
+    font-size: 9px;
+  }
+  .dome-team-tag {
+    padding: 2px 6px;
+    font-size: 9px;
+  }
+  .dome-bar {
+    gap: 10px 14px;
+    padding: 12px;
+    border-radius: 12px;
+  }
+  .dome-bid strong {
+    font-size: 34px;
+  }
+  .dome-leader .dome-badge {
+    width: 36px;
+    height: 36px;
+  }
+  .dome-leader strong {
+    font-size: 13px;
+  }
+  .dome-leader small,
+  .dome-waiting {
+    font-size: 10.5px;
+  }
+  .dome-secondary {
+    padding: 0 12px;
+  }
+  /* Icon-only on phones so SOLD keeps most of the row. */
+  .dome-secondary span {
+    display: none;
+  }
+  .dome-sell {
+    min-height: 52px;
+    font-size: 24px;
+  }
+  .dome-sold-photo,
+  .dome-sold-team {
+    width: 78px;
+    height: 78px;
+  }
+  .dome-sold-price {
+    font-size: 44px;
+  }
+}

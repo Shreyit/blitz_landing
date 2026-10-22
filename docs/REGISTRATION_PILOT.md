@@ -1,12 +1,12 @@
 # Registration and admin pilot
 
-The first phase stores player and volunteer registrations in Supabase and provides a private roster at `/admin`. Auction controls are deferred until the registration pilot passes. The existing auction implementation remains in the repository; this dashboard does not start an auction or expose bidding controls.
+The first phase stores player and volunteer registrations in Supabase and provides a private roster at `/admin`. The registration dashboard itself does not start an auction or expose bidding controls. Those live on a separate organiser page, `/admin/auction`, linked from the dashboard as "Auction controls". Pressing **Start auction** there closes registration, so only use it when the pilot is finished.
 
 ## The three stages
 
 1. **Registration and admin access — implemented locally.** Uploads are normalized to square JPEGs in private Supabase Storage. PostgreSQL stores the form details, consent, and completed registration state. Only an allowlisted organiser can review all submissions and their photos.
 2. **Your 2–3 registrations — after hosted activation.** Submit test player and volunteer entries, confirm that all values and cropped photos match, and check the mobile form/dashboard. A person registering for both roles has two entries. Keep the IDs of the pilot entries for later targeted removal.
-3. **Auction pilot and cleanup — next phase.** After registration works, enable the auction controls, configure confirmation mail, rehearse the test players and team purses, then remove only the identified pilot data and photos. When you authorise removal, use the [pilot cleanup command](PILOT_CLEANUP.md) to remove those registrations, related mail jobs and photos.
+3. **Auction pilot and cleanup — next phase.** After registration works, open the auction controls at `/admin/auction`, configure confirmation mail, rehearse the test players and team purses, then remove only the identified pilot data and photos. When you authorise removal, use the [pilot cleanup command](PILOT_CLEANUP.md) to remove those registrations, related mail jobs and photos.
 
 ## Activate the hosted database
 

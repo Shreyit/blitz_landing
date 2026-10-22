@@ -3,14 +3,13 @@ html { scroll-padding-top: calc(105px + env(safe-area-inset-top, 0px)); }
 .field-grid,
 .review-fields,
 .sport-options { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.field, .form-card, .registration-layout > *, .auction-layout > *,
-.teams-grid > *, .purse-grid > *, .review-profile > div,
+.field, .form-card, .registration-layout > *,
+.teams-grid > *, .review-profile > div,
 .roster-person > div, .admin-table, .admin-tabs { min-width: 0; }
 .hero-actions, .form-actions, .confirm-dialog footer { flex-wrap: wrap; }
-.review-profile h3, .review-profile p, .player-info h2,
-.team-card-body h2, .purse-card h3, .roster-person strong,
-.roster-person small, .history-row strong, .history-row > span,
-.bid-leader { overflow-wrap: anywhere; }
+.review-profile h3, .review-profile p,
+.team-card-body h2, .roster-person strong,
+.roster-person small, .history-row strong, .history-row > span { overflow-wrap: anywhere; }
 .site-header { padding-top: env(safe-area-inset-top, 0px); }
 .photo-crop-dialog { max-height: calc(100vh - 32px); max-height: calc(100dvh - 32px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); }
 .confirm-dialog section { width: 100%; max-height: calc(100dvh - 48px); overflow-y: auto; overscroll-behavior: contain; }
@@ -21,6 +20,7 @@ html { scroll-padding-top: calc(105px + env(safe-area-inset-top, 0px)); }
   .nav-wrap { height: 72px; width: calc(100% - 40px - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px)); }
   .brand > span { font-size: 30px; }
   .brand > svg { width: 17px; }
+  .brand-logo { width: 62px; height: 62px; }
   .nav-cta { margin-left: auto; margin-right: 8px; min-height: 44px; padding: 10px 12px; gap: 8px; font-size: 11px; }
   .menu-button { display: grid; place-items: center; min-width: 44px; min-height: 44px; }
   .main-nav {
@@ -52,8 +52,8 @@ html { scroll-padding-top: calc(105px + env(safe-area-inset-top, 0px)); }
   .field input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
   .field select, .tug-team-labels select, select, .field textarea, textarea { font-size: 16px; }
   .role-selector button, .sport-options label, .played-before-options label,
-  .secondary-link, .sport-rules-link, .team-card summary,
-  .admin-tabs button, .admin-team-buttons button,
+  .secondary-link, .sport-rules-link, .team-squad-button,
+  .admin-tabs button,
   .region-map-message button, .photo-crop-adjust button { min-height: 44px; }
   .region-map-zoom button, .photo-crop-close, .bolt-minimise { width: 44px; height: 44px; }
   .photo-crop-adjust input { min-height: 44px; }
@@ -66,11 +66,9 @@ html { scroll-padding-top: calc(105px + env(safe-area-inset-top, 0px)); }
   .site-footer { padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)); }
   .hero-grid > *, .about-feature > *, .spirit-section > *, .invite-main > * { min-width: 0; }
   .hero-actions { row-gap: 14px; }
-  .sports-grid, .teams-grid, .purse-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .sports-grid, .teams-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .admin-tabs { max-width: 100%; }
   .admin-tabs button { flex-shrink: 0; }
-  .purse-amount { flex-wrap: wrap; row-gap: 3px; }
-  .bid-amount { font-size: clamp(60px, 18vw, 86px); }
   .history-row > * { min-width: 0; }
   .bolt-companion { bottom: calc(12px + env(safe-area-inset-bottom, 0px)); right: calc(12px + env(safe-area-inset-right, 0px)); }
   .form-actions > span { flex: 1 1 100px; }
@@ -80,7 +78,25 @@ html { scroll-padding-top: calc(105px + env(safe-area-inset-top, 0px)); }
 
 @media (max-width: 480px) {
   .nav-cta { font-size: 10px; gap: 5px; padding-inline: 9px; }
-  .field-grid, .review-fields, .teams-grid { grid-template-columns: minmax(0, 1fr); }
+  .field-grid, .review-fields { grid-template-columns: minmax(0, 1fr); }
+  /* Two teams per row even on small phones: tighten the card to fit. */
+  .teams-grid { gap: 10px; }
+  .team-card { padding: 6px; border-radius: 15px; }
+  .team-emblem { border-radius: 10px; }
+  .team-logo-soon { font-size: 8.5px; padding: 3px 8px; }
+  .team-card-body { padding: 10px 4px 2px; }
+  .team-card-body h2 { font-size: 14px; }
+  .team-owner-line { font-size: 11px; margin-top: 3px; }
+  .team-owner-line span { font-size: 8.5px; }
+  .team-card-stats { gap: 4px; margin-top: 10px; }
+  .team-card-stats > div { padding: 6px 7px; border-radius: 8px; }
+  .team-card-stats strong { font-size: 12.5px; }
+  .team-card-stats small { font-size: 8.5px; }
+  .team-card-stats + .team-squad-button { margin-top: 8px; }
+  .team-squad-button { padding: 8px 9px; font-size: 10.5px; border-radius: 8px; }
+  .squad-dialog { padding: 16px; }
+  .squad-badge { width: 54px; height: 54px; font-size: 22px; }
+  .squad-head h2 { font-size: 19px; }
   .registration-guide { grid-template-columns: minmax(0, 1fr); }
   .registration-guide h3, .registration-guide p, .registration-guide .mascot { grid-column: 1; grid-row: auto; }
   .registration-guide .mascot { width: 100%; height: auto; display: grid; gap: 10px; }

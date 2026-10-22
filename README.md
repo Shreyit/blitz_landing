@@ -15,9 +15,10 @@ An interactive campus sports website for the **Bachelor’s in Analytics and Sus
 | Landing & spirit | Oversized BLITZ branding, the supplied TISS logo, illustrated sports equipment, and an interactive tug-of-war warm-up. |
 | Rules & formats | Eight sport dialogs with animated entrances and glass-blurred backdrops, award points, and a connected knockout bracket. |
 | Registration | Separate player and volunteer entries, institutional email selection, demographics, a zoomable India map, and a square photo crop editor. |
-| Auction Dome | Public auction snapshots, team purses, current player, bidding history, and saved allocations. |
-| Registration admin | Private signed admin sessions, searchable player/volunteer roster, full profiles and photos, role filters, and CSV export. Auction controls are deferred to the next pilot phase. |
-| Team rosters | Persisted player assignments with team identities and jersey colours. |
+| Auction Dome | Live spectator view: all eight team purses in one line, the player on the floor (square photo, course, year, sports), the current bid and leading team, every team's logo and owner, recent sales, and a "Sold!" celebration with confetti. |
+| Auction controls | Organiser-only auctioneer screen at `/admin/auction`: tap a team to raise the bid, then **Sold** (hammer), **Unsold**, or **Clear bids**. The next player loads automatically after a sale. Shows the player's gender, which never reaches the public feed. |
+| Registration admin | Private signed admin sessions, searchable player/volunteer roster, full profiles and photos, role filters, CSV export, and a link to the auction controls. |
+| Team rosters | Square team-logo cards with owner names, player count, purse left, and a squad popup. Teams without a logo show their colour and initials. |
 | Bolt | A forest-green and lime chibi speedster with a big head, high-fives, page reactions, and four tricks: keep-ups, a lightning lap, a spin, and a flip. |
 
 Touch navigation, safe-area spacing, native mobile scrolling, and reduced-motion fallbacks are implemented. Browser and physical-device verification status is recorded in [VERIFICATION.md](VERIFICATION.md).
@@ -71,7 +72,7 @@ For removing the authorised dummy entries and their photos, follow [Pilot cleanu
 
 For the current registration-first phase, follow [Registration and admin pilot](docs/REGISTRATION_PILOT.md). It includes the exact hosted activation commands and the hidden-password admin setup.
 
-Start with [Supabase setup](docs/SUPABASE_SETUP.md) and the [SQL walkthrough](docs/SUPABASE_SQL.md), which explains all nine migrations and the manual organiser/mail operations.
+Start with [Supabase setup](docs/SUPABASE_SETUP.md) and the [SQL walkthrough](docs/SUPABASE_SQL.md), which explains all twelve migrations and the manual organiser/mail operations.
 
 ## From registration to team
 
@@ -91,6 +92,14 @@ The India map supports zooming, panning, and all 36 states and union territories
 ### Organisers
 
 **Configure teams → review registered players → start the auction → bid → sell or mark unsold → complete rapid rounds → allocate remaining players → review rosters and mail.**
+
+Run the auction from **`/admin/auction`** (or the "Auction controls" button on `/admin`). The screen has three parts:
+
+1. **Purse KPIs** — all eight teams in one line with their purse left; the leading team is highlighted.
+2. **Player stage** — square photo, name, course (BSASS/BSW), year ("1st year", "2nd year", …), organiser-only gender, and sports. The bid panel on the right shows the current bid, the leading team, the next valid bid, and the **Sold** (hammer), **Clear bids**, and **Unsold** buttons. On tablets and phones the panel sits below the player.
+3. **Team grid** — two rows of four team buttons (logo, name, owner). Each tap places that team's next bid: ₹20 → ₹25 → ₹30 → ₹35 … in the normal round. The leading team can't bid against itself, and a team whose purse is below the next bid is disabled.
+
+**Sold** completes the sale in one press, with no confirmation dialog. Every screen, including spectators on `/auction`, shows a "Sold!" card with confetti in the winning team's colours, and the next player appears automatically. **Clear bids** asks for confirmation and is recorded in the audit log.
 
 Starting the auction closes registration and freezes its registered-player queue. The organiser explicitly closes each sale; there is no automatic closing timer. The eight team purses start at **₹2,000 each** and carry across all rounds.
 
@@ -137,7 +146,7 @@ ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
 npm run dev
 ```
 
-Open [the website](http://localhost:3000), [Studio](http://127.0.0.1:54323), or [the organiser console](http://localhost:3000/admin). Follow the [setup guide](docs/SUPABASE_SETUP.md) to create an authorised organiser, test registration and confirmation mail locally, and configure the mail function. The secret key remains server-only. Rebuild/restart after changing public environment variables.
+Open [the website](http://localhost:3000), [Studio](http://127.0.0.1:54323), [the organiser console](http://localhost:3000/admin), or [the auction controls](http://localhost:3000/admin/auction). Follow the [setup guide](docs/SUPABASE_SETUP.md) to create an authorised organiser, test registration and confirmation mail locally, and configure the mail function. The secret key remains server-only. Rebuild/restart after changing public environment variables.
 
 <details>
 <summary>Existing FastAPI development mode</summary>
@@ -216,11 +225,47 @@ blitz_landing/
 │   └── operations/          Manual organiser bootstrap and mail scheduling
 ├── shared/                  Registration options shared by frontend and API
 ├── public/                  Website assets, map notes, and optional Rive artwork
+│   ├── brand/               BLITZ header logo (transparent sticker cut-out)
+│   └── teams/               Square team logos (512px WebP)
 ├── img/                     Supplied TISS logo
 ├── docs/                    Supabase setup, SQL lessons, and animated SVG artwork
 ├── tests/                   Frontend behavior and browser suites
 └── docker-compose.yml       Local PostgreSQL and Mailpit
 ```
+
+## Teams and logos
+
+The eight team identities (id, name, colour, symbol) live in three places that must stay in sync:
+
+| Where | Used by |
+| :--- | :--- |
+| `src/lib/event.ts` → `TEAMS` | Preview/offline state and the frontend |
+| `backend/app/config.py` → `TEAMS` | The legacy FastAPI backend |
+| A Supabase migration (`update blitz.teams … where id = N`) | The live database, which is what the hosted site shows |
+
+Logos and owners are frontend-only, in `TEAM_BRANDING` in `src/lib/event.ts`, keyed by team id:
+
+```ts
+4: { logo: "/teams/slytherwins.webp", logoBg: "#768262", owner: "Merry Geordy" },
+```
+
+`logoBg` is the colour shown while the image loads. Teams without an entry show their colour and initials, with "Owner to be announced".
+
+**Logo format:** one square image, ideally 1080 × 1080. It's shown as given (full-bleed, no cropping or padding added) on the team cards, the squad popup, and the Auction Dome. Keep important artwork away from the very edges. Convert it to a 512px WebP into `public/teams/` (for example with `sharp`), then add the `TEAM_BRANDING` line.
+
+Confirmed so far:
+
+| Id | Team | Owner | Migration |
+| ---: | :--- | :--- | :--- |
+| 4 | Slytherwins | Merry Geordy | `202610220012_slytherwins.sql` |
+| 5 | X Force United | Wali Abidi | `202610220010_x_force_united.sql` |
+| 6 | Vikings | Reha Tripathi | `202610220011_vikings.sql` |
+
+Team names are fixed once the auction starts. Apply new migrations with `npx supabase db push` before then; until a migration is applied, the hosted site keeps showing the old name even though the logo appears.
+
+## Maintainer
+
+Built and maintained by **Shreyit Sinha** — [GitHub](https://github.com/Shreyit) · [m2024bsas027@stud.tiss.ac.in](mailto:m2024bsas027@stud.tiss.ac.in). Found something broken? Get in touch; the site footer has the same contact pill.
 
 ## Deployment plan
 
@@ -238,7 +283,7 @@ Fixture/result persistence and calculated overall standings remain pending. See 
 
 This README uses local, self-contained **SVG artwork**, with animated court traces, connection paths, and workflow markers. Each SVG includes a static composition, accessible title/description, and a `prefers-reduced-motion` fallback. There are no emoji icons or external image services. Edit [hero.svg](docs/readme/hero.svg), [architecture.svg](docs/readme/architecture.svg), or [workflow.svg](docs/readme/workflow.svg) to adjust the artwork.
 
-Website motion belongs to GSAP/Lenis and the Three.js mascot. SVG poses provide reduced-motion and WebGL fallbacks. The floating mascot stays out of the Auction Dome. The optional Rive adapter uses its SVG fallback until an authored `.riv` file is supplied; see [animation asset notes](public/animations/README.md).
+Website motion belongs to GSAP/Lenis and the Three.js mascot. SVG poses provide reduced-motion and WebGL fallbacks. The floating mascot stays out of the Auction Dome and the auction controls, so it never covers the bid panel. The optional Rive adapter uses its SVG fallback until an authored `.riv` file is supplied; see [animation asset notes](public/animations/README.md).
 
 The India boundary data source and licensing are documented in [map asset notes](public/maps/README.md). Technical boundaries and transaction details are in [ARCHITECTURE.md](ARCHITECTURE.md).
 

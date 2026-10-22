@@ -1,7 +1,7 @@
 "use client";
 import { sportName } from "@/lib/sport-rules";
-import { useEffect, useState } from "react";
-import { Download, Gavel, LogOut, Play, Shuffle, X } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Download, Gavel, LogOut, Play, Shuffle } from "lucide-react";
 import { api, command } from "@/lib/api";
 import { AuctionState, Player } from "@/lib/event";
 import { useAuction } from "@/lib/use-auction";
@@ -75,7 +75,7 @@ export function Admin() {
   }, []);
   useEffect(() => {
     if (!authenticated) return;
-    if (tab === "registrations")
+    if (tab === "registrations" || tab === "auction")
       api<Registration[]>("/admin/registrations")
         .then(setRegistrations)
         .catch((e) => setError(e.message));
@@ -88,6 +88,22 @@ export function Admin() {
         .then(setAudit)
         .catch((e) => setError(e.message));
   }, [authenticated, tab]);
+  // Gender is organiser-only: it comes from the admin registration list, never the public feed.
+  const genders = useMemo(
+    () =>
+      Object.fromEntries(
+        (Array.isArray(registrations) ? registrations : [])
+          .filter((r) => r.gender)
+          .map((r) => [r.id, r.gender as string]),
+      ),
+    [registrations],
+  );
+  const currentId = state.current?.id;
+  useEffect(() => {
+    if (!authenticated || tab !== "auction" || !currentId || currentId in genders) return;
+    api<Registration[]>("/admin/registrations").then(setRegistrations).catch(() => {});
+    // Only refetch when a player we have not seen yet reaches the floor.
+  }, [authenticated, tab, currentId]);
   async function login(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true);
@@ -228,8 +244,15 @@ export function Admin() {
           <AuctionBoard
             state={state}
             admin
-            onBid={(team) => action("bid", { team_id: team })}
+            genders={genders}
             busy={busy || !connected}
+            onBid={(team) => action("bid", { team_id: team })}
+            onSell={() => action("sell")}
+            onUnsold={() => action("unsold")}
+            onCancel={() => {
+              if (confirm("Clear all bids for this player? This will be recorded in the audit log."))
+                action("cancel");
+            }}
           />
           <div className="admin-controls">
             {state.phase === "idle" && (
@@ -247,46 +270,6 @@ export function Admin() {
               >
                 <Play size={16} /> Start auction
               </button>
-            )}
-            {state.phase === "active" && (
-              <>
-                <button
-                  className="button"
-                  disabled={busy || !connected || !state.leader}
-                  onClick={() => {
-                    const team = state.teams.find((t) => t.id === state.leader);
-                    if (
-                      confirm(
-                        `Sell ${state.current?.name} to ${team?.name} for ₹${state.bid}?`,
-                      )
-                    )
-                      action("sell");
-                  }}
-                >
-                  <Gavel size={16} /> Sell player · ₹{state.bid}
-                </button>
-                <button
-                  className="button button-outline"
-                  disabled={busy || !connected || state.bid > 0}
-                  onClick={() => action("unsold")}
-                >
-                  Mark unsold & next
-                </button>
-                <button
-                  className="button button-outline"
-                  disabled={busy || !connected || !state.bid}
-                  onClick={() => {
-                    if (
-                      confirm(
-                        "Clear all bids for this player? This will be recorded in the audit log.",
-                      )
-                    )
-                      action("cancel");
-                  }}
-                >
-                  <X size={15} /> Cancel current bids
-                </button>
-              </>
             )}
             {state.phase === "allocation" && (
               <button

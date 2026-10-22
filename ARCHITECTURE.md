@@ -37,7 +37,13 @@ The first-admin setup command creates a confirmed Supabase Auth identity and cal
 
 Participant registration is complete when the form is saved; no email-verification step or participant Auth account is required. Organiser accounts retain their separate Auth checks. Player and volunteer entries are distinct, allowing one of each per institutional email. Both require demographics, state/UT, prior participation, consent, and a square photo. Players choose sports; volunteers choose one department and give a rationale. All completed player registrations enter the frozen auction queue; volunteers remain outside it. The legacy database column `verified` is retained as an accepted-registration flag, not evidence of mailbox ownership.
 
-The public snapshot includes player name, programme/year, sports, eligible photo URL, bids/leader, team identities/purses/rosters, and recent assignments. It excludes email, verification secrets, demographics, prior participation, and volunteer statements. Organiser data functions exclude verification hashes/links even in private dashboard responses. CSV export escapes cells that could execute spreadsheet formulas.
+The public snapshot includes player name, programme/year, sports, eligible photo URL, bids/leader, team identities/purses/rosters, and recent assignments. It excludes email, verification secrets, demographics, prior participation, and volunteer statements. The auctioneer screen (`/admin/auction`) shows the current player's gender by looking it up in the organiser-only registration list, so gender never enters the public snapshot. Organiser data functions exclude verification hashes/links even in private dashboard responses. CSV export escapes cells that could execute spreadsheet formulas.
+
+## Team branding
+
+Team identities (name, colour, symbol) are database rows, changed by migration or by the idle-phase `teams` command. Logos and owner names are static frontend data in `TEAM_BRANDING` (`src/lib/event.ts`), keyed by team id, with square WebP files in `public/teams/`. They need no database change and are public by design.
+
+The Auction Dome detects a sale on the client by comparing consecutive snapshots: when `sold` increases and the newest history entry is an auction sale of the previous lot's player, it shows a three-second "Sold!" overlay with confetti. The first snapshot after page load only sets the baseline, so reconnecting never replays a celebration.
 
 ## Photos
 
@@ -73,7 +79,7 @@ GSAP owns DOM choreography, Lenis owns fine-pointer smooth scrolling, and Three.
 
 ## Local verification and remaining work
 
-Nine versioned SQL migrations define the schema and functions. PGlite tests run real PostgreSQL with Supabase platform stubs; adapter/route tests mock network and cookies while exercising actual application handlers. See [verification](VERIFICATION.md), [setup](docs/SUPABASE_SETUP.md), and [SQL lessons](docs/SUPABASE_SQL.md).
+Twelve versioned SQL migrations define the schema and functions; 010–012 only rename confirmed teams. PGlite tests run real PostgreSQL with Supabase platform stubs; adapter/route tests mock network and cookies while exercising actual application handlers. See [verification](VERIFICATION.md), [setup](docs/SUPABASE_SETUP.md), and [SQL lessons](docs/SUPABASE_SQL.md).
 
 Hosted service integration, a real SMTP/provider rehearsal, browser/device checks, and multi-connection/load testing remain pending. Sports fixture/result management and persisted overall standings are separate unfinished features. Existing Python/SQLite data needs an explicit import if any real event data must move to Supabase.
 

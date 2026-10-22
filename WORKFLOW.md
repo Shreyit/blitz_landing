@@ -24,9 +24,9 @@ The region field supports the zoomable India map and its dropdown fallback. The 
 
 ## Organiser workflow
 
-The active phase is registration review: apply hosted migrations → run `npm run setup:admin` → deploy → sign in at `/admin` → submit 2–3 pilot entries → inspect photos/full profiles and export. See [the activation guide](docs/REGISTRATION_PILOT.md). The auction sequence below is the next phase; its controls are not currently exposed on `/admin`.
+The active phase is registration review: apply hosted migrations → run `npm run setup:admin` → deploy → sign in at `/admin` → submit 2–3 pilot entries → inspect photos/full profiles and export. See [the activation guide](docs/REGISTRATION_PILOT.md). The auction sequence below runs from `/admin/auction`, linked from the `/admin` dashboard as "Auction controls".
 
-Start the local Supabase stack and Next.js → create an allowlisted organiser account → configure queued-mail processing → review registrations → log in at `/admin` → set eight team identities → start when registered players are ready → select a team to bid → explicitly sell or mark unsold → finish each round → allocate remaining players → inspect rosters, email status, and audit history.
+Start the local Supabase stack and Next.js → create an allowlisted organiser account → configure queued-mail processing → review registrations → log in at `/admin` → open Auction controls (`/admin/auction`) → set eight team identities → start when registered players are ready → tap a team to bid → press **Sold** (one press, no confirmation) or mark unsold → finish each round → allocate remaining players → inspect rosters, email status, and audit history.
 
 The explicit `fastapi` development option instead uses the existing Python API/database/SMTP worker. Supabase mode does not require those processes and never silently routes writes to them.
 

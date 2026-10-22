@@ -177,10 +177,10 @@ test("auction preview and eight expandable teams", async () => {
   await page.goto(`${base}/auction`);
   assert.equal(await page.locator(".mascot, .bolt-companion").count(), 0);
   await page.getByText("Read-only preview", { exact: true }).waitFor();
-  assert.equal(await page.locator(".purse-card").count(), 8);
+  assert.equal(await page.locator(".dome-kpi").count(), 8);
   await page.goto(`${base}/teams`);
   assert.equal(await page.locator(".team-card").count(), 8);
-  await page.locator(".team-card summary").first().click();
+  await page.locator(".team-squad-button").first().click();
   await page.getByText("The first team-up is still to come.").first().waitFor();
   await page.close();
 });

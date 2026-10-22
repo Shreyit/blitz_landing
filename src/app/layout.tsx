@@ -4,6 +4,7 @@ import { Motion } from "@/components/motion";
 import { MascotProvider } from "@/components/mascot-provider";
 import { MascotCompanion } from "@/components/mascot-companion";
 import "./globals.css";
+import "./auction-dome.css";
 import "./mascot.css";
 import "./mobile.css";
 export const viewport: Viewport = {

@@ -150,14 +150,6 @@ svg {
 .text-link:hover {
   color: var(--green);
 }
-.status-dot {
-  display: inline-block;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--green);
-  margin-right: 9px;
-}
 .section-kicker {
   display: block;
   color: var(--muted);
@@ -207,6 +199,12 @@ svg {
 .brand > svg {
   color: var(--green);
   width: 20px;
+}
+.brand-logo {
+  width: 76px;
+  height: 76px;
+  flex: none;
+  filter: drop-shadow(0 4px 8px #19392040);
 }
 .brand > span {
   font-family: var(--font-display);
@@ -710,9 +708,6 @@ svg {
   align-items: center;
   font-size: 12px;
   color: #c9d5c0;
-}
-.invite-top .status-dot {
-  background: var(--lime);
 }
 .invite-top > svg {
   color: var(--lime);
@@ -1452,137 +1447,12 @@ svg {
   background: currentColor;
   border-radius: 50%;
 }
-.auction-meta {
-  display: flex;
-  align-items: center;
-  gap: 32px;
-  padding: 18px 0;
-  border-block: 1px solid var(--line);
-  margin-bottom: 27px;
-  font-size: 12px;
-  color: var(--muted);
-}
-.auction-meta span:first-child {
-  color: var(--green);
-  font-weight: 600;
-}
-.auction-meta .auction-progress {
-  margin-left: auto;
-}
-.auction-layout {
-  display: grid;
-  grid-template-columns: 1fr 1.08fr;
-  gap: 28px;
-}
-.player-card {
-  background: #edf0e4;
-  border-radius: 12px;
-  overflow: hidden;
-}
-.player-photo {
-  aspect-ratio: 1;
-  background: #e2e8d4;
-  position: relative;
-  overflow: hidden;
-}
-.player-photo > img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.player-photo > .mascot {
-  height: 290px;
-}
-.player-number {
-  position: absolute;
-  top: 19px;
-  left: 19px;
-  padding: 8px 12px;
-  background: var(--paper);
-  border-radius: 5px;
-  font-size: 11px;
-}
-.player-info {
-  padding: 27px;
-}
-.player-info h2 {
-  font-size: 31px;
-  letter-spacing: -1px;
-}
-.player-info > p {
-  font-size: 13px;
-  color: var(--muted);
-  margin: 8px 0 18px;
-}
-.bid-panel {
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: #fff;
-  padding: 28px;
-  display: flex;
-  flex-direction: column;
-}
-.bid-title {
-  display: flex;
-  justify-content: space-between;
-  font-size: 12px;
-  color: var(--muted);
-}
-.bid-title > svg {
-  color: var(--green);
-}
-.bid-amount {
-  font-family: var(--font-display);
-  font-size: 100px;
-  font-weight: 700;
-  line-height: 1.25;
-  letter-spacing: -3px;
-}
-.bid-leader {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 12px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid var(--line);
-}
 .team-dot {
   width: 9px;
   height: 9px;
   border-radius: 50%;
   display: inline-block;
   background: var(--green);
-}
-.next-bid {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 12px;
-  color: var(--muted);
-  margin: 22px 0;
-}
-.next-bid strong {
-  color: var(--ink);
-  font-size: 19px;
-}
-.spectator-note {
-  margin-top: auto;
-  background: #f0f3e8;
-  border-radius: 7px;
-  padding: 18px;
-  display: flex;
-  gap: 13px;
-  align-items: center;
-  font-size: 12px;
-  line-height: 1.6;
-  color: #68785d;
-}
-.spectator-note svg {
-  color: var(--green);
-}
-.purse-section {
-  margin-top: 38px;
 }
 .small-heading {
   font-size: 20px;
@@ -1596,73 +1466,6 @@ svg {
   font-size: 11px;
   font-weight: 400;
   color: var(--muted);
-}
-.purse-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
-}
-.purse-card {
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 17px 19px;
-  background: #fff;
-  text-align: left;
-  color: var(--ink);
-}
-.purse-card.is-leading {
-  border: 2px solid var(--green);
-  padding: 16px 18px;
-  background: #f4f7ed;
-}
-.purse-card header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.team-initial {
-  width: 29px;
-  height: 31px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--green);
-  color: white;
-  border-radius: 4px;
-  font-size: 10px;
-  font-weight: 700;
-}
-.purse-card h3 {
-  font-size: 12px;
-  font-weight: 600;
-}
-.purse-amount {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  margin-top: 14px;
-  gap: 10px;
-}
-.purse-amount strong {
-  font-size: 23px;
-  font-weight: 600;
-  letter-spacing: -0.5px;
-}
-.purse-amount span {
-  font-size: 10px;
-  color: var(--muted);
-}
-.purse-bar {
-  height: 3px;
-  background: #e9eddf;
-  border-radius: 2px;
-  margin-top: 11px;
-  overflow: hidden;
-}
-.purse-bar span {
-  display: block;
-  height: 100%;
-  background: var(--green);
 }
 .auction-history {
   margin-top: 35px;
@@ -1738,80 +1541,228 @@ svg {
   padding-bottom: 70px;
 }
 .team-card {
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
   background: #fff;
   border: 1px solid var(--line);
-  border-radius: 11px;
-  overflow: hidden;
+  border-radius: 18px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
+.team-card:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--team-color) 35%, var(--line));
+  box-shadow: 0 22px 40px -26px color-mix(in srgb, var(--team-color) 70%, #000);
+}
+/* Square art panel: the team's logo, or its colour + initials until one arrives. */
 .team-emblem {
-  height: 190px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  container-type: inline-size;
+  aspect-ratio: 1;
   position: relative;
-  background: color-mix(in srgb, var(--team-color) 12%, var(--paper));
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
   overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 120%, #ffffff26 0 34%, transparent 34.5%),
+    radial-gradient(circle at 50% 120%, #ffffff14 0 52%, transparent 52.5%),
+    radial-gradient(circle at 25% 15%, color-mix(in srgb, var(--team-color) 65%, #fff), var(--team-color) 55%, color-mix(in srgb, var(--team-color) 70%, #000));
 }
-.team-emblem:before,
-.team-emblem:after {
-  content: "";
-  position: absolute;
-  border: 1px solid color-mix(in srgb, var(--team-color) 23%, transparent);
-  border-radius: 50%;
-  width: 260px;
-  height: 260px;
-  transform: translate(65px, 10px);
+.team-emblem-logo {
+  background: var(--logo-bg, #000);
 }
-.team-emblem:after {
-  width: 190px;
-  height: 190px;
-  transform: translate(-60px, 70px);
+.team-logo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
-.shield {
-  width: 85px;
-  height: 100px;
-  background: var(--team-color);
-  clip-path: polygon(0 0, 100% 0, 100% 65%, 50% 100%, 0 65%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
+.team-initials {
+  color: #fff;
   font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 37px;
-  padding-bottom: 8px;
-  position: relative;
-  z-index: 1;
+  font-weight: 800;
+  font-size: 38cqw;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  text-shadow: 0 6px 24px #0000004d;
+}
+.team-logo-soon {
+  position: absolute;
+  bottom: 7%;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #00000033;
+  color: #ffffffe6;
+  font-size: 10px;
+  font-weight: 550;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 .team-card-body {
-  padding: 22px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 14px 8px 6px;
 }
 .team-card-body h2 {
-  font-size: 18px;
+  font-size: 19px;
   letter-spacing: -0.4px;
+  line-height: 1.15;
 }
-.team-card-body > p {
-  font-size: 11px;
+.team-owner-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 6px;
+  margin-top: 5px;
+  font-size: 12px;
+}
+.team-owner-line span {
   color: var(--muted);
-  margin-top: 7px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.team-owner {
+  color: var(--ink);
+  font-weight: 650;
+}
+.team-owner.is-tba {
+  color: var(--muted);
+  font-weight: 450;
 }
 .team-card-stats {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 22px;
-  font-size: 11px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-top: 14px;
+}
+.team-card-stats > div {
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--team-color) 8%, var(--paper));
+}
+.team-card-stats strong {
+  display: block;
+  font-size: 15px;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+.team-card-stats small {
+  display: block;
+  margin-top: 1px;
+  font-size: 10px;
   color: var(--muted);
 }
-.team-card summary {
-  list-style: none;
+.team-squad-button {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  cursor: pointer;
+  width: 100%;
+  margin-top: auto;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--ink);
+  font: inherit;
   font-size: 12px;
-  margin-top: 20px;
-  padding-top: 16px;
+  font-weight: 550;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+.team-card-stats + .team-squad-button {
+  margin-top: 10px;
+}
+.team-squad-button:hover,
+.team-squad-button:focus-visible {
+  background: color-mix(in srgb, var(--team-color) 10%, #fff);
+  border-color: color-mix(in srgb, var(--team-color) 30%, var(--line));
+}
+.squad-dialog {
+  width: min(480px, calc(100vw - 24px));
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #ffffffc9;
+  border-radius: 20px;
+  background: #fbfcf7;
+  color: var(--ink);
+  box-shadow: 0 25px 80px #10271945;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.squad-dialog::backdrop {
+  background: #17271d59;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.squad-dialog[open] {
+  animation: squad-in 0.22s ease-out;
+}
+@keyframes squad-in {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+}
+.squad-head {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 14px;
+}
+.squad-head h2 {
+  font-size: 22px;
+  letter-spacing: -0.5px;
+  line-height: 1.1;
+}
+.squad-badge {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--team-color);
+  color: #fff;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 26px;
+}
+.squad-badge img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.squad-close {
+  align-self: start;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: #fff;
+  color: var(--ink);
+  cursor: pointer;
+}
+.squad-close:hover {
+  background: color-mix(in srgb, var(--team-color) 10%, #fff);
+}
+.squad-dialog .team-card-stats {
+  margin-top: 18px;
+}
+.squad-list {
+  margin-top: 6px;
+}
+.squad-list .roster-person + .roster-person {
+  padding-top: 14px;
   border-top: 1px solid var(--line);
+}
+.squad-list .empty-message {
+  margin-top: 18px;
+  font-size: 12px;
+  color: var(--muted);
+  text-align: center;
 }
 .roster-person {
   display: flex;
@@ -1844,10 +1795,6 @@ svg {
   font-size: 10px;
   color: var(--muted);
   margin-top: 5px;
-}
-.team-card .empty-message {
-  font-size: 11px;
-  padding-bottom: 0;
 }
 .admin-login {
   max-width: 470px;
@@ -1897,29 +1844,6 @@ svg {
   font-size: 12px;
   padding: 12px 16px;
   gap: 10px;
-}
-.admin-team-buttons {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 7px;
-  margin-top: 5px;
-}
-.admin-team-buttons button {
-  border: 1px solid var(--line);
-  background: #f8faf3;
-  border-radius: 5px;
-  padding: 11px 8px;
-  text-align: left;
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 10px;
-}
-.admin-team-buttons button:hover {
-  background: #edf5d7;
-}
-.admin-team-buttons button span:last-child {
-  margin-left: auto;
 }
 .admin-table {
   overflow: auto;
@@ -2072,18 +1996,6 @@ svg {
   }
   .about-feature {
     gap: 50px;
-  }
-  .purse-grid {
-    gap: 10px;
-  }
-  .purse-card {
-    padding: 15px 12px;
-  }
-  .purse-card.is-leading {
-    padding: 14px 11px;
-  }
-  .purse-card h3 {
-    font-size: 11px;
   }
 }
 @media (max-width: 760px) {
@@ -2533,50 +2445,6 @@ svg {
     font-size: 10px;
     margin-bottom: 20px;
   }
-  .auction-meta {
-    gap: 15px;
-    font-size: 10px;
-    flex-wrap: wrap;
-    padding: 14px 0;
-  }
-  .auction-meta .auction-progress {
-    margin-left: 0;
-  }
-  .auction-layout {
-    grid-template-columns: 1fr;
-    gap: 18px;
-  }
-  .player-info {
-    padding: 22px;
-  }
-  .player-info h2 {
-    font-size: 27px;
-  }
-  .bid-panel {
-    padding: 24px;
-  }
-  .bid-amount {
-    font-size: 86px;
-  }
-  .purse-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-  }
-  .purse-card {
-    padding: 15px;
-  }
-  .purse-card.is-leading {
-    padding: 14px;
-  }
-  .purse-card h3 {
-    font-size: 11px;
-  }
-  .purse-amount strong {
-    font-size: 22px;
-  }
-  .purse-amount span {
-    font-size: 9px;
-  }
   .small-heading {
     font-size: 18px;
   }
@@ -2587,30 +2455,8 @@ svg {
     gap: 14px;
     padding-bottom: 40px;
   }
-  .team-emblem {
-    height: 150px;
-  }
-  .shield {
-    width: 65px;
-    height: 78px;
-    font-size: 30px;
-  }
-  .team-card-body {
-    padding: 17px 14px;
-  }
   .team-card-body h2 {
-    font-size: 15px;
-  }
-  .team-card-body > p {
-    font-size: 10px;
-  }
-  .team-card-stats {
-    font-size: 10px;
-    gap: 7px;
-    flex-wrap: wrap;
-  }
-  .team-card summary {
-    font-size: 11px;
+    font-size: 16px;
   }
   .admin-login {
     margin: 40px auto 50px;

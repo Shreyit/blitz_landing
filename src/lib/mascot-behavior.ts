@@ -62,7 +62,8 @@ export function mascotTrick(index: number): MascotReaction {
   return MASCOT_TRICKS[((index % MASCOT_TRICKS.length) + MASCOT_TRICKS.length) % MASCOT_TRICKS.length];
 }
 export function pageReaction(path: string): MascotReaction | null {
-  if (path === "/auction" || path.startsWith("/auction/")) return null;
+  // The Dome needs every pixel (and the bid bar must stay clear), so Bolt sits out.
+  if (path === "/auction" || path.startsWith("/auction/") || path === "/admin/auction") return null;
   if (path === "/register")
     return {
       action: "wave",

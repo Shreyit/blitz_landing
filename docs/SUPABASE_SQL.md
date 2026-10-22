@@ -2,7 +2,7 @@
 
 SQL is the language used to define and query our data. PostgreSQL is the database engine. Supabase hosts PostgreSQL and adds Auth, Storage, Realtime, and Edge Functions. The SQL below is executable project code, not a diagram pretending to be a backend.
 
-Read the nine migrations in order. The detailed comments in each file explain the main boundaries. This guide explains the statements, data relationships, and decisions around them.
+Read the twelve migrations in order. The detailed comments in each file explain the main boundaries. This guide explains the statements, data relationships, and decisions around them.
 
 ## Vocabulary used throughout
 
@@ -189,6 +189,12 @@ The two backfill `update` statements upgrade pending/failed registration and ass
 ## Migration 009: hosted safe-update compatibility
 
 [Open the scoped reset fix](../supabase/migrations/202610220009_scoped_pilot_reset.sql). Supabase's `safeupdate` protection requires a `WHERE` clause on `DELETE` and `UPDATE`. The first reset function had unfiltered bid/assignment deletion and purse restoration, so the hosted call was rejected and rolled back. `create or replace` installs the corrected function while retaining its service-only grant. `where player_id=any(p_ids)` restricts child records to the approved pilot IDs, and `where purse<>2000` restores only balances that need changing. This is a forward migration: already applied migration 008 remains unchanged. [Supabase's configuration reference](https://supabase.com/docs/guides/database/custom-postgres-config).
+
+## Migrations 010–012: confirmed team identities
+
+[010](../supabase/migrations/202610220010_x_force_united.sql), [011](../supabase/migrations/202610220011_vikings.sql) and [012](../supabase/migrations/202610220012_slytherwins.sql) each run one `update blitz.teams set name = …, color = …, symbol = … where id = N`, renaming placeholder teams 5, 6 and 4 to X Force United, Vikings and Slytherwins. The `where id = N` clause keeps them compatible with `safeupdate`. They change only the identity row: purses, bids and rosters are untouched, and the next published snapshot carries the new names. Team logos and owner names are not stored in the database; they live in `TEAM_BRANDING` in `src/lib/event.ts`.
+
+Apply them before starting the auction (`npx supabase db push`). Use the same pattern, a new migration with one scoped `update`, for each further confirmed team, and mirror the change in `src/lib/event.ts` and `backend/app/config.py`.
 
 ## Operational SQL files
 

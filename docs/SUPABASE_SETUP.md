@@ -108,7 +108,7 @@ SMTP in Supabase Auth handles authentication emails separately. Configuring Auth
 
 ## 7. Rehearse the auction in the next phase
 
-The current `/admin` route is focused on registration review. Restore the auction control view in the next pilot phase. With registered players ready, set the team names, start the auction, bid, sell, cancel bids, and mark players unsold. Starting closes registration and freezes the registered-player queue. Walk through all rapid rounds and final allocation. Open a spectator tab alongside the organiser dashboard.
+`/admin` is the registration dashboard; the auction controls are at `/admin/auction` (the "Auction controls" button on `/admin`). With registered players ready, set the team names, start the auction, bid, sell, cancel bids, and mark players unsold. Starting closes registration and freezes the registered-player queue. Walk through all rapid rounds and final allocation. Open a spectator tab alongside the organiser dashboard.
 
 Each command locks the singleton auction row, checks permissions and the expected version, applies the change, records an audit entry, builds one coherent public snapshot, and commits. A sale deducts the purse and assigns the player in that same transaction. Assignment mail is queued, not sent during the command.
 

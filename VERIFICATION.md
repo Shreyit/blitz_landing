@@ -1,6 +1,14 @@
 # Verification
 
-## Current hosted status — 22 October 2026
+## Auction Dome, team branding and site updates — 23 October 2026
+
+Changes: maintainer contact pill in the footer (Bolt reacts on hover), redrawn tug-of-war sport icon, BLITZ header logo, square auction photos, three confirmed teams with logos and owners (migrations 010–012), redesigned team cards with a squad popup and two cards per row on phones, and the new Auction Dome with the auctioneer screen at `/admin/auction`.
+
+Executed checks: TypeScript (`npm run typecheck`) passes. `npm run test:mascot` (11), `npm run test:registration` (11) and `npm run test:supabase` (31 + 17 + 15 + 6 + 1) pass. A headless-Chromium script against the dev server, with mocked API responses, ran the auctioneer flow at 1440px and 390px: three bids stepped ₹20 → ₹25 → ₹30, the panel showed the leader and next bid ₹35, **Sold** showed the celebration, the overlay cleared after about three seconds, and the next player loaded with course, ordinal year and organiser-only gender. No page errors or horizontal overflow occurred. The team-card squad popup was checked for open, Escape and backdrop-click close. Team cards and the sold overlay were visually inspected from screenshots.
+
+Not yet run: the browser suites `npm run test:e2e` and `npm run test:mobile` (they expect Chromium at `/usr/bin/chromium` or `CHROMIUM_PATH`); their auction and team-card selectors were updated to `.dome-kpi` and `.team-squad-button`. The backend pytest suite was not run (pytest is not installed in this environment). Migrations 010–012 have not been applied to the hosted database; until they are, the hosted site shows the old placeholder names.
+
+## Hosted status — 22 October 2026
 
 The user confirmed successful hosted organiser login, application of migrations through 009, and deployment of the updated `deliver-mail` function. Their final cleanup command reported removal of 30 dummy bids, one assignment, one registration, one uploaded photo and two related email records. Team purses returned to ₹2,000 and registration reopened. The retained auction singleton is idle with empty queues; it is required application state. These results were reported from the user's terminal and dashboard, rather than independently queried from this environment.
 

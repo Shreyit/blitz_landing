@@ -12,12 +12,25 @@ export const TEAMS = [
   { id: 1, name: "Court Kings", color: "#4c7051", symbol: "CK" },
   { id: 2, name: "The Strikers", color: "#bd6039", symbol: "ST" },
   { id: 3, name: "Blue Wolves", color: "#466da3", symbol: "BW" },
-  { id: 4, name: "Wild Aces", color: "#9671a5", symbol: "WA" },
-  { id: 5, name: "Red Hawks", color: "#b04f51", symbol: "RH" },
-  { id: 6, name: "Trailblazers", color: "#9b7929", symbol: "TB" },
+  { id: 4, name: "Slytherwins", color: "#1f7a3a", symbol: "SW" },
+  { id: 5, name: "X Force United", color: "#c4242b", symbol: "XF" },
+  { id: 6, name: "Vikings", color: "#8f1d2a", symbol: "VK" },
   { id: 7, name: "The Mavericks", color: "#3c8a88", symbol: "MV" },
   { id: 8, name: "Thunder Club", color: "#6e638c", symbol: "TC" },
 ];
+/**
+ * Confirmed team identities, keyed by team id. Teams without an entry keep the shield.
+ * Logos are square images used as given, filling the card's square emblem.
+ * `logoBg` shows behind the logo while it loads.
+ */
+export const TEAM_BRANDING: Record<
+  number,
+  { logo?: string; logoBg?: string; owner?: string }
+> = {
+  4: { logo: "/teams/slytherwins.webp", logoBg: "#768262", owner: "Merry Geordy" },
+  5: { logo: "/teams/x-force-united.webp", logoBg: "#000000", owner: "Wali Abidi" },
+  6: { logo: "/teams/vikings.webp", logoBg: "#52030a", owner: "Reha Tripathi" },
+};
 export const ROUND_NAMES = [
   "Normal round",
   "Rapid fire · ₹10",

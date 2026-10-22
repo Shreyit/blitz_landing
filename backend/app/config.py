@@ -34,9 +34,9 @@ TEAMS = [
     ("Court Kings", "#4c7051", "CK"),
     ("The Strikers", "#bd6039", "ST"),
     ("Blue Wolves", "#466da3", "BW"),
-    ("Wild Aces", "#9671a5", "WA"),
-    ("Red Hawks", "#b04f51", "RH"),
-    ("Trailblazers", "#9b7929", "TB"),
+    ("Slytherwins", "#1f7a3a", "SW"),
+    ("X Force United", "#c4242b", "XF"),
+    ("Vikings", "#8f1d2a", "VK"),
     ("The Mavericks", "#3c8a88", "MV"),
     ("Thunder Club", "#6e638c", "TC"),
 ]
