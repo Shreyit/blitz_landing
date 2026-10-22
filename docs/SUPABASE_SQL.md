@@ -194,7 +194,17 @@ The two backfill `update` statements upgrade pending/failed registration and ass
 
 [010](../supabase/migrations/202610220010_x_force_united.sql), [011](../supabase/migrations/202610220011_vikings.sql) and [012](../supabase/migrations/202610220012_slytherwins.sql) each run one `update blitz.teams set name = …, color = …, symbol = … where id = N`, renaming placeholder teams 5, 6 and 4 to X Force United, Vikings and Slytherwins. The `where id = N` clause keeps them compatible with `safeupdate`. They change only the identity row: purses, bids and rosters are untouched, and the next published snapshot carries the new names. Team logos and owner names are not stored in the database; they live in `TEAM_BRANDING` in `src/lib/event.ts`.
 
-Apply them before starting the auction (`npx supabase db push`). Use the same pattern, a new migration with one scoped `update`, for each further confirmed team, and mirror the change in `src/lib/event.ts` and `backend/app/config.py`.
+Those three did not rebuild the public projection, so the site kept showing the old names. [Migration 013](../supabase/migrations/202610230013_republish_team_names.sql) fixes that: it bumps `blitz.auction.version` (so open browsers accept the newer state) and calls `blitz.publish_snapshot()`.
+
+Apply them before starting the auction (`npx supabase db push`). For each further confirmed team, write one migration with the scoped `update`, **followed by the same two statements as 013**:
+
+```sql
+update blitz.teams set name = 'New Name', color = '#123456', symbol = 'NN' where id = N;
+update blitz.auction set version = version + 1 where id = 1;
+select blitz.publish_snapshot();
+```
+
+Then mirror the change in `src/lib/event.ts` and `backend/app/config.py`.
 
 ## Operational SQL files
 

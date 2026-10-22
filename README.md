@@ -241,7 +241,7 @@ The eight team identities (id, name, colour, symbol) live in three places that m
 | :--- | :--- |
 | `src/lib/event.ts` → `TEAMS` | Preview/offline state and the frontend |
 | `backend/app/config.py` → `TEAMS` | The legacy FastAPI backend |
-| A Supabase migration (`update blitz.teams … where id = N`) | The live database, which is what the hosted site shows |
+| A Supabase migration (`update blitz.teams … where id = N`, then republish the snapshot; see [SQL lessons](docs/SUPABASE_SQL.md)) | The live database, which is what the hosted site shows |
 
 Logos and owners are frontend-only, in `TEAM_BRANDING` in `src/lib/event.ts`, keyed by team id:
 
