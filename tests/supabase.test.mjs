@@ -87,7 +87,7 @@ test('all migrations execute and seed eight teams with one coherent public snaps
   const s = await state(); assert.equal(s.phase, 'idle'); assert.equal(s.teams.length, 8);
   assert.ok(s.teams.every(t => t.purse === 2000 && t.players.length === 0));
   // Confirmed team renames (migrations 010–012) must reach the public snapshot.
-  assert.deepEqual([4, 5, 6].map(id => s.teams.find(t => t.id === id).name), ['Slytherwins', 'X Force United', 'Vikings']);
+  assert.deepEqual([4, 5, 6, 7].map(id => s.teams.find(t => t.id === id).name), ['SlytherWins', 'X Force United', 'Vikings', 'Shadow Strikers']);
 });
 test('SQL sports and region catalogues match the frontend configuration', async () => {
   const options = JSON.parse(await readFile('shared/registration-options.json', 'utf8'));

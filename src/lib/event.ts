@@ -12,10 +12,10 @@ export const TEAMS = [
   { id: 1, name: "Court Kings", color: "#4c7051", symbol: "CK" },
   { id: 2, name: "The Strikers", color: "#bd6039", symbol: "ST" },
   { id: 3, name: "Blue Wolves", color: "#466da3", symbol: "BW" },
-  { id: 4, name: "Slytherwins", color: "#1f7a3a", symbol: "SW" },
+  { id: 4, name: "SlytherWins", color: "#1f7a3a", symbol: "SW" },
   { id: 5, name: "X Force United", color: "#c4242b", symbol: "XF" },
   { id: 6, name: "Vikings", color: "#8f1d2a", symbol: "VK" },
-  { id: 7, name: "The Mavericks", color: "#3c8a88", symbol: "MV" },
+  { id: 7, name: "Shadow Strikers", color: "#2b2b30", symbol: "SS" },
   { id: 8, name: "Thunder Club", color: "#6e638c", symbol: "TC" },
 ];
 /**
@@ -30,6 +30,7 @@ export const TEAM_BRANDING: Record<
   4: { logo: "/teams/slytherwins.webp", logoBg: "#768262", owner: "Merry Geordy" },
   5: { logo: "/teams/x-force-united.webp", logoBg: "#000000", owner: "Wali Abidi" },
   6: { logo: "/teams/vikings.webp", logoBg: "#52030a", owner: "Reha Tripathi" },
+  7: { logo: "/teams/shadow-strikers.webp", logoBg: "#0a0a0a", owner: "Aditya Gupta" },
 };
 export const ROUND_NAMES = [
   "Normal round",
