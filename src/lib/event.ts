@@ -21,15 +21,16 @@ export const TEAMS = [
 /**
  * Confirmed team identities, keyed by team id. Teams without an entry keep the shield.
  * Logos are square images used as given, filling the card's square emblem.
- * `logoBg` shows behind the logo while it loads.
+ * `logoBg` shows behind the logo while it loads. `nameSoon` hides a placeholder team name
+ * on the Teams page until the real one is confirmed.
  */
 export const TEAM_BRANDING: Record<
   number,
-  { logo?: string; logoBg?: string; owner?: string }
+  { logo?: string; logoBg?: string; owner?: string; nameSoon?: boolean }
 > = {
-  1: { owner: "Monalisa Murmur" },
-  2: { owner: "Vinayak Sarin" },
-  3: { owner: "Eesha Mishra" },
+  1: { owner: "Monalisa Murmur", nameSoon: true },
+  2: { owner: "Vinayak Sarin", nameSoon: true },
+  3: { owner: "Eesha Mishra", nameSoon: true },
   4: { logo: "/teams/slytherwins.webp", logoBg: "#768262", owner: "Merry Geordy" },
   5: { logo: "/teams/x-force-united.webp", logoBg: "#000000", owner: "Wali Abidi" },
   6: { logo: "/teams/vikings.webp", logoBg: "#52030a", owner: "Reha Tripathi" },

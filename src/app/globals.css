@@ -1609,6 +1609,11 @@ svg {
   letter-spacing: -0.4px;
   line-height: 1.15;
 }
+.team-name-soon {
+  color: var(--muted);
+  font-style: italic;
+  font-weight: 600;
+}
 .team-owner-line {
   display: flex;
   flex-wrap: wrap;

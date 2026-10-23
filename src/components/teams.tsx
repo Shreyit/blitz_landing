@@ -19,7 +19,9 @@ export function Teams() {
     reactMascot(
       {
         action: "celebrate",
-        message: `${team.name}. That’s your squad spirit!`,
+        message: TEAM_BRANDING[team.id]?.nameSoon
+          ? "Name coming soon. The squad spirit is already here!"
+          : `${team.name}. That’s your squad spirit!`,
         accent: team.color,
       },
       3500,
@@ -63,6 +65,11 @@ export function Teams() {
             >
               {brand?.logo ? (
                 <img className="team-logo" src={brand.logo} alt={`${team.name} logo`} />
+              ) : brand?.nameSoon ? (
+                <>
+                  <span className="team-initials" aria-hidden="true">?</span>
+                  <span className="team-logo-soon">Logo coming soon</span>
+                </>
               ) : (
                 <>
                   <span className="team-initials" aria-hidden="true">{team.symbol}</span>
@@ -71,7 +78,7 @@ export function Teams() {
               )}
             </div>
             <div className="team-card-body">
-              <h2>{team.name}</h2>
+              <TeamName team={team} />
               <p className="team-owner-line">
                 <span>Owner</span>
                 <strong className={brand?.owner ? "team-owner" : "team-owner is-tba"}>
@@ -118,16 +125,23 @@ export function Teams() {
     </div>
   );
 }
+function TeamName({ team, id }: { team: Team; id?: string }) {
+  return TEAM_BRANDING[team.id]?.nameSoon ? (
+    <h2 id={id} className="team-name-soon">Will be announced soon</h2>
+  ) : (
+    <h2 id={id}>{team.name}</h2>
+  );
+}
 function SquadSheet({ team, onClose }: { team: Team; onClose: () => void }) {
   const brand = TEAM_BRANDING[team.id];
   return (
     <>
       <header className="squad-head">
         <div className="squad-badge" style={brand?.logoBg ? { background: brand.logoBg } : undefined}>
-          {brand?.logo ? <img src={brand.logo} alt="" /> : <span>{team.symbol}</span>}
+          {brand?.logo ? <img src={brand.logo} alt="" /> : <span>{brand?.nameSoon ? "?" : team.symbol}</span>}
         </div>
         <div>
-          <h2 id="squad-dialog-title">{team.name}</h2>
+          <TeamName team={team} id="squad-dialog-title" />
           <p className="team-owner-line">
             <span>Owner</span>
             <strong className={brand?.owner ? "team-owner" : "team-owner is-tba"}>
