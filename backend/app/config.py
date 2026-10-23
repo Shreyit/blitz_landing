@@ -38,5 +38,5 @@ TEAMS = [
     ("X Force United", "#c4242b", "XF"),
     ("Vikings", "#8f1d2a", "VK"),
     ("Shadow Strikers", "#2b2b30", "SS"),
-    ("Thunder Club", "#6e638c", "TC"),
+    ("The Symbiotes", "#4a4f5c", "SY"),
 ]

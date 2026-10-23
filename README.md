@@ -261,6 +261,7 @@ Confirmed so far:
 | 5 | X Force United | Wali Abidi | `202610220010_x_force_united.sql` |
 | 6 | Vikings | Reha Tripathi | `202610220011_vikings.sql` |
 | 7 | Shadow Strikers | Aditya Gupta | `202610230014_shadow_strikers.sql` |
+| 8 | The Symbiotes | Prakhar | `202610230015_the_symbiotes.sql` |
 
 Team names are fixed once the auction starts. Apply new migrations with `npx supabase db push` before then; until a migration is applied, the hosted site keeps showing the old name even though the logo appears.
 

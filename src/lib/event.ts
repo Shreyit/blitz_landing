@@ -16,7 +16,7 @@ export const TEAMS = [
   { id: 5, name: "X Force United", color: "#c4242b", symbol: "XF" },
   { id: 6, name: "Vikings", color: "#8f1d2a", symbol: "VK" },
   { id: 7, name: "Shadow Strikers", color: "#2b2b30", symbol: "SS" },
-  { id: 8, name: "Thunder Club", color: "#6e638c", symbol: "TC" },
+  { id: 8, name: "The Symbiotes", color: "#4a4f5c", symbol: "SY" },
 ];
 /**
  * Confirmed team identities, keyed by team id. Teams without an entry keep the shield.
@@ -31,6 +31,7 @@ export const TEAM_BRANDING: Record<
   5: { logo: "/teams/x-force-united.webp", logoBg: "#000000", owner: "Wali Abidi" },
   6: { logo: "/teams/vikings.webp", logoBg: "#52030a", owner: "Reha Tripathi" },
   7: { logo: "/teams/shadow-strikers.webp", logoBg: "#0a0a0a", owner: "Aditya Gupta" },
+  8: { logo: "/teams/the-symbiotes.webp", logoBg: "#000000", owner: "Prakhar" },
 };
 export const ROUND_NAMES = [
   "Normal round",
