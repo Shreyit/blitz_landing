@@ -79,7 +79,7 @@ GSAP owns DOM choreography, Lenis owns fine-pointer smooth scrolling, and Three.
 
 ## Local verification and remaining work
 
-Fifteen versioned SQL migrations define the schema and functions; 010–015 only rename confirmed teams and republish the snapshot. PGlite tests run real PostgreSQL with Supabase platform stubs; adapter/route tests mock network and cookies while exercising actual application handlers. See [verification](VERIFICATION.md), [setup](docs/SUPABASE_SETUP.md), and [SQL lessons](docs/SUPABASE_SQL.md).
+Sixteen versioned SQL migrations define the schema and functions; 010–016 only rename confirmed teams and republish the snapshot. PGlite tests run real PostgreSQL with Supabase platform stubs; adapter/route tests mock network and cookies while exercising actual application handlers. See [verification](VERIFICATION.md), [setup](docs/SUPABASE_SETUP.md), and [SQL lessons](docs/SUPABASE_SQL.md).
 
 Hosted service integration, a real SMTP/provider rehearsal, browser/device checks, and multi-connection/load testing remain pending. Sports fixture/result management and persisted overall standings are separate unfinished features. Existing Python/SQLite data needs an explicit import if any real event data must move to Supabase.
 

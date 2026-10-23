@@ -257,6 +257,8 @@ Confirmed so far:
 
 | Id | Team | Owner | Migration |
 | ---: | :--- | :--- | :--- |
+| 2 | United Spartans | Vinayak Sarin | `202610230016_united_spartans_shell_mates.sql` |
+| 3 | Shell Mates | Eesha Mishra | `202610230016_united_spartans_shell_mates.sql` |
 | 4 | SlytherWins | Merry Geordy | `202610220012_slytherwins.sql`, renamed in `202610230014_shadow_strikers.sql` |
 | 5 | X Force United | Wali Abidi | `202610220010_x_force_united.sql` |
 | 6 | Vikings | Reha Tripathi | `202610220011_vikings.sql` |
@@ -268,8 +270,6 @@ Owners confirmed, team name and logo still to come (placeholder names show until
 | Id | Placeholder | Owner |
 | ---: | :--- | :--- |
 | 1 | Court Kings | Monalisa Murmur |
-| 2 | The Strikers | Vinayak Sarin |
-| 3 | Blue Wolves | Eesha Mishra |
 
 Team names are fixed once the auction starts. Apply new migrations with `npx supabase db push` before then; until a migration is applied, the hosted site keeps showing the old name even though the logo appears.
 

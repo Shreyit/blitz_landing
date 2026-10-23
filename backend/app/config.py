@@ -32,8 +32,8 @@ SPORTS = [
 ]
 TEAMS = [
     ("Court Kings", "#4c7051", "CK"),
-    ("The Strikers", "#bd6039", "ST"),
-    ("Blue Wolves", "#466da3", "BW"),
+    ("United Spartans", "#a8742c", "US"),
+    ("Shell Mates", "#6b4a2e", "SM"),
     ("SlytherWins", "#1f7a3a", "SW"),
     ("X Force United", "#c4242b", "XF"),
     ("Vikings", "#8f1d2a", "VK"),

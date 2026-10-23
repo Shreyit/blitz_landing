@@ -10,8 +10,8 @@ export const SPORTS = [
 ] as const;
 export const TEAMS = [
   { id: 1, name: "Court Kings", color: "#4c7051", symbol: "CK" },
-  { id: 2, name: "The Strikers", color: "#bd6039", symbol: "ST" },
-  { id: 3, name: "Blue Wolves", color: "#466da3", symbol: "BW" },
+  { id: 2, name: "United Spartans", color: "#a8742c", symbol: "US" },
+  { id: 3, name: "Shell Mates", color: "#6b4a2e", symbol: "SM" },
   { id: 4, name: "SlytherWins", color: "#1f7a3a", symbol: "SW" },
   { id: 5, name: "X Force United", color: "#c4242b", symbol: "XF" },
   { id: 6, name: "Vikings", color: "#8f1d2a", symbol: "VK" },
@@ -29,8 +29,8 @@ export const TEAM_BRANDING: Record<
   { logo?: string; logoBg?: string; owner?: string; nameSoon?: boolean }
 > = {
   1: { owner: "Monalisa Murmur", nameSoon: true },
-  2: { owner: "Vinayak Sarin", nameSoon: true },
-  3: { owner: "Eesha Mishra", nameSoon: true },
+  2: { logo: "/teams/united-spartans.webp", logoBg: "#070705", owner: "Vinayak Sarin" },
+  3: { logo: "/teams/shell-mates.webp", logoBg: "#2e1910", owner: "Eesha Mishra" },
   4: { logo: "/teams/slytherwins.webp", logoBg: "#768262", owner: "Merry Geordy" },
   5: { logo: "/teams/x-force-united.webp", logoBg: "#000000", owner: "Wali Abidi" },
   6: { logo: "/teams/vikings.webp", logoBg: "#52030a", owner: "Reha Tripathi" },

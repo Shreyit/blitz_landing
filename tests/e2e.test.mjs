@@ -236,14 +236,14 @@ test("sports scenes, all eight registration choices and tug-of-war controls", as
   await hero.getByRole("button", { name: "Show a trick", exact: true }).click();
   assert.equal(await hero.getAttribute("data-mascot-action"), "dribble");
   await page
-    .getByRole("button", { name: "Pull for The Strikers", exact: true })
+    .getByRole("button", { name: "Pull for United Spartans", exact: true })
     .click();
   assert.equal(
     await page.getByRole("meter").getAttribute("aria-valuenow"),
     "-1",
   );
   await page
-    .getByRole("button", { name: "Pull for Blue Wolves", exact: true })
+    .getByRole("button", { name: "Pull for Shell Mates", exact: true })
     .click();
   assert.equal(
     await page.getByRole("meter").getAttribute("aria-valuenow"),
@@ -251,14 +251,14 @@ test("sports scenes, all eight registration choices and tug-of-war controls", as
   );
   for (let i = 0; i < 6; i++)
     await page
-      .getByRole("button", { name: "Pull for The Strikers", exact: true })
+      .getByRole("button", { name: "Pull for United Spartans", exact: true })
       .click();
   await page
-    .getByText("The Strikers takes the rope!", { exact: true })
+    .getByText("United Spartans takes the rope!", { exact: true })
     .waitFor();
   assert(
     await page
-      .getByRole("button", { name: "Pull for Blue Wolves", exact: true })
+      .getByRole("button", { name: "Pull for Shell Mates", exact: true })
       .isDisabled(),
   );
   await page.getByRole("button", { name: "Reset tug of war" }).click();
