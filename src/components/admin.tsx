@@ -60,7 +60,7 @@ export function Admin() {
           tab === "teams"
             ? "Eight names. Eight colours. Make them yours."
             : tab === "registrations"
-              ? "Your players and volunteer crew are here."
+              ? "Every player up for auction is here."
               : tab === "emails"
                 ? "Keeping an eye on the event’s outgoing mail."
                 : tab === "audit"
@@ -96,6 +96,11 @@ export function Admin() {
           .filter((r) => r.gender)
           .map((r) => [r.id, r.gender as string]),
       ),
+    [registrations],
+  );
+  // Volunteers never enter the auction, so the auction console lists players only.
+  const players = useMemo(
+    () => (Array.isArray(registrations) ? registrations : []).filter((r) => r.role === "player"),
     [registrations],
   );
   const currentId = state.current?.id;
@@ -304,7 +309,7 @@ export function Admin() {
       {tab === "registrations" && (
         <>
           <div className="small-heading">
-            {registrations.length} registrations
+            {players.length} {players.length === 1 ? "player" : "players"}
             <a href="/api/admin/registrations.csv" className="secondary-link">
               <Download size={15} /> Export CSV
             </a>
@@ -316,18 +321,16 @@ export function Admin() {
                   <th>Photo</th>
                   <th>Name</th>
                   <th>Email</th>
-                  <th>Role</th>
                   <th>Programme / year</th>
                   <th>Age / gender</th>
                   <th>Region</th>
                   <th>Played BLITZ before</th>
-                  <th>Sports / department</th>
-                  <th>Volunteer contribution</th>
+                  <th>Sports</th>
                   <th>Registration</th>
                 </tr>
               </thead>
               <tbody>
-                {registrations.map((r) => (
+                {players.map((r) => (
                   <tr key={r.id}>
                     <td>
                       {r.photo && (
@@ -342,23 +345,21 @@ export function Admin() {
                     </td>
                     <td>{r.name}</td>
                     <td>{r.email}</td>
-                    <td>{r.role}</td>
                     <td>
                       {r.programme} / {r.year}
                     </td>
                     <td>{r.age ?? "—"} / {r.gender ? genderLabel(r.gender) : "—"}</td>
                     <td>{r.region || "—"}</td>
                     <td>{r.played_before == null ? "—" : r.played_before ? "Yes" : "No"}</td>
-                    <td>{r.role === "volunteer" ? r.volunteer_department || "—" : r.sports.map(sportName).join(", ")}</td>
-                    <td>{r.volunteer_rationale ? <details className="admin-volunteer-rationale"><summary>Read statement</summary><p>{r.volunteer_rationale}</p></details> : "—"}</td>
+                    <td>{r.sports.map(sportName).join(", ")}</td>
                     <td>{r.verified ? "Complete" : "Pending"}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
-            {!registrations.length && (
+            {!players.length && (
               <p className="empty-message" style={{ padding: 25 }}>
-                No registrations yet.
+                No players registered yet.
               </p>
             )}
           </div>

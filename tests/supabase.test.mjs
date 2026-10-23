@@ -214,6 +214,25 @@ test('team names can be exchanged before start but duplicate names and later edi
   await eligible(); await command('start');
   await assert.rejects(command('teams',null,randomUUID(),undefined,teams),/fixed/);
 });
+test('volunteers never enter the auction queue, lots or allocation', async () => {
+  const volunteer = await register('volunteer');
+  const [player] = await eligible(1);
+  await command('start');
+  let s = await state();
+  assert.equal(s.total, 1);
+  assert.equal(s.current.id, player);
+  await as('postgres');
+  assert.equal(await scalar('select ($1::uuid = any(queue)) as value from blitz.auction where id=1', [volunteer]), false);
+  await as('authenticated', organiser);
+  await command('unsold'); await command('unsold'); await command('unsold'); await command('unsold');
+  await command('allocate');
+  s = await state();
+  assert.equal(s.phase, 'complete');
+  await as('postgres');
+  assert.equal(await scalar('select count(*)::int as value from blitz.assignments where player_id=$1', [volunteer]), 0);
+  assert.equal(await scalar('select count(*)::int as value from blitz.assignments where player_id=$1', [player]), 1);
+  await assert.rejects(db.query('select blitz.assign_player($1, 1, 0, $2)', [volunteer, 'random']), /not eligible/);
+});
 test('private volunteer photos are inaccessible to spectators and ordinary accounts', async () => {
   const volunteer=await register('volunteer'); const player=await register();
   await db.exec("update blitz.registrations set verified=true where role='player'");
