@@ -2,8 +2,9 @@
 import { sportName } from "@/lib/sport-rules";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowUpRight, Gavel, RotateCcw, SkipForward, Trophy, Users } from "lucide-react";
+import { ArrowUpRight, BookOpen, Gavel, RotateCcw, SkipForward, Trophy, Users } from "lucide-react";
 import { SportArt } from "./icons";
+import { BiddingRules } from "./bidding-rules";
 import { AuctionState, Player, ROUND_NAMES, TEAM_BRANDING, Team, orderTeams } from "@/lib/event";
 import { useAuction } from "@/lib/use-auction";
 
@@ -318,6 +319,14 @@ export function AuctionBoard({
 export function Auction() {
   const { state, connected } = useAuction();
   const [loading, setLoading] = useState(true);
+  const [view, setView] = useState<"live" | "rules">("live");
+  useEffect(() => {
+    if (location.hash === "#how-bidding-works") setView("rules");
+  }, []);
+  const choose = (next: "live" | "rules") => {
+    setView(next);
+    history.replaceState(null, "", next === "rules" ? "#how-bidding-works" : location.pathname);
+  };
   useEffect(() => {
     const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
     const timer = setTimeout(() => setLoading(false), reduced ? 150 : 1600);
@@ -348,8 +357,37 @@ export function Auction() {
               : "Reconnecting · last saved state"}
         </div>
       </div>
-      <AuctionBoard state={state} />
-      {state.phase === "complete" && (
+      <div className="auction-tabs" role="tablist" aria-label="Auction Dome sections">
+        <button
+          type="button"
+          role="tab"
+          id="tab-live"
+          aria-selected={view === "live"}
+          aria-controls="panel-live"
+          className={view === "live" ? "is-active" : undefined}
+          onClick={() => choose("live")}
+        >
+          <Gavel size={16} /> Live Dome
+        </button>
+        <button
+          type="button"
+          role="tab"
+          id="tab-rules"
+          aria-selected={view === "rules"}
+          aria-controls="panel-rules"
+          className={view === "rules" ? "is-active" : undefined}
+          onClick={() => choose("rules")}
+        >
+          <BookOpen size={16} /> How bidding works
+        </button>
+      </div>
+      <div role="tabpanel" id="panel-live" aria-labelledby="tab-live" hidden={view !== "live"}>
+        <AuctionBoard state={state} />
+      </div>
+      <div role="tabpanel" id="panel-rules" aria-labelledby="tab-rules" hidden={view !== "rules"}>
+        {view === "rules" && <BiddingRules state={state} />}
+      </div>
+      {view === "live" && state.phase === "complete" && (
         <div className="form-actions">
           <span>
             <Users size={17} /> The squads are ready.

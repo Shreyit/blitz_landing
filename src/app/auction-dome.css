@@ -708,3 +708,197 @@ button.dome-team.is-leading:disabled {
     font-size: 44px;
   }
 }
+
+/* ── Public page sub-tabs: Live Dome / How bidding works ── */
+.auction-tabs {
+  display: inline-flex;
+  gap: 4px;
+  margin: 4px 0 22px;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+}
+.auction-tabs button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 9px 18px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font: 600 14px/1 var(--font-body);
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.auction-tabs button:hover { color: var(--ink); }
+.auction-tabs button.is-active { background: var(--green); color: #fff; }
+.auction-tabs button:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+
+/* ── How bidding works ── */
+.rules { display: grid; gap: 22px; padding-bottom: 48px; }
+.rules h3 { font-size: 20px; letter-spacing: -0.3px; }
+.rules p { color: var(--muted); line-height: 1.6; }
+.rules-intro { max-width: 640px; }
+.rules-intro h2 {
+  margin: 8px 0 10px;
+  font-family: var(--font-display);
+  font-size: clamp(34px, 5vw, 52px);
+  line-height: 1;
+  text-transform: uppercase;
+}
+.rules-rounds {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.rules-round {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: #fff;
+}
+.rules-round:first-child {
+  border-color: #213b25;
+  background: linear-gradient(150deg, #2c4e31, #1d3121);
+  color: #fff;
+}
+.rules-round:first-child p, .rules-round:first-child small { color: rgba(255, 255, 255, 0.7); }
+.rules-round.is-live { box-shadow: 0 0 0 3px var(--lime); }
+.rules-round-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.rules-round-no {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--orange);
+}
+.rules-round:first-child .rules-round-no { color: var(--lime); }
+.rules-live-tag {
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: var(--lime);
+  color: #203e28;
+  font-size: 10.5px;
+  font-weight: 700;
+}
+.rules-figures { display: grid; grid-template-columns: auto 1fr; gap: 16px; }
+.rules-figures small { display: block; font-size: 11px; color: var(--muted); }
+.rules-figures strong {
+  font-family: var(--font-display);
+  font-size: 30px;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+.rules-figures div + div strong { font-size: 22px; padding-top: 5px; display: block; }
+.rules-round p { margin: 0; font-size: 13px; }
+
+.rules-ladder, .rules-lot {
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: #fff;
+}
+.rules-ladder-head p { margin: 4px 0 0; font-size: 14px; }
+.rules-bands {
+  display: grid;
+  grid-template-columns: 1fr 1fr 0.8fr;
+  gap: 4px;
+  margin-top: 18px;
+}
+.rules-band {
+  display: grid;
+  gap: 4px;
+  padding: 14px 16px;
+  background: color-mix(in srgb, var(--green) 12%, #fff);
+}
+.rules-band:nth-child(2) { background: color-mix(in srgb, var(--green) 26%, #fff); }
+.rules-band:nth-child(3) { background: var(--green); color: #fff; }
+.rules-band:first-child { border-radius: 12px 0 0 12px; }
+.rules-band:last-child { border-radius: 0 12px 12px 0; }
+.rules-band-step { font-family: var(--font-display); font-size: 30px; line-height: 1; }
+.rules-band-range { font-size: 13px; font-weight: 600; opacity: 0.8; }
+.rules-example-label {
+  margin: 20px 0 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.rules-example { display: flex; flex-wrap: wrap; gap: 6px; }
+.rules-example span {
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.rules-example span.is-turn { background: var(--lime); border-color: #b9d64a; color: #203e28; }
+.rules-example .rules-example-more { border-style: dashed; color: var(--muted); }
+
+.rules-lot ol {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.rules-lot li { display: flex; gap: 12px; align-items: flex-start; }
+.rules-lot-no {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--green);
+  color: #fff;
+  font-weight: 700;
+}
+.rules-lot strong { display: block; margin-top: 6px; }
+.rules-lot li p { margin: 4px 0 0; font-size: 13.5px; }
+
+.rules-facts {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+.rules-facts > div {
+  padding: 18px;
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--lime) 30%, #fff);
+  border: 1px solid color-mix(in srgb, var(--lime) 70%, var(--line));
+}
+.rules-facts svg { color: var(--green); }
+.rules-facts strong { display: block; margin: 10px 0 4px; }
+.rules-facts p { margin: 0; font-size: 13.5px; }
+
+@media (max-width: 1000px) {
+  .rules-rounds, .rules-facts, .rules-lot ol { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+  .auction-tabs { display: flex; width: 100%; }
+  .auction-tabs button { flex: 1; justify-content: center; padding-inline: 10px; font-size: 13px; }
+  .rules-rounds { gap: 8px; }
+  .rules-round { padding: 14px; border-radius: 14px; }
+  .rules-figures { grid-template-columns: 1fr; gap: 6px; }
+  .rules-figures strong { font-size: 26px; }
+  .rules-figures div + div strong { font-size: 18px; padding-top: 0; }
+  .rules-ladder, .rules-lot { padding: 16px; border-radius: 16px; }
+  .rules-bands { grid-template-columns: 1fr; }
+  .rules-band:first-child { border-radius: 12px 12px 0 0; }
+  .rules-band:last-child { border-radius: 0 0 12px 12px; }
+  .rules-band { grid-template-columns: 64px 1fr; align-items: center; }
+  .rules-lot ol, .rules-facts { grid-template-columns: 1fr; }
+}
