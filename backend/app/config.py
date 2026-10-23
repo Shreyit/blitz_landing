@@ -31,7 +31,7 @@ SPORTS = [
     "Dodgeball",
 ]
 TEAMS = [
-    ("Court Kings", "#4c7051", "CK"),
+    ("The Monarchs", "#3f6e5a", "MO"),
     ("United Spartans", "#a8742c", "US"),
     ("Shell Mates", "#6b4a2e", "SM"),
     ("SlytherWins", "#1f7a3a", "SW"),
