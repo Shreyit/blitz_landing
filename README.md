@@ -273,7 +273,7 @@ Owners confirmed, team name and logo still to come (placeholder names show until
 
 Team names are fixed once the auction starts. Apply new migrations with `npx supabase db push` before then; until a migration is applied, the hosted site keeps showing the old name even though the logo appears.
 
-## Maintainer
+## Developer
 
 Built and maintained by **Shreyit Sinha** — [GitHub](https://github.com/Shreyit) · [m2024bsas027@stud.tiss.ac.in](mailto:m2024bsas027@stud.tiss.ac.in). Found something broken? Get in touch; the site footer has the same contact pill.
 

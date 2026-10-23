@@ -104,7 +104,7 @@ export function Footer() {
           data-mascot-note="Spotted a glitch? Shreyit keeps this place running."
           data-mascot-move="wave"
         >
-          <span className="maintainer-label">Contact maintainer</span>
+          <span className="maintainer-label">Contact developer</span>
           <span className="maintainer-name">Shreyit Sinha</span>
           <a
             href="https://github.com/Shreyit"
