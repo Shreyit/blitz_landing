@@ -12,12 +12,17 @@ export const TEAMS = [
   { id: 1, name: "The Monarchs", color: "#3f6e5a", symbol: "MO" },
   { id: 2, name: "United Spartans", color: "#a8742c", symbol: "US" },
   { id: 3, name: "Shell Mates", color: "#6b4a2e", symbol: "SM" },
-  { id: 4, name: "SlytherWins", color: "#1f7a3a", symbol: "SW" },
   { id: 5, name: "X Force United", color: "#c4242b", symbol: "XF" },
+  { id: 4, name: "SlytherWins", color: "#1f7a3a", symbol: "SW" },
   { id: 6, name: "Vikings", color: "#8f1d2a", symbol: "VK" },
   { id: 7, name: "Shadow Strikers", color: "#2b2b30", symbol: "SS" },
   { id: 8, name: "The Symbiotes", color: "#4a4f5c", symbol: "SY" },
 ];
+/** Display order by team id, used everywhere teams are listed. Ids stay fixed in the database. */
+const TEAM_ORDER = TEAMS.map((team) => team.id);
+export function orderTeams<T extends { id: number }>(teams: T[]): T[] {
+  return [...teams].sort((a, b) => TEAM_ORDER.indexOf(a.id) - TEAM_ORDER.indexOf(b.id));
+}
 /**
  * Confirmed team identities, keyed by team id. Teams without an entry keep the shield.
  * Logos are square images used as given, filling the card's square emblem.

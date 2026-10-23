@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowUpRight, Gavel, RotateCcw, SkipForward, Trophy, Users } from "lucide-react";
 import { SportArt } from "./icons";
-import { AuctionState, Player, ROUND_NAMES, TEAM_BRANDING, Team } from "@/lib/event";
+import { AuctionState, Player, ROUND_NAMES, TEAM_BRANDING, Team, orderTeams } from "@/lib/event";
 import { useAuction } from "@/lib/use-auction";
 
 /** 1 → "1st year", 2 → "2nd year", 3 → "3rd year", 4 → "4th year". */
@@ -134,7 +134,7 @@ export function AuctionBoard({
   return (
     <div className="dome">
       <section className="dome-kpis" aria-label="Team purses">
-        {state.teams.map((team) => (
+        {orderTeams(state.teams).map((team) => (
           <div
             key={team.id}
             className={`dome-kpi${team.id === state.leader ? " is-leading" : ""}`}
@@ -258,7 +258,7 @@ export function AuctionBoard({
       </section>
 
       <section className="dome-teams" aria-label={controls ? "Bid for a team" : "Teams"}>
-        {state.teams.map((team) => {
+        {orderTeams(state.teams).map((team) => {
           const brand = TEAM_BRANDING[team.id];
           const leading = team.id === state.leader;
           const short = team.purse < state.next_bid;

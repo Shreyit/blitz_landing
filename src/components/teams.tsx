@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { ArrowUpRight, UserRound, X } from "lucide-react";
 import { useAuction } from "@/lib/use-auction";
 import { reactMascot } from "@/lib/mascot-behavior";
-import { TEAM_BRANDING, type Team } from "@/lib/event";
+import { TEAM_BRANDING, orderTeams, type Team } from "@/lib/event";
 export function Teams() {
   const { state, connected } = useAuction();
   const [openId, setOpenId] = useState<number | null>(null);
@@ -44,7 +44,7 @@ export function Teams() {
         </div>
       )}
       <div className="teams-grid">
-        {state.teams.map((team) => {
+        {orderTeams(state.teams).map((team) => {
           const brand = TEAM_BRANDING[team.id];
           return (
           <article
