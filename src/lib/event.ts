@@ -38,7 +38,7 @@ export const TEAM_BRANDING: Record<
   3: { logo: "/teams/shell-mates.webp", logoBg: "#2e1910", owner: "Eesha Mishra" },
   4: { logo: "/teams/slytherwins.webp", logoBg: "#768262", owner: "Merry Geordy" },
   5: { logo: "/teams/x-force-united.webp", logoBg: "#000000", owner: "Wali Abidi" },
-  6: { logo: "/teams/vikings.webp", logoBg: "#52030a", owner: "Reha Tripathi" },
+  6: { logo: "/teams/vikings.webp", logoBg: "#52030a", owner: "Rhea Tripathi" },
   7: { logo: "/teams/shadow-strikers.webp", logoBg: "#0a0a0a", owner: "Aditya Gupta" },
   8: { logo: "/teams/the-symbiotes.webp", logoBg: "#000000", owner: "Prakhar Rai" },
 };

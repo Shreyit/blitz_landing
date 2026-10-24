@@ -262,7 +262,7 @@ All eight teams are confirmed:
 | 3 | Shell Mates | Eesha Mishra | `202610230016_united_spartans_shell_mates.sql` |
 | 4 | SlytherWins | Merry Geordy | `202610220012_slytherwins.sql`, renamed in `202610230014_shadow_strikers.sql` |
 | 5 | X Force United | Wali Abidi | `202610220010_x_force_united.sql` |
-| 6 | Vikings | Reha Tripathi | `202610220011_vikings.sql` |
+| 6 | Vikings | Rhea Tripathi | `202610220011_vikings.sql` |
 | 7 | Shadow Strikers | Aditya Gupta | `202610230014_shadow_strikers.sql` |
 | 8 | The Symbiotes | Prakhar Rai | `202610230015_the_symbiotes.sql` |
 
