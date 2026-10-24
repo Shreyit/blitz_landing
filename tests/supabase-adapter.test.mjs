@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {test} from 'node:test';
 import {SupabaseHttp, SupabaseError} from '../src/lib/supabase-http.ts';
 import {registrationData} from '../src/lib/registration-validation.ts';
-import {normaliseWhatsapp, formatWhatsapp} from '../src/lib/whatsapp.ts';
+import {normaliseWhatsapp, formatWhatsapp, whatsappFromParts} from '../src/lib/whatsapp.ts';
 import {mergeAuctionState} from '../src/lib/auction-state.ts';
 import {subscribeAuction} from '../src/lib/auction-realtime.ts';
 import {createMailHandler} from '../supabase/functions/deliver-mail/handler.ts';
@@ -31,6 +31,13 @@ test('WhatsApp numbers normalise to E.164 and reject implausible input',()=>{
     assert.equal(normaliseWhatsapp(input),null,input);
   assert.equal(formatWhatsapp('+919876543210'),'+91 98765 43210');
   assert.equal(formatWhatsapp(null),'Not provided');
+  assert.equal(whatsappFromParts('India','98765 43210'),'+919876543210');
+  assert.equal(whatsappFromParts('India','91 98765 43210'),'+919876543210');
+  assert.equal(whatsappFromParts('United Arab Emirates','050 123 4567'),'+971501234567');
+  assert.equal(whatsappFromParts('United States','(415) 555-0123'),'+14155550123');
+  assert.equal(whatsappFromParts('India','+44 7700 900123'),'+447700900123');
+  assert.equal(whatsappFromParts('India','12345'),null);
+  assert.equal(whatsappFromParts('Nowhere','98765 43210'),null);
 });
 test('REST adapter uses an apikey and a separate user bearer token without caching',async()=>{
   let request;

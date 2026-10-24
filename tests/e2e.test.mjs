@@ -143,7 +143,7 @@ test("volunteers choose one department and can submit a separate player registra
   await page.getByRole("heading", { name: "Your registration is complete." }).waitFor();
   assert(submissions[0].includes('name="volunteer_department"\r\n\r\nMedical'));
   assert(submissions[0].includes('name="sports"\r\n\r\n[]'));
-  assert(submissions[0].includes('name="whatsapp"\r\n\r\n98765 43210'));
+  assert(submissions[0].includes('name="whatsapp"\r\n\r\n+919876543210'));
   await page.getByRole("button", { name: "Also register as a player" }).click();
   assert.equal(await page.getByRole("checkbox", { name: "Football", exact: true }).isChecked(), true);
   await page.getByRole("button", { name: "Continue", exact: true }).click();

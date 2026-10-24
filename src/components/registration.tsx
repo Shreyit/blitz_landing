@@ -23,7 +23,7 @@ import { RegionPicker } from "./region-picker";
 import { PhotoCropper } from "./photo-cropper";
 import { INITIAL_PHOTO_CROP, type PhotoCrop } from "@/lib/photo-crop";
 import { EMAIL_DOMAINS, emailInput, registrationEmail, type EmailDomain } from "@/lib/registration-email";
-import { formatWhatsapp, normaliseWhatsapp } from "@/lib/whatsapp";
+import { DEFAULT_WHATSAPP_COUNTRY, WHATSAPP_COUNTRIES, formatWhatsapp, whatsappFromParts } from "@/lib/whatsapp";
 import { reactMascot, registrationReaction } from "@/lib/mascot-behavior";
 export function Registration() {
   const params = useSearchParams();
@@ -46,6 +46,8 @@ export function Registration() {
   const [emailUsername, setEmailUsername] = useState("");
   const [emailDomain, setEmailDomain] = useState<EmailDomain>(EMAIL_DOMAINS[0]);
   const email = registrationEmail(emailUsername, emailDomain);
+  const [whatsappCountry, setWhatsappCountry] = useState(DEFAULT_WHATSAPP_COUNTRY);
+  const whatsapp = whatsappFromParts(whatsappCountry, details.whatsapp);
   const [sports, setSports] = useState<string[]>(
     SPORTS.some((sport) => sport === params.get("sport"))
       ? [params.get("sport")!]
@@ -119,8 +121,8 @@ export function Registration() {
         setError("Enter only your email username, the part before @, and choose your TISS domain.");
         return;
       }
-      if (!normaliseWhatsapp(details.whatsapp)) {
-        setError("Enter a valid WhatsApp number, for example 98765 43210.");
+      if (!whatsapp) {
+        setError("Enter a valid WhatsApp number and check its country code.");
         return;
       }
       go(1);
@@ -150,6 +152,7 @@ export function Registration() {
       body.append(key, value.trim()),
     );
     body.append("email", email);
+    body.set("whatsapp", whatsapp ?? "");
     body.append("role", role);
     body.append("sports", JSON.stringify(role === "player" ? sports : []));
     if (role === "volunteer") {
@@ -366,7 +369,20 @@ export function Registration() {
                 </div>
                 <div className="field full">
                   <label htmlFor="registration-whatsapp">WhatsApp number</label>
-                  <input
+                  <div className="whatsapp-input">
+                    <select
+                      name="whatsappCountry"
+                      aria-label="WhatsApp country code"
+                      value={whatsappCountry}
+                      onChange={(e) => setWhatsappCountry(e.target.value)}
+                    >
+                      {WHATSAPP_COUNTRIES.map((country) => (
+                        <option key={country.name} value={country.name}>
+                          +{country.code} {country.name}
+                        </option>
+                      ))}
+                    </select>
+                    <input
                     id="registration-whatsapp"
                     name="whatsapp"
                     type="tel"
@@ -381,8 +397,9 @@ export function Registration() {
                       setDetails({ ...details, whatsapp: e.target.value })
                     }
                   />
+                  </div>
                   <small id="registration-whatsapp-help">
-                    Indian numbers need no +91. Only the organising team sees this, for team groups and match updates.
+                    India (+91) is selected. Studying from abroad or using a foreign WhatsApp number? Pick its country code. Only the organising team sees this number.
                   </small>
                 </div>
                 <label className="field">
@@ -569,7 +586,7 @@ export function Registration() {
                   </div>
                   <div>
                     <dt>WhatsApp</dt>
-                    <dd>{formatWhatsapp(normaliseWhatsapp(details.whatsapp))}</dd>
+                    <dd>{formatWhatsapp(whatsapp)}</dd>
                   </div>
                   <div>
                     <dt>Age</dt><dd>{details.age}</dd>
