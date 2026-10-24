@@ -135,6 +135,7 @@ test("every sport dialog fits narrow phones and landscape with scrollable rules"
 async function details(page) {
   await page.getByLabel("Full name").fill(player.name);
   await page.getByLabel("TISS email username", { exact: true }).fill("m2024bsass027");
+  await page.getByLabel("WhatsApp number", { exact: true }).fill("98765 43210");
   await page.getByLabel("Age", { exact: true }).fill("20");
   await page.getByLabel("Gender", { exact: true }).selectOption("female");
   await page.getByLabel("State or union territory", { exact: true }).selectOption("Andaman and Nicobar Islands");

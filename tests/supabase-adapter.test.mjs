@@ -2,25 +2,35 @@ import assert from 'node:assert/strict';
 import {test} from 'node:test';
 import {SupabaseHttp, SupabaseError} from '../src/lib/supabase-http.ts';
 import {registrationData} from '../src/lib/registration-validation.ts';
+import {normaliseWhatsapp, formatWhatsapp} from '../src/lib/whatsapp.ts';
 import {mergeAuctionState} from '../src/lib/auction-state.ts';
 import {subscribeAuction} from '../src/lib/auction-realtime.ts';
 import {createMailHandler} from '../supabase/functions/deliver-mail/handler.ts';
 
 function form(extra={}) {
-  const data={name:'Example Student',email:'m2024bsass027@stud.tiss.ac.in',role:'player',
+  const data={name:'Example Student',email:'m2024bsass027@stud.tiss.ac.in',whatsapp:'98765 43210',role:'player',
     programme:'BSASS',year:'2',age:'20',gender:'female',region:'Andaman and Nicobar Islands',
     played_before:'no',sports:'["Football"]',consent:'true',...extra};
   const f=new FormData(); for(const [key,value] of Object.entries(data)) f.set(key,value); return f;
 }
 test('registration validation handles both roles and rejects forged or missing details',()=>{
-  const p=registrationData(form()); assert.equal(p.played_before,false); assert.deepEqual(p.sports,['Football']);
+  const p=registrationData(form()); assert.equal(p.whatsapp,'+919876543210'); assert.equal(p.played_before,false); assert.deepEqual(p.sports,['Football']);
   const v=registrationData(form({role:'volunteer',sports:'[]',volunteer_department:'Medical',volunteer_rationale:'I can coordinate first aid.'}));
   assert.equal(v.volunteer_department,'Medical');
   for(const extra of [{email:'x@example.com'},{age:'20.5'},{year:'0'},{region:'Invalid'},
-    {played_before:''},{consent:'false'},{sports:'["Football","Football"]'},
+    {played_before:''},{whatsapp:''},{whatsapp:'12345'},{consent:'false'},{sports:'["Football","Football"]'},
     {sports:'["Basketball"]'},{volunteer_department:'Medical'},{name:'Bad\nName'},
     {role:'volunteer',sports:'[]',volunteer_department:'Operations',volunteer_rationale:''}])
     assert.throws(()=>registrationData(form(extra)));
+});
+test('WhatsApp numbers normalise to E.164 and reject implausible input',()=>{
+  for(const input of ['9876543210','98765 43210','098765-43210','919876543210','+91 98765 43210','(+91) 98765.43210'])
+    assert.equal(normaliseWhatsapp(input),'+919876543210',input);
+  assert.equal(normaliseWhatsapp('+44 7700 900123'),'+447700900123');
+  for(const input of ['','12345','5876543210','+91 12345 67890','+0123456789','98765abcde','+9198765432101'])
+    assert.equal(normaliseWhatsapp(input),null,input);
+  assert.equal(formatWhatsapp('+919876543210'),'+91 98765 43210');
+  assert.equal(formatWhatsapp(null),'Not provided');
 });
 test('REST adapter uses an apikey and a separate user bearer token without caching',async()=>{
   let request;

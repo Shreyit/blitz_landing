@@ -109,7 +109,7 @@ test('malformed JSON and invalid command IDs return validation errors',async()=>
 });
 async function registration(){
   const form=new FormData();
-  const data={name:'Example Student',email:'student@tiss.edu',role:'player',programme:'BSASS',
+  const data={name:'Example Student',email:'student@tiss.edu',whatsapp:'98765 43210',role:'player',programme:'BSASS',
     year:'2',age:'20',gender:'female',region:'Maharashtra',played_before:'yes',sports:'["Chess"]',consent:'true'};
   for(const [k,v]of Object.entries(data))form.set(k,v);
   const photo=await sharp({create:{width:800,height:600,channels:3,background:'#315a36'}}).png().toBuffer();
@@ -128,7 +128,7 @@ test('registration normalizes the image and sends only validated intake to the s
   };
   const form=await registration();form.set('verified','true');
   const response=await route('registrations',form);assert.equal(response.status,201);
-  assert.equal(payload.p_data.verified,undefined);assert.equal(payload.p_data.played_before,true);
+  assert.equal(payload.p_data.verified,undefined);assert.equal(payload.p_data.played_before,true);assert.equal(payload.p_data.whatsapp,'+919876543210');
   assert.equal(payload.p_hash,null);assert.equal(payload.p_token,null);
 });
 test('definite registration rejection cleans up the uploaded photo',async()=>{

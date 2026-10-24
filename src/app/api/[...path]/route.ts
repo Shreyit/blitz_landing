@@ -92,7 +92,7 @@ async function register(request: Request) {
   }
 }
 function csv(rows:Record<string,unknown>[]) {
-  const fields=['id','created_at','consent_at','name','email','role','programme','year','age','gender','region','played_before','sports','volunteer_department','volunteer_rationale'];
+  const fields=['id','created_at','consent_at','name','email','whatsapp','role','programme','year','age','gender','region','played_before','sports','volunteer_department','volunteer_rationale'];
   const quote=(value:unknown) => {
     let s=Array.isArray(value) ? value.join(', ') : value == null ? '' : String(value);
     if(/^[\s]*[=+@-]|^[\t\r]/.test(s)) s="'"+s;

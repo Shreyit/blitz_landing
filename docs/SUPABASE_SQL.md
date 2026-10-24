@@ -219,3 +219,7 @@ Then mirror the change in `src/lib/event.ts` and `backend/app/config.py`.
 Run `npm run test:supabase`. Read each test name, find the corresponding SQL function, and predict its result before running it. Tests exercise RLS/grants, eligibility, intake validation, bid thresholds, duplicate/stale commands, purse boundaries, transactional rollback, allocation, mail leases, and notification privacy. Adapter tests cover input validation, credentials, reconnects, stale responses, and provider failures.
 
 PGlite runs actual PostgreSQL but supplies platform stubs. Hosted Auth, Storage, Realtime transport, concurrent network connections, and browser rendering require separate integration tests. Measuring one local SQL call is not a measurement of an auction update reaching a spectator's phone.
+
+## Migration 018: private WhatsApp number
+
+[018](../supabase/migrations/202610240018_whatsapp_number.sql) adds `blitz.registrations.whatsapp`, stored in E.164 form (`+919876543210`) and checked by `^\+[1-9][0-9]{7,14}$`. `blitz_register` now rejects a registration without a valid number; the API normalises input first (`src/lib/whatsapp.ts`: a bare 10-digit Indian mobile gets `+91`). Rows registered before 018 keep `null`. The number reaches organisers only, through `blitz_admin_data('registrations')` (which returns whole rows) and the CSV export. It is not in `player_view`, the public snapshot, or `registration_mail_data`, so it never appears on the public site or in emails.

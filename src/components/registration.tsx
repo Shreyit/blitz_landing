@@ -23,6 +23,7 @@ import { RegionPicker } from "./region-picker";
 import { PhotoCropper } from "./photo-cropper";
 import { INITIAL_PHOTO_CROP, type PhotoCrop } from "@/lib/photo-crop";
 import { EMAIL_DOMAINS, emailInput, registrationEmail, type EmailDomain } from "@/lib/registration-email";
+import { formatWhatsapp, normaliseWhatsapp } from "@/lib/whatsapp";
 import { reactMascot, registrationReaction } from "@/lib/mascot-behavior";
 export function Registration() {
   const params = useSearchParams();
@@ -32,6 +33,7 @@ export function Registration() {
   const [step, setStep] = useState(0);
   const [details, setDetails] = useState({
     name: "",
+    whatsapp: "",
     programme: "BSASS",
     year: "1",
     age: "",
@@ -115,6 +117,10 @@ export function Registration() {
         )
       ) {
         setError("Enter only your email username, the part before @, and choose your TISS domain.");
+        return;
+      }
+      if (!normaliseWhatsapp(details.whatsapp)) {
+        setError("Enter a valid WhatsApp number, for example 98765 43210.");
         return;
       }
       go(1);
@@ -358,6 +364,27 @@ export function Registration() {
                   </small>
                   {email && <small className="registration-email-preview">Registration email: <strong>{email}</strong></small>}
                 </div>
+                <div className="field full">
+                  <label htmlFor="registration-whatsapp">WhatsApp number</label>
+                  <input
+                    id="registration-whatsapp"
+                    name="whatsapp"
+                    type="tel"
+                    inputMode="tel"
+                    autoComplete="tel"
+                    maxLength={20}
+                    placeholder="98765 43210"
+                    aria-describedby="registration-whatsapp-help"
+                    value={details.whatsapp}
+                    required
+                    onChange={(e) =>
+                      setDetails({ ...details, whatsapp: e.target.value })
+                    }
+                  />
+                  <small id="registration-whatsapp-help">
+                    Indian numbers need no +91. Only the organising team sees this, for team groups and match updates.
+                  </small>
+                </div>
                 <label className="field">
                   Programme
                   <select
@@ -541,6 +568,10 @@ export function Registration() {
                     <dd>{email}</dd>
                   </div>
                   <div>
+                    <dt>WhatsApp</dt>
+                    <dd>{formatWhatsapp(normaliseWhatsapp(details.whatsapp))}</dd>
+                  </div>
+                  <div>
                     <dt>Age</dt><dd>{details.age}</dd>
                   </div>
                   <div>
@@ -572,7 +603,7 @@ export function Registration() {
                     {role === "player"
                       ? "My name, photo, programme, year and sports may appear in the auction and team rosters. My email stays private."
                       : "My information is shared with the organising team; my photo and email are not displayed publicly."}{" "}
-                    My age, gender, region, and previous participation answer are shared only with the organising team.
+                    My WhatsApp number, age, gender, region, and previous participation answer are shared only with the organising team.
                   </span>
                 </label>
               </>

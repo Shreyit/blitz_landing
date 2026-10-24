@@ -1,5 +1,6 @@
 import options from '../../shared/registration-options.json' with { type: 'json' };
 import { SPORTS } from './event.ts';
+import { normaliseWhatsapp } from './whatsapp.ts';
 
 export class InputError extends Error {
   status: number;
@@ -16,6 +17,8 @@ export function registrationData(form: FormData) {
   if (email.length > 200 || !/^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@(stud\.tiss\.ac\.in|tiss\.edu)$/.test(email))
     throw new InputError('Use an @stud.tiss.ac.in or @tiss.edu email address.');
   if (!['player', 'volunteer'].includes(role)) throw new InputError('Choose Player or Volunteer.');
+  const whatsapp = normaliseWhatsapp(text('whatsapp'));
+  if (!whatsapp) throw new InputError('Enter a valid WhatsApp number, for example 98765 43210.');
   const programme = text('programme');
   if (!['BSASS', 'BSW'].includes(programme)) throw new InputError('Choose a valid programme.');
   const year = Number(text('year')), age = Number(text('age'));
@@ -37,7 +40,7 @@ export function registrationData(form: FormData) {
     if (!rationale || rationale.length > 2000 || /[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/.test(rationale))
       throw new InputError('Explain your suitability and contribution in up to 2,000 characters.');
   } else if (department || rationale) throw new InputError('Volunteer details belong in a separate volunteer registration.');
-  return { name, email, role, programme, year, age, gender, region,
+  return { name, email, whatsapp, role, programme, year, age, gender, region,
     played_before: text('played_before') === 'yes', sports: sports as string[],
     volunteer_department: department || null, volunteer_rationale: rationale || null, consent: true };
 }

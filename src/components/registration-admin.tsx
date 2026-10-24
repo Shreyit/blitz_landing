@@ -6,9 +6,10 @@ import { Download, Gavel, LogOut, RefreshCw, Search, ShieldCheck, Users, X } fro
 import { api, ApiError, command } from "@/lib/api";
 import { genderLabel } from "@/lib/registration-options";
 import { sportName } from "@/lib/sport-rules";
+import { formatWhatsapp } from "@/lib/whatsapp";
 
 type Registration = {
-  id: string; name: string; email: string; role: string; programme: string;
+  id: string; name: string; email: string; whatsapp: string | null; role: string; programme: string;
   year: number; age: number | null; gender: string | null; region: string | null;
   sports: string[]; played_before: boolean | null;
   volunteer_department: string | null; volunteer_rationale: string | null;
@@ -36,7 +37,7 @@ function Profile({ row, close }: { row: Registration; close: () => void }) {
     return () => dialog?.close();
   }, []);
   const details = [
-    ["Email", row.email], ["Role", row.role === "player" ? "Player" : "Volunteer"],
+    ["Email", row.email], ["WhatsApp", formatWhatsapp(row.whatsapp)], ["Role", row.role === "player" ? "Player" : "Volunteer"],
     ["Programme", row.programme], ["Year", String(row.year)], ["Age", row.age ?? "Not recorded"],
     ["Gender", row.gender ? genderLabel(row.gender) : "Not recorded"], ["Home state / UT", row.region || "Not recorded"],
     ["Played BLITZ before", row.played_before === null ? "Not recorded" : row.played_before ? "Yes" : "No"],

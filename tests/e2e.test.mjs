@@ -4,6 +4,7 @@ import { chromium } from "playwright-core";
 import { readFileSync } from "node:fs";
 
 async function completeDemographics(page) {
+  await page.getByLabel("WhatsApp number", { exact: true }).fill("98765 43210");
   await page.getByLabel("Age", { exact: true }).fill("20");
   await page.getByLabel("Gender", { exact: true }).selectOption("female");
   await page.getByLabel("State or union territory", { exact: true }).selectOption("Maharashtra");
@@ -142,6 +143,7 @@ test("volunteers choose one department and can submit a separate player registra
   await page.getByRole("heading", { name: "Your registration is complete." }).waitFor();
   assert(submissions[0].includes('name="volunteer_department"\r\n\r\nMedical'));
   assert(submissions[0].includes('name="sports"\r\n\r\n[]'));
+  assert(submissions[0].includes('name="whatsapp"\r\n\r\n98765 43210'));
   await page.getByRole("button", { name: "Also register as a player" }).click();
   assert.equal(await page.getByRole("checkbox", { name: "Football", exact: true }).isChecked(), true);
   await page.getByRole("button", { name: "Continue", exact: true }).click();

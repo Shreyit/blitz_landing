@@ -23,7 +23,7 @@ async function command(action, team = null, id = randomUUID(), version = undefin
 }
 async function register(role = 'player', extra = {}) {
   const id = randomUUID(); const n = ++sequence;
-  const data = {name: `Student ${n}`, email: `student${n}@stud.tiss.ac.in`, role,
+  const data = {name: `Student ${n}`, email: `student${n}@stud.tiss.ac.in`, whatsapp: `+9198765${String(n).padStart(5,'0')}`, role,
     programme: 'BSASS', year: 2, age: 20, gender: 'female', region: 'Maharashtra',
     played_before: false, sports: role === 'player' ? ['Football'] : [], consent: true,
     ...(role === 'volunteer' ? {volunteer_department: 'Operations', volunteer_rationale: 'I can coordinate the venue.'} : {}), ...extra};
@@ -213,6 +213,23 @@ test('team names can be exchanged before start but duplicate names and later edi
   await assert.rejects(command('teams',null,randomUUID(),saved.version,duplicate),/distinct/);
   await eligible(); await command('start');
   await assert.rejects(command('teams',null,randomUUID(),undefined,teams),/fixed/);
+});
+test('WhatsApp numbers are required, private to organisers and kept out of public data and mail', async () => {
+  await assert.rejects(register('player', {whatsapp: ''}), /WhatsApp/);
+  await assert.rejects(register('volunteer', {whatsapp: '12345'}), /WhatsApp/);
+  const player = await register('player', {whatsapp: '+919812345678'});
+  await as('postgres');
+  assert.equal(await scalar('select whatsapp as value from blitz.registrations where id=$1', [player]), '+919812345678');
+  const mail = await scalar("select data as value from blitz.email_outbox where key='registration:' || $1", [player]);
+  assert.equal(JSON.stringify(mail).includes('9812345678'), false);
+  await db.exec('update blitz.registrations set verified=true');
+  await as('authenticated', organiser);
+  const rows = await scalar("select public.blitz_admin_data('registrations') as value");
+  assert.equal(rows.find(row => row.id === player).whatsapp, '+919812345678');
+  await command('start');
+  assert.equal(JSON.stringify(await state()).includes('9812345678'), false);
+  await as('authenticated', outsider);
+  await assert.rejects(db.query("select public.blitz_admin_data('registrations')"), /Organiser/);
 });
 test('volunteers never enter the auction queue, lots or allocation', async () => {
   const volunteer = await register('volunteer');

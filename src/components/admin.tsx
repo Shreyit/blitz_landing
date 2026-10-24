@@ -1,5 +1,6 @@
 "use client";
 import { sportName } from "@/lib/sport-rules";
+import { formatWhatsapp } from "@/lib/whatsapp";
 import { useEffect, useMemo, useState } from "react";
 import { Download, Gavel, LogOut, Play, Shuffle } from "lucide-react";
 import { api, command } from "@/lib/api";
@@ -9,7 +10,7 @@ import { AuctionBoard } from "./auction";
 import { reactMascot } from "@/lib/mascot-behavior";
 import { genderLabel } from "@/lib/registration-options";
 type Registration = Player & {
-  role: string; email: string; verified: boolean;
+  role: string; email: string; whatsapp: string | null; verified: boolean;
   age: number | null; gender: string | null; region: string | null;
   played_before: boolean | null;
   volunteer_department: string | null; volunteer_rationale: string | null;
@@ -321,6 +322,7 @@ export function Admin() {
                   <th>Photo</th>
                   <th>Name</th>
                   <th>Email</th>
+                  <th>WhatsApp</th>
                   <th>Programme / year</th>
                   <th>Age / gender</th>
                   <th>Region</th>
@@ -345,6 +347,7 @@ export function Admin() {
                     </td>
                     <td>{r.name}</td>
                     <td>{r.email}</td>
+                    <td style={{ whiteSpace: "nowrap" }}>{formatWhatsapp(r.whatsapp)}</td>
                     <td>
                       {r.programme} / {r.year}
                     </td>
