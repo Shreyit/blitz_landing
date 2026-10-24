@@ -1168,13 +1168,13 @@ svg {
 .field .institutional-email input, .field .institutional-email select { min-width: 0; border: 0; border-radius: 7px; background: transparent; }
 .field .institutional-email select { border-left: 1px solid #dce1d3; border-radius: 0 7px 7px 0; background: #edf2e5; color: var(--green); cursor: pointer; }
 .field .institutional-email input:focus-visible, .field .institutional-email select:focus-visible { outline: 2px solid var(--green); outline-offset: -3px; }
-.whatsapp-input { display: grid; grid-template-columns: 148px minmax(0, 1fr); background: #fafbf7; border: 1px solid #dce1d3; border-radius: 8px; transition: border-color .2s, box-shadow .2s; }
+.whatsapp-input { display: grid; grid-template-columns: 112px minmax(0, 1fr); background: #fafbf7; border: 1px solid #dce1d3; border-radius: 8px; transition: border-color .2s, box-shadow .2s; }
 .whatsapp-input:focus-within { border-color: var(--green); box-shadow: 0 0 0 3px #315a3610; }
 .field .whatsapp-input input, .field .whatsapp-input select { min-width: 0; border: 0; background: transparent; }
 .field .whatsapp-input select { border-right: 1px solid #dce1d3; border-radius: 7px 0 0 7px; background: #edf2e5; color: var(--green); font-weight: 600; cursor: pointer; text-overflow: ellipsis; }
 .field .whatsapp-input input { border-radius: 0 7px 7px 0; }
 .field .whatsapp-input input:focus-visible, .field .whatsapp-input select:focus-visible { outline: 2px solid var(--green); outline-offset: -3px; }
-@media (max-width: 380px) { .whatsapp-input { grid-template-columns: 118px minmax(0, 1fr); } }
+
 .field .registration-email-preview { overflow-wrap: anywhere; color: var(--green); }
 .registration-email-preview strong { font-weight: 600; }
 @media (max-width: 480px) {

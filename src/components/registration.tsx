@@ -377,8 +377,8 @@ export function Registration() {
                       onChange={(e) => setWhatsappCountry(e.target.value)}
                     >
                       {WHATSAPP_COUNTRIES.map((country) => (
-                        <option key={country.name} value={country.name}>
-                          +{country.code} {country.name}
+                        <option key={country.name} value={country.name} aria-label={`${country.name} +${country.code}`}>
+                          {country.flag} +{country.code}
                         </option>
                       ))}
                     </select>
@@ -399,7 +399,7 @@ export function Registration() {
                   />
                   </div>
                   <small id="registration-whatsapp-help">
-                    India (+91) is selected. Studying from abroad or using a foreign WhatsApp number? Pick its country code. Only the organising team sees this number.
+                    Number from abroad? Change the country code. Only the organising team sees this number.
                   </small>
                 </div>
                 <label className="field">
