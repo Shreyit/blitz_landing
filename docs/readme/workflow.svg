@@ -18,7 +18,7 @@
     <text x="60" y="191" class="heading">Choose your role</text><text x="60" y="220" class="body">Player, volunteer, or both</text><text x="60" y="241" class="body">Separate registrations</text>
     <rect x="290" y="111" width="205" height="144" rx="16" fill="white" stroke="#DDE4D5"/>
     <circle cx="326" cy="146" r="16" fill="#EAF0DF"/><text x="326" y="151" text-anchor="middle" fill="#315A36" font-size="13" font-weight="700">02</text>
-    <text x="310" y="191" class="heading">Make it yours</text><text x="310" y="220" class="body">Identity + region + choices</text><text x="310" y="241" class="body">Square photo crop</text>
+    <text x="310" y="191" class="heading">Make it yours</text><text x="310" y="220" class="body">Identity + WhatsApp + region</text><text x="310" y="241" class="body">Square photo crop</text>
     <rect x="540" y="111" width="205" height="144" rx="16" fill="#315A36"/>
     <circle cx="576" cy="146" r="16" fill="#D9F46B" class="marker"/><path d="M569 146L574 151L583 141" fill="none" stroke="#315A36" stroke-width="2"/>
     <text x="560" y="191" font-size="20" font-weight="700" fill="#F7F8F2">Review &amp; submit</text><text x="560" y="220" font-size="14" fill="#D8E5CE">Consent + submission</text><text x="560" y="241" font-size="14" fill="#D8E5CE">Confirmation email</text>

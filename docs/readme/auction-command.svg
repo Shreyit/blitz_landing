@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="570" viewBox="0 0 1200 570" role="img" aria-labelledby="title desc">
+  <title id="title">BLITZ auction command flow</title>
+  <desc id="desc">Each button on the auction screen calls blitz_auction_command. It locks the auction row, checks the version and the rules, saves the change with a new version and an audit entry, rebuilds the public snapshot and pings Realtime so every screen re-reads it.</desc>
+  <style>
+    text{font-family:Arial,Helvetica,sans-serif}
+    .k{font-size:12px;font-weight:700;letter-spacing:3px;fill:#315A36}
+    .h{font-size:19px;font-weight:700;fill:#202820}
+    .hw{font-size:19px;font-weight:700;fill:#F7F8F2}
+    .s{font-size:14px;fill:#6B7468}
+    .sw{font-size:14px;fill:#D8E5CE}
+    .m{font-family:Menlo,Consolas,monospace;font-size:13px;fill:#202820}
+    .mp{font-family:Menlo,Consolas,monospace;font-size:13px;fill:#C9693D}
+    .lab{font-size:13px;fill:#315A36;font-weight:700}
+    .rail{fill:none;stroke:#BCCCB1;stroke-width:2}
+    .flow{fill:none;stroke:#315A36;stroke-width:2;stroke-dasharray:8 14;animation:travel 2.6s linear infinite}
+    .flow.slow{animation-duration:4s}
+    .dot{fill:#D9F46B;stroke:#315A36;stroke-width:2}
+    @keyframes travel{to{stroke-dashoffset:-88}}
+    @keyframes glow{0%,100%{opacity:.15}50%{opacity:1}}
+    @keyframes pulse{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(1.5)}}
+    .glow{animation:glow 2.4s ease-in-out infinite}
+    .ring{transform-box:fill-box;transform-origin:center;animation:pulse 2s ease-out infinite}
+    
+    @media(prefers-reduced-motion:reduce){.flow,.glow,.ring,.step,.on{animation:none}.dot{display:none}.on{opacity:0}.on0{opacity:1}}
+  </style>
+  <rect x="1" y="1" width="1198" height="568" rx="24" fill="#F7F8F2" stroke="#DDE4D5"/>
+  <text x="40" y="48" class="k">ONE TAP / WHAT A BID DOES</text>
+  <path d="M370 165.0H415 M745 165.0H790 M955.0 240V310 M790 385.0H745 M415 385.0H370" class="rail"/>
+  <path d="M370 165.0H415 M745 165.0H790 M955.0 240V310 M790 385.0H745 M415 385.0H370" class="flow"/>
+  <path d="M406 160.0L415 165.0L406 170.0Z" fill="#315A36"/>
+  <path d="M781 160.0L790 165.0L781 170.0Z" fill="#315A36"/>
+  <path d="M950.0 301L955.0 310L960.0 301Z" fill="#315A36"/>
+  <path d="M754 380.0L745 385.0L754 390.0Z" fill="#315A36"/>
+  <path d="M379 380.0L370 385.0L379 390.0Z" fill="#315A36"/>
+  <circle r="8" class="dot"><animateMotion dur="9s" repeatCount="indefinite" path="M205.0 165.0H955.0V385.0H205.0"/></circle>
+  <g class=""><rect x="40" y="90" width="330" height="150" rx="16" fill="white" stroke="#DDE4D5"/>
+  <text x="60" y="122" class="h">Auctioneer taps</text>
+  <text x="60" y="146" class="s">“Bid ₹30” on Vikings</text>
+  <text x="60" y="167" class="s">Sends team, version 41</text>
+  <text x="60" y="188" class="s">and a unique command id</text>
+  </g>
+  <circle cx="344" cy="116" r="13" fill="#EAF0DF"/><text x="344" y="121" font-size="13" font-weight="700" fill="#202820" text-anchor="middle">1</text>
+  <g class=""><rect x="415" y="90" width="330" height="150" rx="16" fill="#315A36" stroke="none"/>
+  <text x="435" y="122" class="hw">Vercel API</text>
+  <text x="435" y="146" class="sw">Checks the organiser</text>
+  <text x="435" y="167" class="sw">login cookie</text>
+  <text x="435" y="188" class="sw">Calls the database as them</text>
+  </g>
+  <circle cx="719" cy="116" r="13" fill="#D9F46B"/><text x="719" y="121" font-size="13" font-weight="700" fill="#202820" text-anchor="middle">2</text>
+  <g class=""><rect x="790" y="90" width="330" height="150" rx="16" fill="#315A36" stroke="none"/>
+  <text x="810" y="122" class="hw">Lock + check</text>
+  <text x="810" y="146" class="sw">Lock the one auction row</text>
+  <text x="810" y="167" class="sw">Still version 41?</text>
+  <text x="810" y="188" class="sw">Vikings not leading?</text>
+  <text x="810" y="209" class="sw">Purse covers ₹30?</text>
+  </g>
+  <circle cx="1094" cy="116" r="13" fill="#D9F46B"/><text x="1094" y="121" font-size="13" font-weight="700" fill="#202820" text-anchor="middle">3</text>
+  <g class=""><rect x="790" y="310" width="330" height="150" rx="16" fill="white" stroke="#DDE4D5"/>
+  <text x="810" y="342" class="h">Save it</text>
+  <text x="810" y="366" class="s">Bid row + leader = Vikings</text>
+  <text x="810" y="387" class="s">Price = next step</text>
+  <text x="810" y="408" class="s">version → 42</text>
+  <text x="810" y="429" class="s">Audit entry written</text>
+  </g>
+  <circle cx="1094" cy="336" r="13" fill="#EAF0DF"/><text x="1094" y="341" font-size="13" font-weight="700" fill="#202820" text-anchor="middle">4</text>
+  <g class=""><rect x="415" y="310" width="330" height="150" rx="16" fill="white" stroke="#DDE4D5"/>
+  <text x="435" y="342" class="h">Publish</text>
+  <text x="435" y="366" class="s">Rebuild public snapshot</text>
+  <text x="435" y="387" class="s">Realtime: “version 42”</text>
+  <text x="435" y="408" class="s">No data in the ping</text>
+  </g>
+  <circle cx="719" cy="336" r="13" fill="#EAF0DF"/><text x="719" y="341" font-size="13" font-weight="700" fill="#202820" text-anchor="middle">5</text>
+  <g class=""><rect x="40" y="310" width="330" height="150" rx="16" fill="white" stroke="#DDE4D5"/>
+  <text x="60" y="342" class="h">Every screen updates</text>
+  <text x="60" y="366" class="s">Projector + phones fetch</text>
+  <text x="60" y="387" class="s">/api/auction</text>
+  <text x="60" y="408" class="s">Older versions are ignored</text>
+  </g>
+  <circle cx="344" cy="336" r="13" fill="#EAF0DF"/><text x="344" y="341" font-size="13" font-weight="700" fill="#202820" text-anchor="middle">6</text>
+  <rect x="40" y="490" width="1120" height="56" rx="14" fill="#FFF4EC" stroke="#F0C7AD"/>
+  <text x="62" y="524" font-size="15" fill="#C9693D" font-weight="700">If any check fails:</text>
+  <text x="210" y="524" font-size="15" fill="#202820">nothing is saved. A double tap or a second laptop gets “The auction changed. Refresh.”</text>
+
+</svg>

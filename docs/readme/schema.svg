@@ -1,0 +1,170 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="840" viewBox="0 0 1200 840" role="img" aria-labelledby="title desc">
+  <title id="title">BLITZ database schema</title>
+  <desc id="desc">Private tables in the blitz schema: registrations, teams, the single auction row, bids, assignments, email outbox, organiser users and audit events, with their links. Private fields such as WhatsApp, age, gender and region are visible to organisers only. Spectators read only public.auction_public_state.</desc>
+  <style>
+    text{font-family:Arial,Helvetica,sans-serif}
+    .k{font-size:12px;font-weight:700;letter-spacing:3px;fill:#315A36}
+    .h{font-size:19px;font-weight:700;fill:#202820}
+    .hw{font-size:19px;font-weight:700;fill:#F7F8F2}
+    .s{font-size:14px;fill:#6B7468}
+    .sw{font-size:14px;fill:#D8E5CE}
+    .m{font-family:Menlo,Consolas,monospace;font-size:13px;fill:#202820}
+    .mp{font-family:Menlo,Consolas,monospace;font-size:13px;fill:#C9693D}
+    .lab{font-size:13px;fill:#315A36;font-weight:700}
+    .rail{fill:none;stroke:#BCCCB1;stroke-width:2}
+    .flow{fill:none;stroke:#315A36;stroke-width:2;stroke-dasharray:8 14;animation:travel 2.6s linear infinite}
+    .flow.slow{animation-duration:4s}
+    .dot{fill:#D9F46B;stroke:#315A36;stroke-width:2}
+    @keyframes travel{to{stroke-dashoffset:-88}}
+    @keyframes glow{0%,100%{opacity:.15}50%{opacity:1}}
+    @keyframes pulse{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(1.5)}}
+    .glow{animation:glow 2.4s ease-in-out infinite}
+    .ring{transform-box:fill-box;transform-origin:center;animation:pulse 2s ease-out infinite}
+    
+    @media(prefers-reduced-motion:reduce){.flow,.glow,.ring,.step,.on{animation:none}.dot{display:none}.on{opacity:0}.on0{opacity:1}}
+  </style>
+  <rect x="1" y="1" width="1198" height="838" rx="24" fill="#F7F8F2" stroke="#DDE4D5"/>
+  <text x="40" y="48" class="k">THE DATABASE / SCHEMA blitz</text>
+  <text x="1160" y="48" font-size="13" fill="#C9693D" text-anchor="end">orange = private, organisers only</text>
+  <path d="M360 150H395V330H430" class="rail"/>
+  <path d="M360 150H395V330H430" class="flow"/>
+  <path d="M421 325L430 330L421 335Z" fill="#315A36"/>
+  <circle r="6" class="dot"><animateMotion dur="3s" begin="0s" repeatCount="indefinite" path="M360 150H395V330H430"/></circle>
+  <path d="M360 300H380V530H800" class="rail"/>
+  <path d="M360 300H380V530H800" class="flow"/>
+  <path d="M791 525L800 530L791 535Z" fill="#315A36"/>
+  <text x="560" y="522" class="lab">assigned once</text>
+  <circle r="6" class="dot"><animateMotion dur="3.4s" begin="0.8s" repeatCount="indefinite" path="M360 300H380V530H800"/></circle>
+  <path d="M580 238V290" class="rail"/>
+  <path d="M580 238V290" class="flow"/>
+  <path d="M575 281L580 290L585 281Z" fill="#315A36"/>
+  <path d="M730 200H755V450H800" class="rail"/>
+  <path d="M730 200H755V450H800" class="flow"/>
+  <path d="M791 445L800 450L791 455Z" fill="#315A36"/>
+  <path d="M800 300H780V140H730" class="rail"/>
+  <path d="M800 300H780V140H730" class="flow"/>
+  <path d="M739 135L730 140L739 145Z" fill="#315A36"/>
+  <text x="740" y="132" class="lab">leader</text>
+  <path d="M200 386V440" class="rail"/>
+  <path d="M200 386V440" class="flow"/>
+  <path d="M195 431L200 440L205 431Z" fill="#315A36"/>
+  <text x="210" y="418" class="lab">mail</text>
+  <path d="M730 625H765V660H800" class="rail"/>
+  <path d="M730 625H765V660H800" class="flow"/>
+  <path d="M791 655L800 660L791 665Z" fill="#315A36"/>
+  <text x="736" y="650" class="lab">performs</text>
+  <rect x="40" y="90" width="320" height="298" rx="14" fill="white" stroke="#DDE4D5"/>
+  <path d="M40 104a14 14 0 0 1 14-14h292a14 14 0 0 1 14 14v26h-320z" fill="#315A36"/>
+  <text x="56" y="117" font-size="15" font-weight="700" fill="#F7F8F2">registrations</text>
+  <text x="56" y="152" class="m">id</text>
+  <text x="346" y="152" font-size="12" fill="#6B7468" text-anchor="end">PK uuid</text>
+  <text x="56" y="176" class="m">name</text>
+  <text x="56" y="200" class="m">email</text>
+  <text x="346" y="200" font-size="12" fill="#6B7468" text-anchor="end">campus only</text>
+  <text x="56" y="224" class="mp">whatsapp</text>
+  <text x="346" y="224" font-size="12" fill="#C9693D" text-anchor="end">organisers only</text>
+  <text x="56" y="248" class="m">role</text>
+  <text x="346" y="248" font-size="12" fill="#6B7468" text-anchor="end">player | volunteer</text>
+  <text x="56" y="272" class="m">programme · year</text>
+  <text x="346" y="272" font-size="12" fill="#6B7468" text-anchor="end">BSASS|BSW · 1–4</text>
+  <text x="56" y="296" class="mp">age · gender · region</text>
+  <text x="346" y="296" font-size="12" fill="#C9693D" text-anchor="end">organisers only</text>
+  <text x="56" y="320" class="m">sports[]</text>
+  <text x="346" y="320" font-size="12" fill="#6B7468" text-anchor="end">players: 1–8</text>
+  <text x="56" y="344" class="m">volunteer_department</text>
+  <text x="346" y="344" font-size="12" fill="#6B7468" text-anchor="end">volunteers</text>
+  <text x="56" y="368" class="m">photo_key</text>
+  <text x="346" y="368" font-size="12" fill="#6B7468" text-anchor="end">id.jpg</text>
+  <rect x="430" y="90" width="300" height="154" rx="14" fill="white" stroke="#DDE4D5"/>
+  <path d="M430 104a14 14 0 0 1 14-14h272a14 14 0 0 1 14 14v26h-300z" fill="#315A36"/>
+  <text x="446" y="117" font-size="15" font-weight="700" fill="#F7F8F2">teams</text>
+  <text x="446" y="152" class="m">id</text>
+  <text x="716" y="152" font-size="12" fill="#6B7468" text-anchor="end">PK 1–8</text>
+  <text x="446" y="176" class="m">name</text>
+  <text x="716" y="176" font-size="12" fill="#6B7468" text-anchor="end">unique</text>
+  <text x="446" y="200" class="m">color · symbol</text>
+  <text x="446" y="224" class="m">purse</text>
+  <text x="716" y="224" font-size="12" fill="#6B7468" text-anchor="end">₹2,000 start</text>
+  <rect x="800" y="90" width="360" height="250" rx="14" fill="white" stroke="#DDE4D5"/>
+  <path d="M800 104a14 14 0 0 1 14-14h332a14 14 0 0 1 14 14v26h-360z" fill="#D9F46B"/>
+  <text x="816" y="117" font-size="15" font-weight="700" fill="#202820">auction</text>
+  <text x="1146" y="117" font-size="12" fill="#202820" text-anchor="end">one live row</text>
+  <text x="816" y="152" class="m">id</text>
+  <text x="1146" y="152" font-size="12" fill="#6B7468" text-anchor="end">always 1</text>
+  <text x="816" y="176" class="m">phase</text>
+  <text x="1146" y="176" font-size="12" fill="#6B7468" text-anchor="end">idle→complete</text>
+  <text x="816" y="200" class="m">round</text>
+  <text x="1146" y="200" font-size="12" fill="#6B7468" text-anchor="end">0–3</text>
+  <text x="816" y="224" class="m">queue[]</text>
+  <text x="1146" y="224" font-size="12" fill="#6B7468" text-anchor="end">shuffled ids</text>
+  <text x="816" y="248" class="m">unsold[]</text>
+  <text x="816" y="272" class="m">cursor</text>
+  <text x="1146" y="272" font-size="12" fill="#6B7468" text-anchor="end">current lot</text>
+  <text x="816" y="296" class="m">bid · leader</text>
+  <text x="1146" y="296" font-size="12" fill="#6B7468" text-anchor="end">→ teams</text>
+  <text x="816" y="320" class="m">version</text>
+  <text x="1146" y="320" font-size="12" fill="#6B7468" text-anchor="end">+1 per change</text>
+  <rect x="430" y="290" width="300" height="202" rx="14" fill="white" stroke="#DDE4D5"/>
+  <path d="M430 304a14 14 0 0 1 14-14h272a14 14 0 0 1 14 14v26h-300z" fill="#315A36"/>
+  <text x="446" y="317" font-size="15" font-weight="700" fill="#F7F8F2">bids</text>
+  <text x="446" y="352" class="m">player_id</text>
+  <text x="716" y="352" font-size="12" fill="#6B7468" text-anchor="end">→ registrations</text>
+  <text x="446" y="376" class="m">team_id</text>
+  <text x="716" y="376" font-size="12" fill="#6B7468" text-anchor="end">→ teams</text>
+  <text x="446" y="400" class="m">amount · round</text>
+  <text x="446" y="424" class="m">cancelled</text>
+  <text x="716" y="424" font-size="12" fill="#6B7468" text-anchor="end">kept for record</text>
+  <text x="446" y="448" class="m">command_id</text>
+  <text x="716" y="448" font-size="12" fill="#6B7468" text-anchor="end">unique</text>
+  <text x="446" y="472" class="m">created_at</text>
+  <rect x="800" y="390" width="360" height="178" rx="14" fill="white" stroke="#DDE4D5"/>
+  <path d="M800 404a14 14 0 0 1 14-14h332a14 14 0 0 1 14 14v26h-360z" fill="#315A36"/>
+  <text x="816" y="417" font-size="15" font-weight="700" fill="#F7F8F2">assignments</text>
+  <text x="816" y="452" class="m">player_id</text>
+  <text x="1146" y="452" font-size="12" fill="#6B7468" text-anchor="end">unique → registrations</text>
+  <text x="816" y="476" class="m">team_id</text>
+  <text x="1146" y="476" font-size="12" fill="#6B7468" text-anchor="end">→ teams</text>
+  <text x="816" y="500" class="m">price</text>
+  <text x="1146" y="500" font-size="12" fill="#6B7468" text-anchor="end">₹0 when random</text>
+  <text x="816" y="524" class="m">source</text>
+  <text x="1146" y="524" font-size="12" fill="#6B7468" text-anchor="end">auction | random</text>
+  <text x="816" y="548" class="m">created_at</text>
+  <rect x="40" y="440" width="320" height="178" rx="14" fill="white" stroke="#DDE4D5"/>
+  <path d="M40 454a14 14 0 0 1 14-14h292a14 14 0 0 1 14 14v26h-320z" fill="#315A36"/>
+  <text x="56" y="467" font-size="15" font-weight="700" fill="#F7F8F2">email_outbox</text>
+  <text x="56" y="502" class="m">key</text>
+  <text x="346" y="502" font-size="12" fill="#6B7468" text-anchor="end">unique, no repeats</text>
+  <text x="56" y="526" class="m">template</text>
+  <text x="346" y="526" font-size="12" fill="#6B7468" text-anchor="end">registration | sale</text>
+  <text x="56" y="550" class="m">status</text>
+  <text x="346" y="550" font-size="12" fill="#6B7468" text-anchor="end">pending→sent</text>
+  <text x="56" y="574" class="m">attempts · lease</text>
+  <text x="346" y="574" font-size="12" fill="#6B7468" text-anchor="end">retries</text>
+  <text x="56" y="598" class="m">data</text>
+  <text x="346" y="598" font-size="12" fill="#6B7468" text-anchor="end">no WhatsApp</text>
+  <rect x="430" y="560" width="300" height="106" rx="14" fill="white" stroke="#DDE4D5"/>
+  <path d="M430 574a14 14 0 0 1 14-14h272a14 14 0 0 1 14 14v26h-300z" fill="#315A36"/>
+  <text x="446" y="587" font-size="15" font-weight="700" fill="#F7F8F2">organiser_users</text>
+  <text x="446" y="622" class="m">user_id</text>
+  <text x="716" y="622" font-size="12" fill="#6B7468" text-anchor="end">→ auth.users</text>
+  <text x="446" y="646" class="m">created_at</text>
+  <text x="716" y="646" font-size="12" fill="#6B7468" text-anchor="end">allowlist</text>
+  <rect x="800" y="600" width="360" height="154" rx="14" fill="white" stroke="#DDE4D5"/>
+  <path d="M800 614a14 14 0 0 1 14-14h332a14 14 0 0 1 14 14v26h-360z" fill="#315A36"/>
+  <text x="816" y="627" font-size="15" font-weight="700" fill="#F7F8F2">audit_events</text>
+  <text x="816" y="662" class="m">command_id</text>
+  <text x="1146" y="662" font-size="12" fill="#6B7468" text-anchor="end">unique</text>
+  <text x="816" y="686" class="m">action</text>
+  <text x="1146" y="686" font-size="12" fill="#6B7468" text-anchor="end">bid, sell, …</text>
+  <text x="816" y="710" class="m">actor</text>
+  <text x="1146" y="710" font-size="12" fill="#6B7468" text-anchor="end">→ organiser</text>
+  <text x="816" y="734" class="m">details</text>
+  <text x="1146" y="734" font-size="12" fill="#6B7468" text-anchor="end">jsonb</text>
+  <rect x="40" y="690" width="690" height="96" rx="14" fill="#315A36"/>
+  <rect x="40" y="690" width="690" height="96" rx="14" fill="none" stroke="#D9F46B" stroke-width="3" class="glow"/>
+  <text x="60" y="722" class="hw">public.auction_public_state</text>
+  <text x="60" y="747" class="sw">The only table spectators can read. Rebuilt after every auction command:</text>
+  <text x="60" y="768" class="sw">teams, purses, current player, history. No emails, WhatsApp, ages or genders.</text>
+  <text x="40" y="818" class="s">Lookups: sports (8 names) · regions (36 states/UTs) · rate_limits (anti-spam counters)</text>
+
+</svg>

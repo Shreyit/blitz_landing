@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="460" viewBox="0 0 1200 460" role="img" aria-labelledby="title desc">
+  <title id="title">BLITZ auction lot flow</title>
+  <desc id="desc">A player appears. If a team bids, the price rises one step and that team leads; other teams can keep raising it until the hammer, which sells the player and queues an email. A mistaken bid can be cleared back to zero. With no bids the player is unsold and returns in the next rapid round. Either way the next player loads.</desc>
+  <style>
+    text{font-family:Arial,Helvetica,sans-serif}
+    .k{font-size:12px;font-weight:700;letter-spacing:3px;fill:#315A36}
+    .h{font-size:19px;font-weight:700;fill:#202820}
+    .hw{font-size:19px;font-weight:700;fill:#F7F8F2}
+    .s{font-size:14px;fill:#6B7468}
+    .sw{font-size:14px;fill:#D8E5CE}
+    .m{font-family:Menlo,Consolas,monospace;font-size:13px;fill:#202820}
+    .mp{font-family:Menlo,Consolas,monospace;font-size:13px;fill:#C9693D}
+    .lab{font-size:13px;fill:#315A36;font-weight:700}
+    .rail{fill:none;stroke:#BCCCB1;stroke-width:2}
+    .flow{fill:none;stroke:#315A36;stroke-width:2;stroke-dasharray:8 14;animation:travel 2.6s linear infinite}
+    .flow.slow{animation-duration:4s}
+    .dot{fill:#D9F46B;stroke:#315A36;stroke-width:2}
+    @keyframes travel{to{stroke-dashoffset:-88}}
+    @keyframes glow{0%,100%{opacity:.15}50%{opacity:1}}
+    @keyframes pulse{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(1.5)}}
+    .glow{animation:glow 2.4s ease-in-out infinite}
+    .ring{transform-box:fill-box;transform-origin:center;animation:pulse 2s ease-out infinite}
+    
+    @media(prefers-reduced-motion:reduce){.flow,.glow,.ring,.step,.on{animation:none}.dot{display:none}.on{opacity:0}.on0{opacity:1}}
+  </style>
+  <rect x="1" y="1" width="1198" height="458" rx="24" fill="#F7F8F2" stroke="#DDE4D5"/>
+  <text x="40" y="48" class="k">ONE PLAYER / HOW A LOT PLAYS OUT</text>
+  <path d="M820 90V66H660V90" class="rail"/><path d="M820 90V66H660V90" class="flow"/>
+  <path d="M655 81L660 90L665 81Z" fill="#315A36"/>
+  <text x="672" y="60" class="lab">another team bids → price rises again</text>
+  <path d="M290 140H370" class="rail"/>
+  <path d="M290 140H370" class="flow"/>
+  <path d="M361 135L370 140L361 145Z" fill="#315A36"/>
+  <circle r="6" class="dot"><animateMotion dur="2s" begin="0s" repeatCount="indefinite" path="M290 140H370"/></circle>
+  <path d="M520 140H600" class="rail"/>
+  <path d="M520 140H600" class="flow"/>
+  <path d="M591 135L600 140L591 145Z" fill="#315A36"/>
+  <text x="548" y="130" class="lab">yes</text>
+  <path d="M860 140H940" class="rail"/>
+  <path d="M860 140H940" class="flow"/>
+  <path d="M931 135L940 140L931 145Z" fill="#315A36"/>
+  <text x="872" y="130" class="lab">hammer</text>
+  <circle r="6" class="dot"><animateMotion dur="2.4s" begin="0.5s" repeatCount="indefinite" path="M860 140H940"/></circle>
+  <path d="M445 175V260" class="rail"/>
+  <path d="M445 175V260" class="flow"/>
+  <path d="M440 251L445 260L450 251Z" fill="#315A36"/>
+  <text x="455" y="222" class="lab">no</text>
+  <path d="M1050 190V260" class="rail"/>
+  <path d="M1050 190V260" class="flow"/>
+  <path d="M1045 251L1050 260L1055 251Z" fill="#315A36"/>
+  <path d="M700 190V260" class="rail"/>
+  <path d="M700 190V260" class="flow"/>
+  <path d="M695 251L700 260L705 251Z" fill="#315A36"/>
+  <text x="710" y="230" class="lab">mistake</text>
+  <path d="M620 330H585V165H520" class="rail"/>
+  <path d="M620 330H585V165H520" class="flow slow"/>
+  <path d="M529 160L520 165L529 170Z" fill="#315A36"/>
+  <path d="M465 360V392H1050V360" class="rail"/>
+  <path d="M465 360V392H1050V360" class="flow slow"/>
+  <path d="M1045 369L1050 360L1055 369Z" fill="#315A36"/>
+  <text x="700" y="384" class="lab">next player loads</text>
+  <g class=""><rect x="40" y="90" width="250" height="100" rx="16" fill="white" stroke="#DDE4D5"/>
+  <text x="60" y="122" class="h">Player on the floor</text>
+  <text x="60" y="146" class="s">Photo, course, year, sports</text>
+  </g>
+  <rect x="370" y="105" width="150" height="70" rx="35" fill="#D9F46B"/><text x="445" y="146" font-size="17" font-weight="700" fill="#202820" text-anchor="middle">Any bid?</text>
+  <g class=""><rect x="600" y="90" width="260" height="100" rx="16" fill="#315A36" stroke="none"/>
+  <text x="620" y="122" class="hw">Team bids</text>
+  <text x="620" y="146" class="sw">Price + one step</text>
+  <text x="620" y="167" class="sw">That team leads</text>
+  </g>
+  <g class=""><rect x="940" y="90" width="220" height="100" rx="16" fill="white" stroke="#DDE4D5"/>
+  <text x="960" y="122" class="h">Sold</text>
+  <text x="960" y="146" class="s">Purse − price</text>
+  <text x="960" y="167" class="s">Sale email queued</text>
+  </g>
+  <g class=""><rect x="370" y="260" width="190" height="100" rx="16" fill="white" stroke="#DDE4D5"/>
+  <text x="390" y="292" class="h">Unsold</text>
+  <text x="390" y="316" class="s">Back in the next</text>
+  <text x="390" y="337" class="s">rapid-fire round</text>
+  </g>
+  <g class=""><rect x="620" y="260" width="240" height="100" rx="16" fill="#FFF4EC" stroke="#DDE4D5"/>
+  <text x="640" y="292" class="h">Clear bids</text>
+  <text x="640" y="316" class="s">Price back to ₹0</text>
+  <text x="640" y="337" class="s">Logged in the audit</text>
+  </g>
+  <g class=""><rect x="940" y="260" width="220" height="100" rx="16" fill="white" stroke="#DDE4D5"/>
+  <text x="960" y="292" class="h">Next player</text>
+  <text x="960" y="316" class="s">Loads automatically</text>
+  </g>
+  <text x="40" y="432" class="s">Sold is final: there is no undo after the hammer. A team cannot outbid itself or bid beyond its purse.</text>
+
+</svg>

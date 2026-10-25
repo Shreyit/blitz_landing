@@ -6,7 +6,7 @@ An interactive campus sports website for the **Bachelor’s in Analytics and Sus
 
 **Website:** [blitz-landing-theta.vercel.app](https://blitz-landing-theta.vercel.app/)
 
-[Experience](#the-experience) · [Setup](#run-locally) · [Architecture](#how-it-connects) · [Workflow](#from-registration-to-team) · [Verification](#check-the-work) · [Deployment](#deployment-plan)
+[Experience](#the-experience) · [Setup](#run-locally) · [Architecture](#how-it-connects) · [Schema](#database-schema) · [Backend workflows](#backend-workflows) · [Workflow](#from-registration-to-team) · [Demo auction](#demo-auction-on-your-mac) · [Verification](#check-the-work) · [Deployment](#deployment-plan)
 
 ## The experience
 
@@ -44,7 +44,7 @@ Rules and award points are currently presentation data; fixture management, resu
 
 ## How it connects
 
-![BLITZ architecture: Next.js calls Supabase database functions; PostgreSQL saves auction state and mail jobs; an Edge Function delivers queued email.](docs/readme/architecture.svg)
+![BLITZ architecture: the browser talks to one Next.js API route on Vercel, which uses Supabase Auth, private photo Storage and PostgreSQL database functions. Each auction change rebuilds a public snapshot and sends a Realtime ping; new email jobs wake an Edge Function that sends through Gmail SMTP.](docs/readme/architecture.svg)
 
 The new backend runs on **Vercel + Supabase + an email provider**. Supabase mode needs no separate Python server. The existing FastAPI backend remains an explicit local option while the Supabase integration is rehearsed.
 
@@ -72,7 +72,74 @@ For removing the authorised dummy entries and their photos, follow [Pilot cleanu
 
 For the current registration-first phase, follow [Registration and admin pilot](docs/REGISTRATION_PILOT.md). It includes the exact hosted activation commands and the hidden-password admin setup.
 
-Start with [Supabase setup](docs/SUPABASE_SETUP.md) and the [SQL walkthrough](docs/SUPABASE_SQL.md), which explains all twelve migrations and the manual organiser/mail operations.
+Start with [Supabase setup](docs/SUPABASE_SETUP.md) and the [SQL walkthrough](docs/SUPABASE_SQL.md), which explains all eighteen migrations and the manual organiser/mail operations.
+
+## Database schema
+
+![BLITZ database schema: registrations, teams, the single auction row, bids, assignments, email outbox, organiser users and audit events, with their links. WhatsApp, age, gender and region are organiser-only. Spectators read only public.auction_public_state.](docs/readme/schema.svg)
+
+Private tables live in the `blitz` schema, which browsers cannot reach. Row-level security is on for every table, and the only way to change data is a database function. One table sits in `public`: the read-only spectator snapshot.
+
+| Table | Holds | Rules the database enforces |
+| :--- | :--- | :--- |
+| `registrations` | Every player and volunteer sign-up | `@stud.tiss.ac.in` / `@tiss.edu` only; one entry per email per role; players pick 1–8 sports; volunteers pick one department and no sports; WhatsApp in `+<country><number>` form |
+| `teams` | The eight teams, colours and purses | Ids 1–8; unique names; purse between ₹0 and ₹2,000 |
+| `auction` | **One row**: phase, round, shuffled queue, unsold list, current bid, leader, version | A bid always has a leader; round 0–3; `version` rises by one on every change |
+| `bids` | Every bid, including cleared ones | Each button press has a unique `command_id`, so a retry can't bid twice |
+| `assignments` | Final result: player → team, price, `auction` or `random` | A player can be assigned only once |
+| `audit_events` | Who did what, when, with the full request | Written in the same transaction as the action |
+| `email_outbox` | Emails waiting to be sent | Unique key per email; sale emails go before receipts |
+| `organiser_users` | The admin allowlist | Signing up never makes anyone an admin |
+| `sports`, `regions`, `rate_limits` | Valid sport names, 36 states/UTs, anti-spam counters | Lookups the form must match |
+| `public.auction_public_state` | The spectator snapshot | Anyone can read; only the database writes it |
+
+**Privacy by design.** Email, WhatsApp, age, gender, region and volunteer statements are visible to organisers only, on `/admin`, in the CSV export and on the auction screen. The public snapshot carries only name, course, year, sports and photo for players in the auction. WhatsApp numbers never appear in emails. Team logos and owners are not in the database; they live in `TEAM_BRANDING` in `src/lib/event.ts`.
+
+## Backend workflows
+
+### Registration: form to database
+
+![Registration flow: the student fills the form, crops a square photo and consents; the API rate-limits, validates, normalises the WhatsApp number and resizes the photo; the photo is stored privately; blitz_register saves the row and queues a receipt in one transaction.](docs/readme/registration-flow.svg)
+
+The API normalises WhatsApp numbers before saving: `98765 43210` with 🇮🇳 +91 becomes `+919876543210`, and a 🇦🇪 +971 number such as `050 123 4567` becomes `+971501234567`. Once the auction starts, new **player** sign-ups are refused because the bidding order is fixed.
+
+### One tap on the auction screen
+
+![Auction command flow: a tap sends the team, the current version and a command id; the API checks the organiser; the database locks the auction row, checks the version and rules, saves with a new version and an audit entry, rebuilds the snapshot and pings Realtime so every screen re-reads it.](docs/readme/auction-command.svg)
+
+Every button on `/admin/auction` calls the same function, `blitz_auction_command`, with an action name:
+
+| Action | Allowed when | What changes |
+| :--- | :--- | :--- |
+| `start` | Phase is idle and players exist | All registered **players** (never volunteers) are shuffled into the queue |
+| `bid` | A player is on the floor; the team isn't leading and can afford the next price | Price rises one step; that team leads |
+| `sell` | There is a leading bid | Assignment saved, purse reduced, sale email queued, next player loads |
+| `unsold` | No bids on this player | Player joins the unsold list; next player loads |
+| `cancel` | At least one bid | Price back to ₹0; bids kept but marked cancelled |
+| `allocate` | Phase is allocation | Leftovers dealt at ₹0, one per team per shuffled cycle; auction complete |
+| `teams` | Phase is idle | Renames teams; locked after start |
+
+### Phases and rounds
+
+![Auction phases: idle, normal round from ₹20, rapid fire 1 from ₹10, rapid fire 2 from ₹2, rapid fire 3 from ₹1, random allocation at ₹0, complete. Any round with nobody unsold ends the auction early.](docs/readme/auction-phases.svg)
+
+### How one player's lot plays out
+
+![Lot flow: a player appears; bids raise the price one step at a time until the hammer sells the player; a mistaken bid can be cleared to ₹0; with no bids the player is unsold and returns in the next rapid round; then the next player loads.](docs/readme/auction-lot.svg)
+
+### Live screens
+
+The projector and spectators' phones open `/auction` and stay current in three layers:
+
+1. **Realtime ping:** after each change the database broadcasts only "version 42" on the `blitz:auction` channel; the page then fetches the full snapshot from `/api/auction`. The ping carries no data, so nobody can fake a sale by sending a message.
+2. **Polling every 4 seconds** when the live channel is down.
+3. **A checkpoint every 30 seconds**, regardless.
+
+Each snapshot carries its version, so a late, older response is ignored.
+
+### Email
+
+![Email pipeline: a registration or sale writes an email job in the same transaction; an insert trigger, with an every-minute backup, wakes the deliver-mail worker, which leases one job, sends through Gmail SMTP and marks it sent or retries it later.](docs/readme/email-flow.svg)
 
 ## From registration to team
 
@@ -82,7 +149,7 @@ Start with [Supabase setup](docs/SUPABASE_SETUP.md) and the [SQL walkthrough](do
 
 1. Choose **Player** or **Volunteer**. You can register for both using separate entries with the same institutional email.
 2. Enter your email username and choose `stud.tiss.ac.in` or `tiss.edu`. Pasting a full supported email also works.
-3. Complete identity, programme/year, age, gender, state or union territory, and “Have you played Bachelor’s BLITZ before?”
+3. Complete identity, **WhatsApp number** (🇮🇳 +91 by default; pick another country code for a number from abroad), programme/year, age, gender, state or union territory, and “Have you played Bachelor’s BLITZ before?” Only organisers see the WhatsApp number.
 4. Players choose sports. Volunteers choose exactly one department—**Digital & Marketing, Operations, Medical, or Sustainability**—and explain their suitability and contribution.
 5. Upload a photo, drag and zoom the **1:1 crop**, then review and consent. Only the confirmed 600 × 600 JPEG is uploaded.
 6. Submit to complete registration and receive a confirmation email with your sports. Registered players become eligible for the auction; volunteers stay outside its queue.
@@ -174,6 +241,29 @@ cd backend
 SQLite is the default for this legacy local mode. `docker compose up -d db mailpit` starts optional PostgreSQL and development SMTP; the connection template is in [backend/.env.example](backend/.env.example). Mailpit's UI is at [localhost:8025](http://localhost:8025). Next.js forwards API requests to `API_INTERNAL_URL` in this mode, and the browser uses `NEXT_PUBLIC_WS_URL` for live snapshots. Without a configured API, writes fail explicitly and the auction shows its labelled preview.
 
 </details>
+
+## Demo auction on your Mac
+
+**Don't rehearse on the live site.** It holds real registrations: pressing Start freezes player sign-ups, every Sold emails a real student, and the only reset (`cleanup:pilot --all --reset-auction`) also deletes every registration. Rehearse on a local copy instead. It runs the same migrations with fake players and sends no real email.
+
+1. Open **Docker Desktop** and wait until it's running.
+2. Start the local Supabase stack and note its URL and keys:
+   ```bash
+   npx supabase start
+   npx supabase status
+   ```
+3. Point the site at it in `.env.local` (values from `supabase status`):
+   ```dotenv
+   NEXT_PUBLIC_BACKEND_PROVIDER=supabase
+   NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
+   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<local publishable key>
+   SUPABASE_SECRET_KEY=<local secret key>
+   PUBLIC_URL=http://localhost:3000
+   ALLOWED_ORIGINS=http://localhost:3000
+   ```
+4. Create a local organiser: `BLITZ_ADMIN_EMAIL=demo@tiss.edu npm run setup:admin`
+5. Run `npm run dev`, register a few fake players at `localhost:3000/register`, sign in at `localhost:3000/admin`, open **Auction controls** and press **Start**. Keep `localhost:3000/auction` on a second screen.
+6. Start over with `npx supabase db reset`, then repeat step 4 (the reset removes the login too).
 
 ## Check the work
 
@@ -286,7 +376,7 @@ Fixture/result persistence and calculated overall standings remain pending. See 
 
 ## Artwork and motion
 
-This README uses local, self-contained **SVG artwork**, with animated court traces, connection paths, and workflow markers. Each SVG includes a static composition, accessible title/description, and a `prefers-reduced-motion` fallback. There are no emoji icons or external image services. Edit [hero.svg](docs/readme/hero.svg), [architecture.svg](docs/readme/architecture.svg), or [workflow.svg](docs/readme/workflow.svg) to adjust the artwork.
+This README uses local, self-contained **SVG artwork**, with animated court traces, connection paths, and workflow markers. Each SVG includes a static composition, accessible title/description, and a `prefers-reduced-motion` fallback. There are no emoji icons or external image services. Edit [hero.svg](docs/readme/hero.svg) or [workflow.svg](docs/readme/workflow.svg) by hand. The backend diagrams ([architecture](docs/readme/architecture.svg), [schema](docs/readme/schema.svg), [registration](docs/readme/registration-flow.svg), [auction command](docs/readme/auction-command.svg), [phases](docs/readme/auction-phases.svg), [lot](docs/readme/auction-lot.svg), [email](docs/readme/email-flow.svg)) animate their connectors with moving dashes and travelling markers; the phases diagram lights each stage in turn.
 
 Website motion belongs to GSAP/Lenis and the Three.js mascot. SVG poses provide reduced-motion and WebGL fallbacks. The floating mascot stays out of the Auction Dome and the auction controls, so it never covers the bid panel. The optional Rive adapter uses its SVG fallback until an authored `.riv` file is supplied; see [animation asset notes](public/animations/README.md).
 

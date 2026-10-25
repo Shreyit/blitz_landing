@@ -1,34 +1,127 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="490" viewBox="0 0 1200 490" role="img" aria-labelledby="title desc">
-  <title id="title">BLITZ system architecture</title>
-  <desc id="desc">Next.js handles uploads and sessions, and calls Supabase PostgreSQL functions for auction commands. PostgreSQL saves a safe public snapshot and email jobs. A Supabase Edge Function delivers mail through a provider; Realtime notifies spectators of changes.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="540" viewBox="0 0 1200 540" role="img" aria-labelledby="title desc">
+  <title id="title">BLITZ backend architecture</title>
+  <desc id="desc">The browser talks only to one Next.js API route on Vercel. The route uses Supabase Auth for organiser login, a private Storage bucket for photos, and PostgreSQL database functions for every change. Each auction change rebuilds a public snapshot and sends a Realtime ping so screens re-read it. New email jobs wake an Edge Function that sends through Gmail SMTP.</desc>
   <style>
-    text{font-family:Arial,Helvetica,sans-serif}.label{font-size:22px;font-weight:700;fill:#202820}.small{font-size:15px;fill:#6B7468}
-    .flow{stroke-dasharray:8 16;animation:travel 3s linear infinite}
-    @keyframes travel{to{stroke-dashoffset:-96}}
-    @media(prefers-reduced-motion:reduce){.flow{animation:none}}
+    text{font-family:Arial,Helvetica,sans-serif}
+    .k{font-size:12px;font-weight:700;letter-spacing:3px;fill:#315A36}
+    .h{font-size:19px;font-weight:700;fill:#202820}
+    .hw{font-size:19px;font-weight:700;fill:#F7F8F2}
+    .s{font-size:14px;fill:#6B7468}
+    .sw{font-size:14px;fill:#D8E5CE}
+    .m{font-family:Menlo,Consolas,monospace;font-size:13px;fill:#202820}
+    .mp{font-family:Menlo,Consolas,monospace;font-size:13px;fill:#C9693D}
+    .lab{font-size:13px;fill:#315A36;font-weight:700}
+    .rail{fill:none;stroke:#BCCCB1;stroke-width:2}
+    .flow{fill:none;stroke:#315A36;stroke-width:2;stroke-dasharray:8 14;animation:travel 2.6s linear infinite}
+    .flow.slow{animation-duration:4s}
+    .dot{fill:#D9F46B;stroke:#315A36;stroke-width:2}
+    @keyframes travel{to{stroke-dashoffset:-88}}
+    @keyframes glow{0%,100%{opacity:.15}50%{opacity:1}}
+    @keyframes pulse{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(1.5)}}
+    .glow{animation:glow 2.4s ease-in-out infinite}
+    .ring{transform-box:fill-box;transform-origin:center;animation:pulse 2s ease-out infinite}
+    
+    @media(prefers-reduced-motion:reduce){.flow,.glow,.ring,.step,.on{animation:none}.dot{display:none}.on{opacity:0}.on0{opacity:1}}
   </style>
-  <rect x="1" y="1" width="1198" height="488" rx="24" fill="#F7F8F2" stroke="#DDE4D5"/>
-  <text x="40" y="48" fill="#315A36" font-size="12" font-weight="700" letter-spacing="3">THE SYSTEM / SEPARATE RESPONSIBILITIES</text>
-  <g fill="none" stroke="#BCCCB1" stroke-width="2"><path d="M330 162H470 M330 204H470 M730 183H870 M1000 257V351H730 M470 386H330"/></g>
-  <g fill="none" stroke="#315A36" stroke-width="2" class="flow"><path d="M330 162H470 M470 204H330 M730 183H870 M1000 257V351H730 M470 386H330"/></g>
-  <g fill="#315A36"><path d="M461 157L470 162L461 167Z M339 199L330 204L339 209Z M861 178L870 183L861 188Z M739 346L730 351L739 356Z M339 381L330 386L339 391Z"/></g>
-  <text x="369" y="147" class="small">HTTP / RPC</text><text x="352" y="233" class="small">Command result</text><text x="754" y="166" class="small">Transactions</text><text x="1020" y="311" class="small">Mail jobs</text><text x="362" y="372" class="small">Delivery</text>
-  <g>
-    <rect x="40" y="91" width="290" height="166" rx="16" fill="white" stroke="#DDE4D5"/>
-    <rect x="62" y="113" width="40" height="31" rx="5" fill="none" stroke="#315A36" stroke-width="2"/><path d="M62 122H102" stroke="#315A36" stroke-width="2"/><circle cx="69" cy="118" r="1.5" fill="#315A36"/>
-    <text x="62" y="182" class="label">Browser / Next.js</text><text x="62" y="211" class="small">Pages, forms, admin controls</text><text x="62" y="235" class="small">Uploads + sessions + live notices</text>
-    <rect x="470" y="91" width="260" height="166" rx="16" fill="#315A36"/>
-    <path d="M500 113H518L507 128H519L495 150L502 134H492Z" fill="#D9F46B"/>
-    <text x="492" y="182" font-size="22" font-weight="700" fill="#F7F8F2">Database functions</text><text x="492" y="211" font-size="15" fill="#D8E5CE">Validation + auction authority</text><text x="492" y="235" font-size="15" fill="#D8E5CE">Locked transactions + safe state</text>
-    <rect x="870" y="91" width="290" height="166" rx="16" fill="white" stroke="#DDE4D5"/>
-    <g stroke="#315A36" fill="none" stroke-width="2"><path d="M893 119V140C893 149 925 149 925 140V119 M893 130C893 139 925 139 925 130"/><ellipse cx="909" cy="119" rx="16" ry="6"/></g>
-    <text x="892" y="182" class="label">Supabase PostgreSQL</text><text x="892" y="211" class="small">Players, purses, bids, teams</text><text x="892" y="235" class="small">Assignments, audit, email outbox</text>
-    <rect x="470" y="313" width="260" height="124" rx="16" fill="#EAF0DF" stroke="#DDE4D5"/>
-    <circle cx="505" cy="343" r="11" stroke="#315A36" fill="none" stroke-width="2"/><path d="M505 335V343L511 347" stroke="#315A36" fill="none" stroke-width="2"/>
-    <text x="492" y="383" class="label">Edge mail worker</text><text x="492" y="410" class="small">Leased jobs + retry backoff</text>
-    <rect x="40" y="313" width="290" height="124" rx="16" fill="white" stroke="#DDE4D5"/>
-    <rect x="62" y="331" width="34" height="23" rx="4" fill="none" stroke="#315A36" stroke-width="2"/><path d="M63 333L79 345L95 333" fill="none" stroke="#315A36" stroke-width="2"/>
-    <text x="62" y="383" class="label">Email provider</text><text x="62" y="410" class="small">Verify email + team assignment</text>
+  <rect x="1" y="1" width="1198" height="538" rx="24" fill="#F7F8F2" stroke="#DDE4D5"/>
+  <text x="40" y="48" class="k">THE SYSTEM / WHO DOES WHAT</text>
+  <rect x="630" y="68" width="540" height="452" rx="22" fill="#EAF0DF" stroke="#DDE4D5"/>
+  <text x="652" y="94" class="k">SUPABASE</text>
+  <g class=""><rect x="40" y="110" width="240" height="220" rx="16" fill="white" stroke="#DDE4D5"/>
+  <text x="60" y="142" class="h">Browser</text>
+  <text x="60" y="166" class="s">Home · Register · Teams</text>
+  <text x="60" y="187" class="s">Auction Dome (/auction)</text>
+  <text x="60" y="208" class="s">Admin (/admin)</text>
+  <text x="60" y="229" class="s">Auction controls</text>
+  <text x="60" y="250" class="s">(/admin/auction)</text>
   </g>
-  <text x="870" y="413" fill="#315A36" font-size="14">Realtime: notify, then read state.</text><text x="870" y="435" fill="#6B7468" font-size="14">Supabase Auth + private Storage.</text>
+  <g class=""><rect x="340" y="110" width="240" height="220" rx="16" fill="#315A36" stroke="none"/>
+  <text x="360" y="142" class="hw">Vercel · Next.js</text>
+  <text x="360" y="166" class="sw">Pages + one API route</text>
+  <text x="360" y="187" class="sw">/api/…</text>
+  <text x="360" y="208" class="sw">Validates every input</text>
+  <text x="360" y="229" class="sw">Resizes photos to 600px</text>
+  <text x="360" y="250" class="sw">Holds the server key</text>
+  </g>
+  <g class=""><rect x="650" y="110" width="240" height="60" rx="16" fill="white" stroke="#DDE4D5"/>
+  <text x="670" y="142" class="h">Auth · organiser login</text>
+  </g>
+  <g class=""><rect x="650" y="185" width="240" height="60" rx="16" fill="white" stroke="#DDE4D5"/>
+  <text x="670" y="217" class="h">Storage · private photos</text>
+  </g>
+  <g class=""><rect x="650" y="260" width="240" height="80" rx="16" fill="#315A36" stroke="none"/>
+  <text x="670" y="292" class="hw">Database functions</text>
+  <text x="670" y="316" class="sw">register · auction command</text>
+  </g>
+  <g class=""><rect x="910" y="110" width="240" height="135" rx="16" fill="white" stroke="#DDE4D5"/>
+  <text x="930" y="142" class="h">PostgreSQL</text>
+  <text x="930" y="166" class="s">schema blitz (private)</text>
+  <text x="930" y="187" class="s">registrations · teams</text>
+  <text x="930" y="208" class="s">auction · bids · assignments</text>
+  <text x="930" y="229" class="s">audit · email outbox</text>
+  </g>
+  <g class=""><rect x="910" y="260" width="240" height="80" rx="16" fill="white" stroke="#DDE4D5"/>
+  <text x="930" y="292" class="h">Public snapshot</text>
+  <text x="930" y="316" class="s">one read-only JSON row</text>
+  </g>
+  <g class=""><rect x="910" y="355" width="240" height="70" rx="16" fill="white" stroke="#DDE4D5"/>
+  <text x="930" y="387" class="h">Realtime ping</text>
+  <text x="930" y="411" class="s">“version 42 changed”</text>
+  </g>
+  <g class=""><rect x="650" y="440" width="240" height="70" rx="16" fill="white" stroke="#DDE4D5"/>
+  <text x="670" y="472" class="h">Edge mail worker</text>
+  <text x="670" y="496" class="s">leases jobs, retries</text>
+  </g>
+  <g class=""><rect x="340" y="440" width="240" height="70" rx="16" fill="white" stroke="#DDE4D5"/>
+  <text x="360" y="472" class="h">Gmail SMTP</text>
+  <text x="360" y="496" class="s">sends designed emails</text>
+  </g>
+  <g class=""><rect x="40" y="440" width="240" height="70" rx="16" fill="white" stroke="#DDE4D5"/>
+  <text x="60" y="472" class="h">Student inbox</text>
+  <text x="60" y="496" class="s">receipt · sold to a team</text>
+  </g>
+  <path d="M280 160H340" class="rail"/>
+  <path d="M280 160H340" class="flow"/>
+  <path d="M331 155L340 160L331 165Z" fill="#315A36"/>
+  <text x="286" y="150" class="lab">HTTPS</text>
+  <circle r="6" class="dot"><animateMotion dur="2.2s" begin="0s" repeatCount="indefinite" path="M280 160H340"/></circle>
+  <path d="M580 140H650" class="rail"/>
+  <path d="M580 140H650" class="flow"/>
+  <path d="M641 135L650 140L641 145Z" fill="#315A36"/>
+  <text x="594" y="130" class="lab">login</text>
+  <path d="M580 215H650" class="rail"/>
+  <path d="M580 215H650" class="flow"/>
+  <path d="M641 210L650 215L641 220Z" fill="#315A36"/>
+  <text x="592" y="205" class="lab">photo</text>
+  <path d="M580 300H650" class="rail"/>
+  <path d="M580 300H650" class="flow"/>
+  <path d="M641 295L650 300L641 305Z" fill="#315A36"/>
+  <text x="600" y="290" class="lab">RPC</text>
+  <circle r="6" class="dot"><animateMotion dur="2.2s" begin="0.6s" repeatCount="indefinite" path="M580 300H650"/></circle>
+  <path d="M890 290H900V180H910" class="rail"/>
+  <path d="M890 290H900V180H910" class="flow"/>
+  <path d="M901 175L910 180L901 185Z" fill="#315A36"/>
+  <path d="M890 310H910" class="rail"/>
+  <path d="M890 310H910" class="flow"/>
+  <path d="M901 305L910 310L901 315Z" fill="#315A36"/>
+  <path d="M1030 340V355" class="rail"/>
+  <path d="M1030 340V355" class="flow"/>
+  <path d="M1025 346L1030 355L1035 346Z" fill="#315A36"/>
+  <path d="M910 395H160V330" class="rail"/>
+  <path d="M910 395H160V330" class="flow"/>
+  <path d="M155 339L160 330L165 339Z" fill="#315A36"/>
+  <text x="380" y="385" class="lab">notify, then re-read the snapshot</text>
+  <circle r="6" class="dot"><animateMotion dur="3.2s" begin="1.2s" repeatCount="indefinite" path="M910 395H160V330"/></circle>
+  <path d="M1150 180H1185V475H890" class="rail"/>
+  <path d="M1150 180H1185V475H890" class="flow slow"/>
+  <path d="M899 470L890 475L899 480Z" fill="#315A36"/>
+  <text x="1000" y="466" class="lab">new email job</text>
+  <circle r="6" class="dot"><animateMotion dur="3.6s" begin="0.4s" repeatCount="indefinite" path="M1150 180H1185V475H890"/></circle>
+  <path d="M650 475H580" class="rail"/>
+  <path d="M650 475H580" class="flow slow"/>
+  <path d="M589 470L580 475L589 480Z" fill="#315A36"/>
+  <path d="M340 475H280" class="rail"/>
+  <path d="M340 475H280" class="flow slow"/>
+  <path d="M289 470L280 475L289 480Z" fill="#315A36"/>
+
 </svg>

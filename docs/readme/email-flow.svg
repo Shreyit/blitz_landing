@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="280" viewBox="0 0 1200 280" role="img" aria-labelledby="title desc">
+  <title id="title">BLITZ email pipeline</title>
+  <desc id="desc">A registration or sale writes an email job in the same transaction. An insert trigger, with an every-minute backup, wakes the deliver-mail Edge Function, which leases one job, sends through Gmail SMTP and marks it sent or schedules a retry.</desc>
+  <style>
+    text{font-family:Arial,Helvetica,sans-serif}
+    .k{font-size:12px;font-weight:700;letter-spacing:3px;fill:#315A36}
+    .h{font-size:19px;font-weight:700;fill:#202820}
+    .hw{font-size:19px;font-weight:700;fill:#F7F8F2}
+    .s{font-size:14px;fill:#6B7468}
+    .sw{font-size:14px;fill:#D8E5CE}
+    .m{font-family:Menlo,Consolas,monospace;font-size:13px;fill:#202820}
+    .mp{font-family:Menlo,Consolas,monospace;font-size:13px;fill:#C9693D}
+    .lab{font-size:13px;fill:#315A36;font-weight:700}
+    .rail{fill:none;stroke:#BCCCB1;stroke-width:2}
+    .flow{fill:none;stroke:#315A36;stroke-width:2;stroke-dasharray:8 14;animation:travel 2.6s linear infinite}
+    .flow.slow{animation-duration:4s}
+    .dot{fill:#D9F46B;stroke:#315A36;stroke-width:2}
+    @keyframes travel{to{stroke-dashoffset:-88}}
+    @keyframes glow{0%,100%{opacity:.15}50%{opacity:1}}
+    @keyframes pulse{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(1.5)}}
+    .glow{animation:glow 2.4s ease-in-out infinite}
+    .ring{transform-box:fill-box;transform-origin:center;animation:pulse 2s ease-out infinite}
+    
+    @media(prefers-reduced-motion:reduce){.flow,.glow,.ring,.step,.on{animation:none}.dot{display:none}.on{opacity:0}.on0{opacity:1}}
+  </style>
+  <rect x="1" y="1" width="1198" height="278" rx="24" fill="#F7F8F2" stroke="#DDE4D5"/>
+  <text x="40" y="48" class="k">EMAIL / QUEUED, THEN DELIVERED</text>
+  <g class=""><rect x="40" y="80" width="230" height="110" rx="16" fill="#315A36" stroke="none"/>
+  <text x="60" y="112" class="hw">Registration or sale</text>
+  <text x="60" y="136" class="sw">Email job written in</text>
+  <text x="60" y="157" class="sw">the same transaction</text>
+  </g>
+  <g class=""><rect x="330" y="80" width="230" height="110" rx="16" fill="white" stroke="#DDE4D5"/>
+  <text x="350" y="112" class="h">email_outbox</text>
+  <text x="350" y="136" class="s">status: pending</text>
+  <text x="350" y="157" class="s">unique key per email</text>
+  </g>
+  <g class=""><rect x="620" y="80" width="250" height="110" rx="16" fill="#315A36" stroke="none"/>
+  <text x="640" y="112" class="hw">deliver-mail worker</text>
+  <text x="640" y="136" class="sw">Woken by an insert trigger</text>
+  <text x="640" y="157" class="sw">+ every-minute backup</text>
+  <text x="640" y="178" class="sw">Leases one job at a time</text>
+  </g>
+  <g class=""><rect x="930" y="80" width="230" height="110" rx="16" fill="white" stroke="#DDE4D5"/>
+  <text x="950" y="112" class="h">Gmail SMTP → inbox</text>
+  <text x="950" y="136" class="s">Sale emails go first</text>
+  </g>
+  <path d="M270 135H330" class="rail"/>
+  <path d="M270 135H330" class="flow"/>
+  <path d="M321 130L330 135L321 140Z" fill="#315A36"/>
+  <circle r="6" class="dot"><animateMotion dur="2s" begin="0s" repeatCount="indefinite" path="M270 135H330"/></circle>
+  <path d="M560 135H620" class="rail"/>
+  <path d="M560 135H620" class="flow"/>
+  <path d="M611 130L620 135L611 140Z" fill="#315A36"/>
+  <circle r="6" class="dot"><animateMotion dur="2s" begin="0.7s" repeatCount="indefinite" path="M560 135H620"/></circle>
+  <path d="M870 135H930" class="rail"/>
+  <path d="M870 135H930" class="flow"/>
+  <path d="M921 130L930 135L921 140Z" fill="#315A36"/>
+  <text x="880" y="125" class="lab">send</text>
+  <circle r="6" class="dot"><animateMotion dur="2s" begin="1.4s" repeatCount="indefinite" path="M870 135H930"/></circle>
+  <path d="M745 190V225H445V190" class="rail"/><path d="M745 190V225H445V190" class="flow slow"/>
+  <path d="M440 201L445 192L450 201Z" fill="#315A36"/>
+  <text x="470" y="250" class="lab">sent → marked sent · failed → retried later (up to 8 times)</text>
+
+</svg>

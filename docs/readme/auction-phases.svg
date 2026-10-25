@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="370" viewBox="0 0 1200 370" role="img" aria-labelledby="title desc">
+  <title id="title">BLITZ auction phases</title>
+  <desc id="desc">Idle, then the normal round opening at ₹20, rapid fire 1 at ₹10, rapid fire 2 at ₹2, rapid fire 3 at ₹1, then random allocation at ₹0 and complete. Any round with no unsold players ends the auction early.</desc>
+  <style>
+    text{font-family:Arial,Helvetica,sans-serif}
+    .k{font-size:12px;font-weight:700;letter-spacing:3px;fill:#315A36}
+    .h{font-size:19px;font-weight:700;fill:#202820}
+    .hw{font-size:19px;font-weight:700;fill:#F7F8F2}
+    .s{font-size:14px;fill:#6B7468}
+    .sw{font-size:14px;fill:#D8E5CE}
+    .m{font-family:Menlo,Consolas,monospace;font-size:13px;fill:#202820}
+    .mp{font-family:Menlo,Consolas,monospace;font-size:13px;fill:#C9693D}
+    .lab{font-size:13px;fill:#315A36;font-weight:700}
+    .rail{fill:none;stroke:#BCCCB1;stroke-width:2}
+    .flow{fill:none;stroke:#315A36;stroke-width:2;stroke-dasharray:8 14;animation:travel 2.6s linear infinite}
+    .flow.slow{animation-duration:4s}
+    .dot{fill:#D9F46B;stroke:#315A36;stroke-width:2}
+    @keyframes travel{to{stroke-dashoffset:-88}}
+    @keyframes glow{0%,100%{opacity:.15}50%{opacity:1}}
+    @keyframes pulse{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(1.5)}}
+    .glow{animation:glow 2.4s ease-in-out infinite}
+    .ring{transform-box:fill-box;transform-origin:center;animation:pulse 2s ease-out infinite}
+    .on0{animation:light 28s linear infinite;animation-delay:0.00s;opacity:.0}.on1{animation:light 28s linear infinite;animation-delay:4.00s;opacity:.0}.on2{animation:light 28s linear infinite;animation-delay:8.00s;opacity:.0}.on3{animation:light 28s linear infinite;animation-delay:12.00s;opacity:.0}.on4{animation:light 28s linear infinite;animation-delay:16.00s;opacity:.0}.on5{animation:light 28s linear infinite;animation-delay:20.00s;opacity:.0}.on6{animation:light 28s linear infinite;animation-delay:24.00s;opacity:.0}@keyframes light{0%{opacity:1}12%{opacity:1}15%{opacity:0}100%{opacity:0}}
+    @media(prefers-reduced-motion:reduce){.flow,.glow,.ring,.step,.on{animation:none}.dot{display:none}.on{opacity:0}.on0{opacity:1}}
+  </style>
+  <rect x="1" y="1" width="1198" height="368" rx="24" fill="#F7F8F2" stroke="#DDE4D5"/>
+  <text x="40" y="48" class="k">THE AUCTION / PHASES AND ROUNDS</text>
+  <text x="40" y="80" class="s">Each rapid round only holds players nobody bought in the round before. Purses carry across every round.</text>
+  <path d="M113.0 210H1097.0" class="rail"/>
+  <path d="M113.0 210H1097.0" class="flow slow"/>
+  <rect x="40" y="150" width="146" height="120" rx="16" fill="white" stroke="#DDE4D5"/>
+  <rect x="37" y="147" width="152" height="126" rx="18" fill="none" stroke="#D9F46B" stroke-width="5" class="on on0"/>
+  <text x="113.0" y="190" font-size="17" font-weight="700" fill="#202820" text-anchor="middle">Idle</text>
+  <text x="113.0" y="220" font-size="14" fill="#6B7468" text-anchor="middle">Registration open</text>
+  <text x="113.0" y="242" font-size="13" fill="#6B7468" text-anchor="middle">teams can be renamed</text>
+  <path d="M193 205L202 210L193 215Z" fill="#315A36"/>
+  <rect x="204" y="150" width="146" height="120" rx="16" fill="#315A36" stroke="#DDE4D5"/>
+  <rect x="201" y="147" width="152" height="126" rx="18" fill="none" stroke="#D9F46B" stroke-width="5" class="on on1"/>
+  <text x="277.0" y="190" font-size="17" font-weight="700" fill="#F7F8F2" text-anchor="middle">Normal round</text>
+  <text x="277.0" y="220" font-size="14" fill="#D8E5CE" text-anchor="middle">Opens ₹20</text>
+  <text x="277.0" y="242" font-size="13" fill="#D8E5CE" text-anchor="middle">+5 · +10 · +25</text>
+  <path d="M357 205L366 210L357 215Z" fill="#315A36"/>
+  <rect x="368" y="150" width="146" height="120" rx="16" fill="white" stroke="#DDE4D5"/>
+  <rect x="365" y="147" width="152" height="126" rx="18" fill="none" stroke="#D9F46B" stroke-width="5" class="on on2"/>
+  <text x="441.0" y="190" font-size="17" font-weight="700" fill="#202820" text-anchor="middle">Rapid fire 1</text>
+  <text x="441.0" y="220" font-size="14" fill="#6B7468" text-anchor="middle">Opens ₹10</text>
+  <text x="441.0" y="242" font-size="13" fill="#6B7468" text-anchor="middle">+5</text>
+  <path d="M521 205L530 210L521 215Z" fill="#315A36"/>
+  <rect x="532" y="150" width="146" height="120" rx="16" fill="white" stroke="#DDE4D5"/>
+  <rect x="529" y="147" width="152" height="126" rx="18" fill="none" stroke="#D9F46B" stroke-width="5" class="on on3"/>
+  <text x="605.0" y="190" font-size="17" font-weight="700" fill="#202820" text-anchor="middle">Rapid fire 2</text>
+  <text x="605.0" y="220" font-size="14" fill="#6B7468" text-anchor="middle">Opens ₹2</text>
+  <text x="605.0" y="242" font-size="13" fill="#6B7468" text-anchor="middle">+2</text>
+  <path d="M685 205L694 210L685 215Z" fill="#315A36"/>
+  <rect x="696" y="150" width="146" height="120" rx="16" fill="white" stroke="#DDE4D5"/>
+  <rect x="693" y="147" width="152" height="126" rx="18" fill="none" stroke="#D9F46B" stroke-width="5" class="on on4"/>
+  <text x="769.0" y="190" font-size="17" font-weight="700" fill="#202820" text-anchor="middle">Rapid fire 3</text>
+  <text x="769.0" y="220" font-size="14" fill="#6B7468" text-anchor="middle">Opens ₹1</text>
+  <text x="769.0" y="242" font-size="13" fill="#6B7468" text-anchor="middle">+1</text>
+  <path d="M849 205L858 210L849 215Z" fill="#315A36"/>
+  <rect x="860" y="150" width="146" height="120" rx="16" fill="white" stroke="#DDE4D5"/>
+  <rect x="857" y="147" width="152" height="126" rx="18" fill="none" stroke="#D9F46B" stroke-width="5" class="on on5"/>
+  <text x="933.0" y="190" font-size="17" font-weight="700" fill="#202820" text-anchor="middle">Allocation</text>
+  <text x="933.0" y="220" font-size="14" fill="#6B7468" text-anchor="middle">Leftovers at ₹0</text>
+  <text x="933.0" y="242" font-size="13" fill="#6B7468" text-anchor="middle">one per team per cycle</text>
+  <path d="M1013 205L1022 210L1013 215Z" fill="#315A36"/>
+  <rect x="1024" y="150" width="146" height="120" rx="16" fill="white" stroke="#DDE4D5"/>
+  <rect x="1021" y="147" width="152" height="126" rx="18" fill="none" stroke="#D9F46B" stroke-width="5" class="on on6"/>
+  <text x="1097.0" y="190" font-size="17" font-weight="700" fill="#202820" text-anchor="middle">Complete</text>
+  <text x="1097.0" y="220" font-size="14" fill="#6B7468" text-anchor="middle">Squads final</text>
+  <text x="1097.0" y="242" font-size="13" fill="#6B7468" text-anchor="middle">rosters + emails</text>
+  <path d="M277.0 150V120H1077.0V150" class="rail" stroke-dasharray="4 6"/>
+  <path d="M1072.0 141L1077.0 150L1082.0 141Z" fill="#315A36"/>
+  <text x="532" y="112" class="lab">any round can finish early: nobody left unsold → Complete</text>
+  <text x="40" y="310" class="s">Start shuffles every registered player (never volunteers). Unsold players wait in a list; when the list runs out, they become the next round’s queue.</text>
+  <text x="40" y="332" class="s">After Rapid fire 3, the organiser presses Allocate: leftovers are dealt one per team in a fresh random team order, at ₹0, saved once.</text>
+
+</svg>
