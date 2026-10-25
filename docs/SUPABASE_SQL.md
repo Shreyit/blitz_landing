@@ -223,3 +223,7 @@ PGlite runs actual PostgreSQL but supplies platform stubs. Hosted Auth, Storage,
 ## Migration 018: private WhatsApp number
 
 [018](../supabase/migrations/202610240018_whatsapp_number.sql) adds `blitz.registrations.whatsapp`, stored in E.164 form (`+919876543210`) and checked by `^\+[1-9][0-9]{7,14}$`. `blitz_register` now rejects a registration without a valid number; the API normalises input first (`src/lib/whatsapp.ts`: a bare 10-digit Indian mobile gets `+91`). Rows registered before 018 keep `null`. The number reaches organisers only, through `blitz_admin_data('registrations')` (which returns whole rows) and the CSV export. It is not in `player_view`, the public snapshot, or `registration_mail_data`, so it never appears on the public site or in emails.
+
+## Migration 019: Google Sheet export
+
+[019](../supabase/migrations/202610260019_sheet_export.sql) adds `public.blitz_sheet_export()`, which returns every registration (minus the photo key and legacy verification fields) with its team, price and assignment source, plus the auction phase. Execute is granted to `service_role` only: browsers, spectators and even signed-in organisers cannot call it. The website calls it from `GET /api/sheets/registrations` with the server key, only after the request presents `Authorization: Bearer <SHEETS_EXPORT_TOKEN>`. Without that environment variable (at least 32 characters) the route answers 404. Setup for the organisers' Sheet is in [GOOGLE_SHEET.md](GOOGLE_SHEET.md).

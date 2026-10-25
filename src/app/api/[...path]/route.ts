@@ -1,4 +1,4 @@
-import { createHash, createHmac, randomUUID } from 'node:crypto';
+import { createHash, createHmac, randomUUID, timingSafeEqual } from 'node:crypto';
 import sharp from 'sharp';
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
@@ -91,6 +91,14 @@ async function register(request: Request) {
     throw e;
   }
 }
+// The organisers' Google Sheet sends `Authorization: Bearer <SHEETS_EXPORT_TOKEN>`.
+// Without a configured token of at least 32 characters, the endpoint does not exist.
+function sheetsTokenValid(request: Request) {
+  const expected=process.env.SHEETS_EXPORT_TOKEN || '';
+  if(expected.length<32) return null;
+  const given=(request.headers.get('authorization') || '').replace(/^Bearer\s+/i,'');
+  return timingSafeEqual(Buffer.from(hash(given)),Buffer.from(hash(expected)));
+}
 function csv(rows:Record<string,unknown>[]) {
   const fields=['id','created_at','consent_at','name','email','whatsapp','role','programme','year','age','gender','region','played_before','sports','volunteer_department','volunteer_rationale'];
   const quote=(value:unknown) => {
@@ -121,6 +129,13 @@ async function handle(request: NextRequest, context:{params:Promise<{path:string
       if(path==='health') { await snapshot(); return json({status:'ok',backend:'supabase'}); }
       if(path==='auction') return json(await snapshot());
       if(path==='admin/me') return json(await userRpc('blitz_admin_me'));
+      if(path==='sheets/registrations') {
+        const valid=sheetsTokenValid(request);
+        if(valid===null) return json({detail:'Endpoint not found.'},404);
+        await rateLimit(request,'sheets',120);
+        if(!valid) return json({detail:'Invalid export token.'},401);
+        return json(await serviceClient().rpc('blitz_sheet_export',{}));
+      }
       if(['admin/registrations','admin/emails','admin/audit','admin/registrations.csv'].includes(path)) {
         const kind=path.endsWith('.csv') ? 'registrations' : path.split('/')[1];
         const rows=await userRpc<Record<string,unknown>[]>('blitz_admin_data',{p_kind:kind});

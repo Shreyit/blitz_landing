@@ -231,6 +231,21 @@ test('WhatsApp numbers are required, private to organisers and kept out of publi
   await as('authenticated', outsider);
   await assert.rejects(db.query("select public.blitz_admin_data('registrations')"), /Organiser/);
 });
+test('sheet export is service-only and includes private details and team assignments', async () => {
+  const player = await register('player', {whatsapp: '+919811111111'});
+  const volunteer = await register('volunteer');
+  await db.exec('update blitz.registrations set verified=true');
+  await as('authenticated', organiser);
+  await command('start'); await command('bid', 3); await command('sell');
+  for (const role of ['anon', 'authenticated'])
+    { await as(role, role === 'authenticated' ? organiser : ''); await assert.rejects(db.query('select public.blitz_sheet_export()'), /permission denied/); }
+  await as('service_role');
+  const out = await scalar('select public.blitz_sheet_export() as value');
+  const p = out.rows.find(r => r.id === player), v = out.rows.find(r => r.id === volunteer);
+  assert.equal(p.whatsapp, '+919811111111'); assert.equal(p.price, 20); assert.equal(p.assignment, 'auction');
+  assert.ok(p.team); assert.equal(v.team, null); assert.equal(v.volunteer_department, 'Operations');
+  for (const key of ['photo_key', 'verification_hash', 'verification_expires', 'verified']) assert.equal(key in p, false);
+});
 test('volunteers never enter the auction queue, lots or allocation', async () => {
   const volunteer = await register('volunteer');
   const [player] = await eligible(1);

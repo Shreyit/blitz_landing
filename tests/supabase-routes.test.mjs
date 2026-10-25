@@ -173,6 +173,19 @@ test('organiser CSV export quotes cells and prevents spreadsheet formula executi
   assert.equal(response.status,200);assert.ok(csv.includes('"\' =HYPERLINK(""bad"")"'));
   assert.ok(csv.includes('"Chess, Football"'));assert.match(response.headers.get('content-disposition'),/attachment/);
 });
+test('Google Sheet export is hidden without a token and needs the exact bearer token',async()=>{
+  delete process.env.SHEETS_EXPORT_TOKEN;
+  assert.equal((await route('sheets/registrations')).status,404);assert.equal(calls.length,0);
+  process.env.SHEETS_EXPORT_TOKEN='x'.repeat(40);
+  const wrong=await route('sheets/registrations',undefined,{authorization:'Bearer nope'});
+  assert.equal(wrong.status,401);assert.ok(!calls.some(c=>c.url.endsWith('blitz_sheet_export')));
+  responder=async c=>c.url.endsWith('blitz_sheet_export')?Response.json({rows:[{name:'A',whatsapp:'+919876543210'}]}):Response.json(null);
+  const ok=await route('sheets/registrations',undefined,{authorization:'Bearer '+'x'.repeat(40)});
+  assert.equal(ok.status,200);assert.equal((await ok.json()).rows[0].whatsapp,'+919876543210');
+  const call=calls.find(c=>c.url.endsWith('blitz_sheet_export'));
+  assert.equal(call.init.headers.apikey ?? call.init.headers.get?.('apikey'),'server-secret');
+  assert.equal(ok.headers.get('cache-control'),'no-store');
+});
 test('the existing API still proxies in explicitly selected FastAPI mode',async()=>{
   process.env.NEXT_PUBLIC_BACKEND_PROVIDER='fastapi';
   responder=async c=>{assert.match(c.url,/127\.0\.0\.1:8000\/api\/auction$/);return Response.json({phase:'idle'});};

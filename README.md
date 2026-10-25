@@ -68,11 +68,13 @@ Email designs can be reviewed in [registration](docs/email-previews/registration
 
 For registration emails from the chosen Google Workspace account, follow [Gmail SMTP setup](docs/SMTP_SETUP.md).
 
+For a live Google Sheet of all registrations for the core organising team, follow [Live registrations Google Sheet](docs/GOOGLE_SHEET.md).
+
 For removing the authorised dummy entries and their photos, follow [Pilot cleanup](docs/PILOT_CLEANUP.md).
 
 For the current registration-first phase, follow [Registration and admin pilot](docs/REGISTRATION_PILOT.md). It includes the exact hosted activation commands and the hidden-password admin setup.
 
-Start with [Supabase setup](docs/SUPABASE_SETUP.md) and the [SQL walkthrough](docs/SUPABASE_SQL.md), which explains all eighteen migrations and the manual organiser/mail operations.
+Start with [Supabase setup](docs/SUPABASE_SETUP.md) and the [SQL walkthrough](docs/SUPABASE_SQL.md), which explains all nineteen migrations and the manual organiser/mail operations.
 
 ## Database schema
 
