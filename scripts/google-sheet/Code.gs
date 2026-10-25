@@ -1,3 +1,5 @@
+/** @OnlyCurrentDoc */
+
 /**
  * Bachelor's BLITZ: live registrations sheet for the core organising team.
  *
