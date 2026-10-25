@@ -143,6 +143,12 @@ Each snapshot carries its version, so a late, older response is ignored.
 
 ![Email pipeline: a registration or sale writes an email job in the same transaction; an insert trigger, with an every-minute backup, wakes the deliver-mail worker, which leases one job, sends through Gmail SMTP and marks it sent or retries it later.](docs/readme/email-flow.svg)
 
+### Live Google Sheet for the organising team
+
+![Google Sheet sync: Google's timer runs the Apps Script about every 10 minutes; it calls the website's private export address with a secret key; the website checks the key and runs the read-only blitz_sheet_export function; the script rewrites the Players, Volunteers and Summary tabs.](docs/readme/sheet-sync.svg)
+
+The Sheet **pulls** from the website; nothing pushes into it. Google's timer runs `refreshBlitz()` about every 10 minutes (or on **BLITZ → Refresh now**), even when the Sheet is closed. Each run rewrites the tabs from the live database, so the Sheet can't drift or double-count, and nothing typed into it ever reaches the website. **Last updated** on the Summary tab shows when the last run finished. Setup and safe sharing: [Live registrations Google Sheet](docs/GOOGLE_SHEET.md).
+
 ## From registration to team
 
 ![Participant workflow: choose player or volunteer, complete the form, crop a photo, review and submit. Registered players enter the auction and receive a team; volunteers choose one department and remain outside the auction.](docs/readme/workflow.svg)
@@ -378,7 +384,7 @@ Fixture/result persistence and calculated overall standings remain pending. See 
 
 ## Artwork and motion
 
-This README uses local, self-contained **SVG artwork**, with animated court traces, connection paths, and workflow markers. Each SVG includes a static composition, accessible title/description, and a `prefers-reduced-motion` fallback. There are no emoji icons or external image services. Edit [hero.svg](docs/readme/hero.svg) or [workflow.svg](docs/readme/workflow.svg) by hand. The backend diagrams ([architecture](docs/readme/architecture.svg), [schema](docs/readme/schema.svg), [registration](docs/readme/registration-flow.svg), [auction command](docs/readme/auction-command.svg), [phases](docs/readme/auction-phases.svg), [lot](docs/readme/auction-lot.svg), [email](docs/readme/email-flow.svg)) animate their connectors with moving dashes and travelling markers; the phases diagram lights each stage in turn.
+This README uses local, self-contained **SVG artwork**, with animated court traces, connection paths, and workflow markers. Each SVG includes a static composition, accessible title/description, and a `prefers-reduced-motion` fallback. There are no emoji icons or external image services. Edit [hero.svg](docs/readme/hero.svg) or [workflow.svg](docs/readme/workflow.svg) by hand. The backend diagrams ([architecture](docs/readme/architecture.svg), [schema](docs/readme/schema.svg), [registration](docs/readme/registration-flow.svg), [auction command](docs/readme/auction-command.svg), [phases](docs/readme/auction-phases.svg), [lot](docs/readme/auction-lot.svg), [email](docs/readme/email-flow.svg), [Google Sheet](docs/readme/sheet-sync.svg)) animate their connectors with moving dashes and travelling markers; the phases diagram lights each stage in turn.
 
 Website motion belongs to GSAP/Lenis and the Three.js mascot. SVG poses provide reduced-motion and WebGL fallbacks. The floating mascot stays out of the Auction Dome and the auction controls, so it never covers the bid panel. The optional Rive adapter uses its SVG fallback until an authored `.riv` file is supplied; see [animation asset notes](public/animations/README.md).
 
