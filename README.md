@@ -368,7 +368,7 @@ Team names are fixed once the auction starts. Apply new migrations with `npx sup
 
 ## Developer
 
-Built and maintained by **Shreyit Sinha** — [GitHub](https://github.com/Shreyit) · [m2024bsas027@stud.tiss.ac.in](mailto:m2024bsas027@stud.tiss.ac.in). Found something broken? Get in touch; the site footer has the same contact pill.
+Built and maintained by **Shreyit Sinha** — [GitHub](https://github.com/Shreyit) · [m2024bsass027@stud.tiss.ac.in](mailto:m2024bsass027@stud.tiss.ac.in). Found something broken? Get in touch; the site footer has the same contact pill.
 
 ## Deployment plan
 

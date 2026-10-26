@@ -116,11 +116,11 @@ export function Footer() {
             <Github size={17} /> GitHub
           </a>
           <a
-            href="mailto:m2024bsas027@stud.tiss.ac.in"
+            href="mailto:m2024bsass027@stud.tiss.ac.in"
             data-mascot-note="Drop a line. Bug reports welcome!"
             data-mascot-move="celebrate"
           >
-            <Mail size={17} /> m2024bsas027@stud.tiss.ac.in
+            <Mail size={17} /> m2024bsass027@stud.tiss.ac.in
           </a>
         </div>
       </div>
