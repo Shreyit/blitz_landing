@@ -40,7 +40,7 @@ def test_private_admin_views_and_csv_formula_safety(admin_client):
         db.add(
             Registration(
                 name='=HYPERLINK("evil")',
-                email="student@tiss.edu",
+                email="student@stud.tiss.edu",
                 role="volunteer",
                 programme="BSW",
                 year=1,
@@ -52,13 +52,13 @@ def test_private_admin_views_and_csv_formula_safety(admin_client):
         db.add(
             EmailJob(
                 key="test",
-                recipient="student@tiss.edu",
+                recipient="student@stud.tiss.edu",
                 subject="Verify",
                 body="private verification token",
             )
         )
     response = admin_client.get("/api/admin/registrations")
-    assert response.json()[0]["email"] == "student@tiss.edu"
+    assert response.json()[0]["email"] == "student@stud.tiss.edu"
     assert response.headers["cache-control"] == "no-store"
     assert "'=HYPERLINK" in admin_client.get("/api/admin/registrations.csv").text
     jobs = admin_client.get("/api/admin/emails").json()

@@ -9,7 +9,7 @@ def seed():
         db.add(
             EmailJob(
                 key="test",
-                recipient="student@tiss.edu",
+                recipient="student@stud.tiss.edu",
                 subject="Test",
                 body="A message",
             )

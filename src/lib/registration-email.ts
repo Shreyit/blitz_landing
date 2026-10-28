@@ -1,4 +1,4 @@
-export const EMAIL_DOMAINS = ["stud.tiss.ac.in", "tiss.edu"] as const;
+export const EMAIL_DOMAINS = ["stud.tiss.ac.in", "stud.tiss.edu"] as const;
 export type EmailDomain = (typeof EMAIL_DOMAINS)[number];
 
 export function registrationEmail(username: string, domain: EmailDomain): string {

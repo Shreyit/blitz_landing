@@ -28,7 +28,7 @@ async function mobilePage(viewport = { width: 390, height: 844 }, admin = false)
     if (path === "/api/admin/me") return route.fulfill({ status: admin ? 200 : 401, json: admin ? { authenticated: true } : { detail: "Sign in" } });
     if (path === "/api/admin/registrations") return route.fulfill({ status: admin ? 200 : 401, json: admin ? [
       { ...player, role: "player", email: "m2024bsass027@stud.tiss.ac.in", age: 20, gender: "female", region: "Andaman and Nicobar Islands", played_before: true, verified: true, volunteer_department: null, volunteer_rationale: null },
-      { ...player, id: "volunteer-test", name: "Pilot volunteer", role: "volunteer", email: "pilot@tiss.edu", age: 21, gender: "others", region: "Maharashtra", played_before: false, sports: [], verified: false, volunteer_department: "Operations", volunteer_rationale: "I can coordinate equipment and venue setup." },
+      { ...player, id: "volunteer-test", name: "Pilot volunteer", role: "volunteer", email: "pilot@stud.tiss.edu", age: 21, gender: "others", region: "Maharashtra", played_before: false, sports: [], verified: false, volunteer_department: "Operations", volunteer_rationale: "I can coordinate equipment and venue setup." },
     ] : { detail: "Sign in" } });
     if (path === "/api/admin/logout") { admin = false; return route.fulfill({ json: { authenticated: false } }); }
     if (route.request().method() === "GET") return route.fulfill({ json: [] });

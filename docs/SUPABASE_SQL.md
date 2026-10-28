@@ -227,3 +227,7 @@ PGlite runs actual PostgreSQL but supplies platform stubs. Hosted Auth, Storage,
 ## Migration 019: Google Sheet export
 
 [019](../supabase/migrations/202610260019_sheet_export.sql) adds `public.blitz_sheet_export()`, which returns every registration (minus the photo key and legacy verification fields) with its team, price and assignment source, plus the auction phase. Execute is granted to `service_role` only: browsers, spectators and even signed-in organisers cannot call it. The website calls it from `GET /api/sheets/registrations` with the server key, only after the request presents `Authorization: Bearer <SHEETS_EXPORT_TOKEN>`. Without that environment variable (at least 32 characters) the route answers 404. Setup for the organisers' Sheet is in [GOOGLE_SHEET.md](GOOGLE_SHEET.md).
+
+## Migration 020: stud.tiss.edu
+
+[020](../supabase/migrations/202610280020_stud_tiss_edu.sql) replaces the registration email check: new sign-ups must use `@stud.tiss.ac.in` or `@stud.tiss.edu` (previously `@tiss.edu`). It finds and drops the original inline check by its definition, then adds `registrations_email_domain` as `NOT VALID`, so any rows already saved with `@tiss.edu` stay as they are while every new insert is checked.

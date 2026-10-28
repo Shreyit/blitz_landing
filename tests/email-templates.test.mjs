@@ -49,7 +49,7 @@ test('SMTP receives multipart HTML, plain text and an inline memory attachment',
   let sent;
   const sender=createSmtpSender({host:'smtp.gmail.com',username:'sender@example.test',password:'fixture-only'},()=>({sendMail:async value=>{sent=value;return {accepted:[value.to]};}}));
   const mail=renderMail(job());
-  assert.equal(await sender({...mail,from:worker.from,to:'student@tiss.edu',key:'registration:fixture'}),true);
+  assert.equal(await sender({...mail,from:worker.from,to:'student@stud.tiss.edu',key:'registration:fixture'}),true);
   assert.equal(sent.html,mail.html);assert.equal(sent.text,mail.text);assert.equal(sent.attachments[0].cid,mail.attachments[0].cid);
   assert.equal(sent.attachments[0].encoding,'base64');assert.equal('path' in sent.attachments[0],false);
 });
@@ -59,7 +59,7 @@ test('both delivery providers render the new receipt and acknowledge its exact l
     const handler=createMailHandler({...worker,provider,resendKey:'fixture-provider-key'},async(url,init)=>{
       if(url.endsWith('blitz_mail_claim')) {
         if(claimed)return Response.json(null);claimed=true;
-        return Response.json({...job(),id:1,key:'registration:fixture',recipient:'student@tiss.edu',lease_token:'fixture-lease'});
+        return Response.json({...job(),id:1,key:'registration:fixture',recipient:'student@stud.tiss.edu',lease_token:'fixture-lease'});
       }
       if(url==='https://api.resend.com/emails') {resendMessage=JSON.parse(init.body);return Response.json({id:'accepted'});}
       ack=JSON.parse(init.body);return Response.json(true);

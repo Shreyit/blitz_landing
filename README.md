@@ -74,7 +74,7 @@ For removing the authorised dummy entries and their photos, follow [Pilot cleanu
 
 For the current registration-first phase, follow [Registration and admin pilot](docs/REGISTRATION_PILOT.md). It includes the exact hosted activation commands and the hidden-password admin setup.
 
-Start with [Supabase setup](docs/SUPABASE_SETUP.md) and the [SQL walkthrough](docs/SUPABASE_SQL.md), which explains all nineteen migrations and the manual organiser/mail operations.
+Start with [Supabase setup](docs/SUPABASE_SETUP.md) and the [SQL walkthrough](docs/SUPABASE_SQL.md), which explains all twenty migrations and the manual organiser/mail operations.
 
 ## Database schema
 
@@ -84,7 +84,7 @@ Private tables live in the `blitz` schema, which browsers cannot reach. Row-leve
 
 | Table | Holds | Rules the database enforces |
 | :--- | :--- | :--- |
-| `registrations` | Every player and volunteer sign-up | `@stud.tiss.ac.in` / `@tiss.edu` only; one entry per email per role; players pick 1–8 sports; volunteers pick one department and no sports; WhatsApp in `+<country><number>` form |
+| `registrations` | Every player and volunteer sign-up | `@stud.tiss.ac.in` / `@stud.tiss.edu` only; one entry per email per role; players pick 1–8 sports; volunteers pick one department and no sports; WhatsApp in `+<country><number>` form |
 | `teams` | The eight teams, colours and purses | Ids 1–8; unique names; purse between ₹0 and ₹2,000 |
 | `auction` | **One row**: phase, round, shuffled queue, unsold list, current bid, leader, version | A bid always has a leader; round 0–3; `version` rises by one on every change |
 | `bids` | Every bid, including cleared ones | Each button press has a unique `command_id`, so a retry can't bid twice |
@@ -156,7 +156,7 @@ The Sheet **pulls** from the website; nothing pushes into it. Google's timer run
 ### Participants
 
 1. Choose **Player** or **Volunteer**. You can register for both using separate entries with the same institutional email.
-2. Enter your email username and choose `stud.tiss.ac.in` or `tiss.edu`. Pasting a full supported email also works.
+2. Enter your email username and choose `stud.tiss.ac.in` or `stud.tiss.edu`. Pasting a full supported email also works.
 3. Complete identity, **WhatsApp number** (🇮🇳 +91 by default; pick another country code for a number from abroad), programme/year, age, gender, state or union territory, and “Have you played Bachelor’s BLITZ before?” Only organisers see the WhatsApp number.
 4. Players choose sports. Volunteers choose exactly one department—**Digital & Marketing, Operations, Medical, or Sustainability**—and explain their suitability and contribution.
 5. Upload a photo, drag and zoom the **1:1 crop**, then review and consent. Only the confirmed 600 × 600 JPEG is uploaded.
@@ -269,7 +269,7 @@ SQLite is the default for this legacy local mode. `docker compose up -d db mailp
    PUBLIC_URL=http://localhost:3000
    ALLOWED_ORIGINS=http://localhost:3000
    ```
-4. Create a local organiser: `BLITZ_ADMIN_EMAIL=demo@tiss.edu npm run setup:admin`
+4. Create a local organiser: `BLITZ_ADMIN_EMAIL=demo@stud.tiss.edu npm run setup:admin`
 5. Run `npm run dev`, register a few fake players at `localhost:3000/register`, sign in at `localhost:3000/admin`, open **Auction controls** and press **Start**. Keep `localhost:3000/auction` on a second screen.
 6. Start over with `npx supabase db reset`, then repeat step 4 (the reset removes the login too).
 

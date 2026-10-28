@@ -114,7 +114,7 @@ export function Registration() {
         return;
       }
       if (
-        !/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@(stud\.tiss\.ac\.in|tiss\.edu)$/i.test(
+        !/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@(stud\.tiss\.ac\.in|stud\.tiss\.edu)$/i.test(
           email,
         )
       ) {

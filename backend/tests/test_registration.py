@@ -71,14 +71,15 @@ def test_registration_verification_and_photo_privacy(client):
 def test_allowed_domains_and_roles(client):
     for email in [
         "student@gmail.com",
-        "student@tiss.edu.evil",
+        "student@stud.tiss.edu.evil",
         "student@evil.tiss.edu",
+        "student@tiss.edu",
         "student@stud.tiss.ac.in.evil",
     ]:
         assert register(client, email=email).status_code == 422
     assert register(client, email="STUDENT@TISS.EDU").status_code == 201
     assert (
-        register(client, email="student@tiss.edu", role="volunteer").status_code == 201
+        register(client, email="student@stud.tiss.edu", role="volunteer").status_code == 201
     )
 
 
@@ -111,7 +112,7 @@ def test_invalid_sports_consent_and_image(client):
     assert register(client, consent="false").status_code == 422
     data = {
         "name": "Student",
-        "email": "s@tiss.edu",
+        "email": "s@stud.tiss.edu",
         "role": "player",
         "programme": "BSW",
         "year": 1,
@@ -157,7 +158,7 @@ def test_closed_registration(admin_client):
         ).status_code
         == 200
     )
-    assert register(admin_client, email="another@tiss.edu").status_code == 409
+    assert register(admin_client, email="another@stud.tiss.edu").status_code == 409
 
 
 def test_cookie_is_httponly(client):

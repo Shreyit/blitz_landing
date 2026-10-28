@@ -57,7 +57,7 @@ test('Supabase health and public state read the safe projection without server c
   assert.equal(calls[0].init.headers.get('apikey'),'publishable');
 });
 test('cross-origin mutations and anonymous organiser access fail before any privileged request',async()=>{
-  assert.equal((await route('admin/login',{email:'admin@tiss.edu',password:'password'},{origin:'https://other.example'})).status,403);
+  assert.equal((await route('admin/login',{email:'admin@stud.tiss.edu',password:'password'},{origin:'https://other.example'})).status,403);
   assert.equal((await route('admin/me')).status,401); assert.equal(calls.length,0);
 });
 test('the configured website and explicit preview origins accept trailing slashes without trusting unrelated sites',async()=>{
@@ -79,7 +79,7 @@ test('login checks the organiser allowlist before saving a session',async()=>{
     assert.equal(c.init.headers.get('authorization'),'Bearer user-token');
     return Response.json({authenticated:true});
   };
-  const response=await route('admin/login',{email:'admin@tiss.edu',password:'password'});
+  const response=await route('admin/login',{email:'admin@stud.tiss.edu',password:'password'});
   assert.equal(response.status,200); assert.equal(cookies.get('blitz_access'),'user-token');
   assert.equal(cookies.get('blitz_refresh'),'refresh-token');
 });
@@ -89,7 +89,7 @@ test('valid Auth credentials without organiser membership never create a dashboa
     if(c.url.includes('/auth/v1/token'))return Response.json({access_token:'outsider',refresh_token:'refresh',expires_in:3600});
     return Response.json({code:'42501',message:'Organiser access is required.'},{status:403});
   };
-  assert.equal((await route('admin/login',{email:'other@tiss.edu',password:'password'})).status,403);
+  assert.equal((await route('admin/login',{email:'other@stud.tiss.edu',password:'password'})).status,403);
   assert.equal(cookies.size,0);
 });
 test('expired access tokens refresh and retry an authorised request',async()=>{
@@ -109,7 +109,7 @@ test('malformed JSON and invalid command IDs return validation errors',async()=>
 });
 async function registration(){
   const form=new FormData();
-  const data={name:'Example Student',email:'student@tiss.edu',whatsapp:'98765 43210',role:'player',programme:'BSASS',
+  const data={name:'Example Student',email:'student@stud.tiss.edu',whatsapp:'98765 43210',role:'player',programme:'BSASS',
     year:'2',age:'20',gender:'female',region:'Maharashtra',played_before:'yes',sports:'["Chess"]',consent:'true'};
   for(const [k,v]of Object.entries(data))form.set(k,v);
   const photo=await sharp({create:{width:800,height:600,channels:3,background:'#315a36'}}).png().toBuffer();
@@ -168,7 +168,7 @@ test('eligible photos are served from private storage with server credentials',a
 });
 test('organiser CSV export quotes cells and prevents spreadsheet formula execution',async()=>{
   cookies.set('blitz_access','organiser-token');
-  responder=async()=>Response.json([{name:' =HYPERLINK("bad")',email:'student@tiss.edu',sports:['Chess','Football']}]);
+  responder=async()=>Response.json([{name:' =HYPERLINK("bad")',email:'student@stud.tiss.edu',sports:['Chess','Football']}]);
   const response=await route('admin/registrations.csv');const csv=await response.text();
   assert.equal(response.status,200);assert.ok(csv.includes('"\' =HYPERLINK(""bad"")"'));
   assert.ok(csv.includes('"Chess, Football"'));assert.match(response.headers.get('content-disposition'),/attachment/);

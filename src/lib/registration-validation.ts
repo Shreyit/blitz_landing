@@ -14,8 +14,8 @@ export function registrationData(form: FormData) {
   };
   const name = text('name'), email = text('email').toLowerCase(), role = text('role');
   if (name.length < 2 || name.length > 100 || /[\x00-\x1f\x7f]/.test(name)) throw new InputError('Enter a valid full name.');
-  if (email.length > 200 || !/^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@(stud\.tiss\.ac\.in|tiss\.edu)$/.test(email))
-    throw new InputError('Use an @stud.tiss.ac.in or @tiss.edu email address.');
+  if (email.length > 200 || !/^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@(stud\.tiss\.ac\.in|stud\.tiss\.edu)$/.test(email))
+    throw new InputError('Use an @stud.tiss.ac.in or @stud.tiss.edu email address.');
   if (!['player', 'volunteer'].includes(role)) throw new InputError('Choose Player or Volunteer.');
   const whatsapp = normaliseWhatsapp(text('whatsapp'));
   if (!whatsapp) throw new InputError('Enter a valid WhatsApp number, for example 98765 43210.');

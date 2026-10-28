@@ -109,10 +109,10 @@ test('an ordinary signed-in account cannot become an organiser', async () => {
   await assert.rejects(db.exec(`insert into blitz.organiser_users(user_id) values ('${outsider}')`), /permission denied/);
 });
 test('intake completes on submit and keeps separate player and volunteer entries', async () => {
-  const player = await register('player', {email:'same@tiss.edu', verified:false});
-  await register('volunteer', {email:'same@tiss.edu'});
+  const player = await register('player', {email:'same@stud.tiss.edu', verified:false});
+  await register('volunteer', {email:'same@stud.tiss.edu'});
   assert.equal(await scalar('select verified as value from blitz.registrations where id=$1',[player]), true);
-  await assert.rejects(register('player', {email:'same@tiss.edu'}), /unique constraint/);
+  await assert.rejects(register('player', {email:'same@stud.tiss.edu'}), /unique constraint/);
 });
 test('intake rejects invalid domains, demographics, sports, department, consent and absent previous participation', async () => {
   for (const extra of [{email:'x@gmail.com'}, {age:0}, {age:20.5}, {gender:'invalid'},
@@ -178,7 +178,7 @@ test('insufficient purse and self-bidding fail without changing state', async ()
 test('sale failure rolls back the assignment, purse, audit, outbox and projection', async () => {
   const [player]=await eligible(); await command('start'); await command('bid',1);
   await as('postgres');
-  await db.query("insert into blitz.email_outbox(key,recipient,subject,body) values($1,'test@tiss.edu','test','test')",['assignment:'+player]);
+  await db.query("insert into blitz.email_outbox(key,recipient,subject,body) values($1,'test@stud.tiss.edu','test','test')",['assignment:'+player]);
   const before=await state();
   await as('authenticated',organiser); await assert.rejects(command('sell'),/unique constraint/);
   assert.deepEqual(await state(),before);
@@ -213,6 +213,11 @@ test('team names can be exchanged before start but duplicate names and later edi
   await assert.rejects(command('teams',null,randomUUID(),saved.version,duplicate),/distinct/);
   await eligible(); await command('start');
   await assert.rejects(command('teams',null,randomUUID(),undefined,teams),/fixed/);
+});
+test('registration accepts stud.tiss.ac.in and stud.tiss.edu but not tiss.edu', async () => {
+  await register('player', {email: 'okay1@stud.tiss.ac.in'});
+  await register('player', {email: 'okay2@stud.tiss.edu'});
+  await assert.rejects(register('player', {email: 'staff@tiss.edu'}), /registrations_email_domain|check constraint/);
 });
 test('WhatsApp numbers are required, private to organisers and kept out of public data and mail', async () => {
   await assert.rejects(register('player', {whatsapp: ''}), /WhatsApp/);

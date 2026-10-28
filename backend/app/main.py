@@ -161,9 +161,9 @@ async def register(
     if len(name) < 2 or any(ord(c) < 32 for c in name):
         raise HTTPException(422, "Enter a valid full name.")
     if not re.fullmatch(
-        r"[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@(stud\.tiss\.ac\.in|tiss\.edu)", email
+        r"[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@(stud\.tiss\.ac\.in|stud\.tiss\.edu)", email
     ):
-        raise HTTPException(422, "Use an @stud.tiss.ac.in or @tiss.edu email address.")
+        raise HTTPException(422, "Use an @stud.tiss.ac.in or @stud.tiss.edu email address.")
     if not consent:
         raise HTTPException(422, "Consent is required to register.")
     region = region.strip()

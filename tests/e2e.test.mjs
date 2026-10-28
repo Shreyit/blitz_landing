@@ -283,9 +283,9 @@ test("sports scenes, all eight registration choices and tug-of-war controls", as
   await page.goto(`${base}/register?sport=Weightlifting`);
   await page.locator('[data-bolt-sport="Weightlifting"]').first().waitFor();
   await page.getByLabel("Full name").fill("Sports test");
-  await page.locator('input[name="email"]').fill("sports@tiss.edu");
+  await page.locator('input[name="email"]').fill("sports@stud.tiss.edu");
   assert.equal(await page.getByLabel("TISS email username", { exact: true }).inputValue(), "sports");
-  assert.equal(await page.getByLabel("TISS email domain").inputValue(), "tiss.edu");
+  assert.equal(await page.getByLabel("TISS email domain").inputValue(), "stud.tiss.edu");
   await completeDemographics(page);
   await page.getByRole("button", { name: "Continue", exact: true }).click();
   assert(await page.locator(".sport-picker").evaluate((node) => node.open));
