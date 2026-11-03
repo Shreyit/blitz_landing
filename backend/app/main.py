@@ -112,7 +112,7 @@ class TeamIdentity(BaseModel):
 class TeamConfiguration(BaseModel):
     version: int = Field(ge=0)
     command_id: UUID
-    teams: list[TeamIdentity] = Field(min_length=8, max_length=8)
+    teams: list[TeamIdentity] = Field(min_length=len(config.TEAMS), max_length=len(config.TEAMS))
 
 
 def verification_email(db, registration, token):
@@ -488,12 +488,12 @@ def emails(actor=Depends(admin)):
 def configure_teams(payload: TeamConfiguration, actor=Depends(admin)):
     names = [team.name.strip() for team in payload.teams]
     if (
-        {team.id for team in payload.teams} != set(range(1, 9))
-        or len(set(name.casefold() for name in names)) != 8
+        {team.id for team in payload.teams} != config.TEAM_IDS
+        or len(set(name.casefold() for name in names)) != len(config.TEAMS)
         or any(len(name) < 2 or any(ord(c) < 32 for c in name) for name in names)
     ):
         raise HTTPException(
-            422, "Provide eight distinct team names, one for each team."
+            422, "Provide a distinct name for each team."
         )
     with mutation_lock, Session.begin() as db:
         auction = db.scalar(select(Auction).where(Auction.id == 1).with_for_update())

@@ -204,10 +204,10 @@ def test_http_commands_and_reload(admin_client):
     state = response.json()
     response = admin_client.post(
         "/api/admin/auction/bid",
-        json={"version": state["version"], "command_id": str(uuid4()), "team_id": 3},
+        json={"version": state["version"], "command_id": str(uuid4()), "team_id": 4},
     )
     assert response.json()["bid"] == 20
-    assert admin_client.get("/api/auction").json()["leader"] == 3
+    assert admin_client.get("/api/auction").json()["leader"] == 4
 
 
 def test_cross_origin_command_rejected(admin_client):

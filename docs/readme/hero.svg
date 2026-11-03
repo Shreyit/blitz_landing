@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="440" viewBox="0 0 1200 440" role="img" aria-labelledby="title desc">
   <title id="title">Bachelor’s BLITZ — campus sports, in motion</title>
-  <desc id="desc">A forest-green sports court with a lime lightning mark, a large BLITZ wordmark, and animated tournament paths. Eight sports, eight teams, one campus.</desc>
+  <desc id="desc">A forest-green sports court with a lime lightning mark, a large BLITZ wordmark, and animated tournament paths. Eight sports, six teams, one campus.</desc>
   <defs>
     <linearGradient id="court" x2="1" y2="1"><stop stop-color="#202820"/><stop offset="1" stop-color="#315A36"/></linearGradient>
     <radialGradient id="light"><stop stop-color="#D9F46B" stop-opacity=".2"/><stop offset="1" stop-color="#D9F46B" stop-opacity="0"/></radialGradient>
@@ -46,7 +46,7 @@
     </g></g>
     <rect y="366" width="1200" height="74" fill="#D9F46B"/>
     <g fill="#202820" font-size="16" font-weight="700" letter-spacing="2">
-      <text x="56" y="410">08 SPORTS</text><text x="335" y="410">08 TEAMS</text><text x="624" y="410">ONE CAMPUS</text><text x="920" y="410">ALL IN.</text>
+      <text x="56" y="410">08 SPORTS</text><text x="335" y="410">06 TEAMS</text><text x="624" y="410">ONE CAMPUS</text><text x="920" y="410">ALL IN.</text>
     </g>
     <g stroke="#315A36" stroke-opacity=".3"><path d="M279 386V420 M568 386V420 M864 386V420"/></g>
   </g>

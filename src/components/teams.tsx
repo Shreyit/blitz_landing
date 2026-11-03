@@ -30,7 +30,7 @@ export function Teams() {
   return (
     <div className="page-width">
       <div className="page-intro" data-entrance>
-        <span className="section-kicker">Eight colours. One campus.</span>
+        <span className="section-kicker">Six colours. One campus.</span>
         <h1>Meet your people.</h1>
         <p>
           New teammates, familiar faces, and a jersey to make your own. Player

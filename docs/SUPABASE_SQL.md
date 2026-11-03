@@ -51,7 +51,7 @@ Migration 006 replaces the original participant email-verification flow describe
 
 ### Auction records
 
-`teams` seeds exactly eight identities with ₹2,000 purses. `check(purse between 0 and 2000)` protects balances. `name_key` is a generated lowercase name, giving case-insensitive uniqueness. Its unique constraint is deferrable so teams can exchange names within one transaction without a temporary collision.
+`teams` seeds eight identities with ₹2,000 purses; migration 023 later removes two, leaving six. `check(purse between 0 and 2000)` protects balances. `name_key` is a generated lowercase name, giving case-insensitive uniqueness. Its unique constraint is deferrable so teams can exchange names within one transaction without a temporary collision.
 
 `auction` is a singleton: `check(id = 1)` allows one auction state. It stores phase, round, frozen queue, unsold queue, current position, bid, leader, version, and initial player count. A compound check requires bid and leader to agree: either no bid/no leader, or a positive bid with a leader.
 
@@ -98,13 +98,13 @@ The command compares its UUID to prior audit entries. An identical retry from th
 
 | Action | Checks and changes |
 | --- | --- |
-| `teams` | Require idle phase and eight distinct names/IDs; defer the name uniqueness check and update identities. |
+| `teams` | Require idle phase and one distinct name for every existing team ID; defer the name uniqueness check and update identities. |
 | `start` | Require idle phase and verified players; shuffle and freeze their IDs, close intake, start the normal round. |
 | `bid` | Require an active lot and real team, reject self-bidding, calculate the next amount, check purse, save bid and leader. |
 | `sell` | Require a winning bid, check purse again, assign player, deduct price, queue email, and advance. |
 | `cancel` | Mark the current lot's live bid rows cancelled, record previous amount/leader, and clear the bid. |
 | `unsold` | Require no current bid, append player to the unsold list, and advance. |
-| `allocate` | Require the final allocation phase, shuffle remaining players and team order per eight-player cycle, assign at ₹0, then complete. |
+| `allocate` | Require the final allocation phase, shuffle remaining players and team order per cycle of one player per team, assign at ₹0, then complete. |
 
 `gen_random_uuid()` supplies random ordering keys for saved draws. The outcome is persisted inside the transaction; a retry cannot reroll it. This is a random allocation mechanism, not a publicly verifiable draw protocol.
 
@@ -231,3 +231,7 @@ PGlite runs actual PostgreSQL but supplies platform stubs. Hosted Auth, Storage,
 ## Migration 020: stud.tiss.edu
 
 [020](../supabase/migrations/202610280020_stud_tiss_edu.sql) replaces the registration email check: new sign-ups must use `@stud.tiss.ac.in` or `@stud.tiss.edu` (previously `@tiss.edu`). It finds and drops the original inline check by its definition, then adds `registrations_email_domain` as `NOT VALID`, so any rows already saved with `@tiss.edu` stay as they are while every new insert is checked.
+
+## Migration 023: six teams
+
+[023](../supabase/migrations/202611030023_six_teams.sql) removes Shell Mates (team 3) and The Symbiotes (team 8). A `do` block first refuses to run if the auction has left `idle` or either team has a bid, an assigned player or the current lead, so no auction history can be lost. The other ids (1, 2, 4, 5, 6, 7) stay as they are, so nothing that refers to them moves. It then replaces `blitz_auction_command` with `create or replace` (keeping its grants): the `teams` command and the final random allocation now count the rows in `blitz.teams` instead of assuming eight. Finally it bumps the version and republishes the snapshot, like migration 013.

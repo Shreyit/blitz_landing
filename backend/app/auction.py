@@ -195,9 +195,9 @@ def execute(db, action, payload):
         rng.shuffle(players)
         teams = list(db.scalars(select(Team).order_by(Team.id).with_for_update()).all())
         draw = []
-        for offset in range(0, len(players), 8):
+        for offset in range(0, len(players), len(teams)):
             rng.shuffle(teams)
-            for player_id, team in zip(players[offset : offset + 8], teams):
+            for player_id, team in zip(players[offset : offset + len(teams)], teams):
                 assign(db, player_id, team, 0, "random")
                 draw.append({"player_id": player_id, "team_id": team.id})
         details["draw"] = draw
@@ -212,7 +212,7 @@ def execute(db, action, payload):
                 select(Team).where(Team.id == payload.team_id).with_for_update()
             )
             if not team:
-                raise HTTPException(400, "Choose one of the eight teams.")
+                raise HTTPException(400, "Choose one of the teams.")
             amount = next_bid(auction.round, auction.bid)
             if team.id == auction.leader:
                 raise HTTPException(409, "This team is already leading.")

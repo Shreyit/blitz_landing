@@ -77,7 +77,7 @@ def test_allowed_domains_and_roles(client):
         "student@stud.tiss.ac.in.evil",
     ]:
         assert register(client, email=email).status_code == 422
-    assert register(client, email="STUDENT@TISS.EDU").status_code == 201
+    assert register(client, email="STUDENT@STUD.TISS.EDU").status_code == 201
     assert (
         register(client, email="student@stud.tiss.edu", role="volunteer").status_code == 201
     )

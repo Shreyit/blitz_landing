@@ -1,6 +1,6 @@
 # BACHELORS BLITZ LANDING PAGE
 
-![Bachelor’s BLITZ — eight sports, eight teams, one campus. Forest-green and lime sports court with animated lightning and tournament paths.](docs/readme/hero.svg)
+![Bachelor’s BLITZ — eight sports, six teams, one campus. Forest-green and lime sports court with animated lightning and tournament paths.](docs/readme/hero.svg)
 
 An interactive campus sports website for the **Bachelor’s in Analytics and Sustainability Studies programme at TISS Mumbai**, with player and volunteer registration, a live Auction Dome, and an organiser console.
 
@@ -15,7 +15,7 @@ An interactive campus sports website for the **Bachelor’s in Analytics and Sus
 | Landing & spirit | Oversized BLITZ branding, the supplied TISS logo, illustrated sports equipment, and an interactive tug-of-war warm-up. |
 | Rules & formats | Eight sport dialogs with animated entrances and glass-blurred backdrops, award points, and a connected knockout bracket. |
 | Registration | Separate player and volunteer entries, institutional email selection, demographics, a zoomable India map, and a square photo crop editor. |
-| Auction Dome | Live spectator view: all eight team purses in one line, the player on the floor (square photo, course, year, sports), the current bid and leading team, every team's logo and owner, recent sales, and a "Sold!" celebration with confetti. |
+| Auction Dome | Live spectator view: all six team purses in one line, the player on the floor (square photo, course, year, sports), the current bid and leading team, every team's logo and owner, recent sales, and a "Sold!" celebration with confetti. |
 | Auction controls | Organiser-only auctioneer screen at `/admin/auction`: tap a team to raise the bid, then **Sold** (hammer), **Unsold**, or **Clear bids**. The next player loads automatically after a sale. Shows the player's gender, which never reaches the public feed. |
 | Registration admin | Private signed admin sessions, searchable player/volunteer roster, full profiles and photos, role filters, CSV export, and a link to the auction controls. |
 | Team rosters | Square team-logo cards with owner names, player count, purse left, and a squad popup. Teams without a logo show their colour and initials. |
@@ -85,7 +85,7 @@ Private tables live in the `blitz` schema, which browsers cannot reach. Row-leve
 | Table | Holds | Rules the database enforces |
 | :--- | :--- | :--- |
 | `registrations` | Every player and volunteer sign-up | `@stud.tiss.ac.in` / `@stud.tiss.edu` only; one entry per email per role; players pick 1–8 sports; volunteers pick one department and no sports; WhatsApp in `+<country><number>` form |
-| `teams` | The eight teams, colours and purses | Ids 1–8; unique names; purse between ₹0 and ₹2,000 |
+| `teams` | The six teams, colours and purses | Ids 1, 2, 4, 5, 6, 7 (3 and 8 were removed); unique names; purse between ₹0 and ₹2,000 |
 | `auction` | **One row**: phase, round, shuffled queue, unsold list, current bid, leader, version | A bid always has a leader; round 0–3; `version` rises by one on every change |
 | `bids` | Every bid, including cleared ones | Each button press has a unique `command_id`, so a retry can't bid twice |
 | `assignments` | Final result: player → team, price, `auction` or `random` | A player can be assigned only once |
@@ -170,13 +170,13 @@ The India map supports zooming, panning, and all 36 states and union territories
 
 Run the auction from **`/admin/auction`** (or the "Auction controls" button on `/admin`). The screen has three parts:
 
-1. **Purse KPIs** — all eight teams in one line with their purse left; the leading team is highlighted.
+1. **Purse KPIs** — all six teams in one line with their purse left; the leading team is highlighted.
 2. **Player stage** — square photo, name, course (BSASS/BSW), year ("1st year", "2nd year", …), organiser-only gender, and sports. The bid panel on the right shows the current bid, the leading team, the next valid bid, and the **Sold** (hammer), **Clear bids**, and **Unsold** buttons. On tablets and phones the panel sits below the player.
 3. **Team grid** — two rows of four team buttons (logo, name, owner). Each tap places that team's next bid: ₹20 → ₹25 → ₹30 → ₹35 … in the normal round. The leading team can't bid against itself, and a team whose purse is below the next bid is disabled.
 
 **Sold** completes the sale in one press, with no confirmation dialog. Every screen, including spectators on `/auction`, shows a "Sold!" card with confetti in the winning team's colours, and the next player appears automatically. **Clear bids** asks for confirmation and is recorded in the audit log.
 
-Starting the auction closes registration and freezes its registered-player queue. The organiser explicitly closes each sale; there is no automatic closing timer. The eight team purses start at **₹2,000 each** and carry across all rounds.
+Starting the auction closes registration and freezes its registered-player queue. The organiser explicitly closes each sale; there is no automatic closing timer. The six team purses start at **₹2,000 each** and carry across all rounds.
 
 | Round | Opening bid | Increment |
 | :--- | ---: | :--- |
@@ -333,7 +333,7 @@ blitz_landing/
 
 ## Teams and logos
 
-The eight team identities (id, name, colour, symbol) live in three places that must stay in sync:
+The six team identities (id, name, colour, symbol) live in three places that must stay in sync:
 
 | Where | Used by |
 | :--- | :--- |
@@ -351,18 +351,18 @@ Logos and owners are frontend-only, in `TEAM_BRANDING` in `src/lib/event.ts`, ke
 
 **Logo format:** one square image, ideally 1080 × 1080. It's shown as given (full-bleed, no cropping or padding added) on the team cards, the squad popup, and the Auction Dome. Keep important artwork away from the very edges. Convert it to a 512px WebP into `public/teams/` (for example with `sharp`), then add the `TEAM_BRANDING` line.
 
-All eight teams are confirmed:
+All six teams are confirmed:
 
 | Id | Team | Owner | Migration |
 | ---: | :--- | :--- | :--- |
 | 1 | The Monarchs | Monalisa Murmu | `202610230017_the_monarchs.sql` |
 | 2 | United Spartans | Vinayak Sarin | `202610230016_united_spartans_shell_mates.sql` |
-| 3 | Shell Mates | Eesha Mishra | `202610230016_united_spartans_shell_mates.sql` |
 | 4 | SlytherWins | Merry Geordy | `202610220012_slytherwins.sql`, renamed in `202610230014_shadow_strikers.sql` |
 | 5 | X Force United | Wali Abidi | `202610220010_x_force_united.sql` |
 | 6 | Vikings | Rhea Tripathi | `202610220011_vikings.sql` |
 | 7 | Shadow Strikers | Aditya Gupta | `202610230014_shadow_strikers.sql` |
-| 8 | The Symbiotes | Prakhar Rai | `202610230015_the_symbiotes.sql` |
+
+Shell Mates (id 3) and The Symbiotes (id 8) were removed by `202611030023_six_teams.sql`. The remaining ids were kept so nothing else had to move.
 
 Team names are fixed once the auction starts. Apply new migrations with `npx supabase db push` before then; until a migration is applied, the hosted site keeps showing the old name even though the logo appears.
 

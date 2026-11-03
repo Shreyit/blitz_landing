@@ -5,10 +5,10 @@
   padding-bottom: 48px;
 }
 
-/* ── Team purse KPIs: all eight teams on one line ── */
+/* ── Team purse KPIs: all six teams on one line ── */
 .dome-kpis {
   display: grid;
-  grid-template-columns: repeat(8, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 8px;
 }
 .dome-kpi {
@@ -171,10 +171,10 @@
   margin-top: 8px;
 }
 
-/* ── Team grid: 2 rows × 4; buttons for the auctioneer ── */
+/* ── Team grid: 2 rows × 3; buttons for the auctioneer ── */
 .dome-teams {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
 }
 .dome-team {

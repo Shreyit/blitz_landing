@@ -251,7 +251,7 @@ export function Registration() {
               </span>
             </div>
             <Link href="/teams" className="button">
-              Meet the eight teams <ArrowUpRight size={17} />
+              Meet the six teams <ArrowUpRight size={17} />
             </Link>
             <button type="button" className="secondary-link register-other-role" onClick={() => {
               setRole(role === "player" ? "volunteer" : "player");

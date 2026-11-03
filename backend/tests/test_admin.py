@@ -1,15 +1,16 @@
 from uuid import uuid4
 from sqlalchemy import select
+from app.config import TEAM_IDS
 from app.database import Session
 from app.models import Auction, EmailJob, Registration
 
 
-def test_eight_team_names_are_editable_before_auction(admin_client):
+def test_six_team_names_are_editable_before_auction(admin_client):
     command_id = str(uuid4())
     payload = {
         "command_id": command_id,
         "version": 0,
-        "teams": [{"id": i, "name": f"Campus Team {i}"} for i in range(1, 9)],
+        "teams": [{"id": i, "name": f"Campus Team {i}"} for i in sorted(TEAM_IDS)],
     }
     response = admin_client.post("/api/admin/teams", json=payload)
     assert response.status_code == 200
@@ -20,7 +21,7 @@ def test_eight_team_names_are_editable_before_auction(admin_client):
         **payload,
         "command_id": str(uuid4()),
         "version": 1,
-        "teams": [{"id": i, "name": "Duplicate"} for i in range(1, 9)],
+        "teams": [{"id": i, "name": "Duplicate"} for i in sorted(TEAM_IDS)],
     }
     assert admin_client.post("/api/admin/teams", json=duplicate).status_code == 422
     with Session.begin() as db:

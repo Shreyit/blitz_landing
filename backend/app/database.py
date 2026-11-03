@@ -52,8 +52,8 @@ def initialize():
             connection.execute(
                 Team.__table__.insert(),
                 [
-                    dict(id=index, name=name, color=color, symbol=symbol, purse=2000)
-                    for index, (name, color, symbol) in enumerate(TEAMS, 1)
+                    dict(id=team_id, name=name, color=color, symbol=symbol, purse=2000)
+                    for team_id, name, color, symbol in TEAMS
                 ],
             )
             connection.execute(

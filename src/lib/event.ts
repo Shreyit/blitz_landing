@@ -11,12 +11,10 @@ export const SPORTS = [
 export const TEAMS = [
   { id: 1, name: "The Monarchs", color: "#3f6e5a", symbol: "MO" },
   { id: 2, name: "United Spartans", color: "#a8742c", symbol: "US" },
-  { id: 3, name: "Shell Mates", color: "#6b4a2e", symbol: "SM" },
   { id: 5, name: "X Force United", color: "#c4242b", symbol: "XF" },
   { id: 4, name: "SlytherWins", color: "#1f7a3a", symbol: "SW" },
   { id: 6, name: "Vikings", color: "#8f1d2a", symbol: "VK" },
   { id: 7, name: "Shadow Strikers", color: "#2b2b30", symbol: "SS" },
-  { id: 8, name: "The Symbiotes", color: "#4a4f5c", symbol: "SY" },
 ];
 /** Display order by team id, used everywhere teams are listed. Ids stay fixed in the database. */
 const TEAM_ORDER = TEAMS.map((team) => team.id);
@@ -35,12 +33,10 @@ export const TEAM_BRANDING: Record<
 > = {
   1: { logo: "/teams/the-monarchs.webp", logoBg: "#e6dfcf", owner: "Monalisa Murmu" },
   2: { logo: "/teams/united-spartans.webp", logoBg: "#070705", owner: "Vinayak Sarin" },
-  3: { logo: "/teams/shell-mates.webp", logoBg: "#2e1910", owner: "Eesha Mishra" },
   4: { logo: "/teams/slytherwins.webp", logoBg: "#768262", owner: "Merry Geordy" },
   5: { logo: "/teams/x-force-united.webp", logoBg: "#000000", owner: "Wali Abidi" },
   6: { logo: "/teams/vikings.webp", logoBg: "#52030a", owner: "Rhea Tripathi" },
   7: { logo: "/teams/shadow-strikers.webp", logoBg: "#0a0a0a", owner: "Aditya Gupta" },
-  8: { logo: "/teams/the-symbiotes.webp", logoBg: "#000000", owner: "Prakhar Rai" },
 };
 export const ROUND_NAMES = [
   "Normal round",

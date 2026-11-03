@@ -167,7 +167,7 @@ test("region selection remains usable when the boundary download fails", async (
   await page.close();
 });
 
-test("auction preview and eight expandable teams", async () => {
+test("auction preview and six expandable teams", async () => {
   const page = await browser.newPage({ reducedMotion: "reduce" });
   await page.route("**/api/auction", (route) =>
     route.fulfill({
@@ -179,9 +179,9 @@ test("auction preview and eight expandable teams", async () => {
   await page.goto(`${base}/auction`);
   assert.equal(await page.locator(".mascot, .bolt-companion").count(), 0);
   await page.getByText("Read-only preview", { exact: true }).waitFor();
-  assert.equal(await page.locator(".dome-kpi").count(), 8);
+  assert.equal(await page.locator(".dome-kpi").count(), 6);
   await page.goto(`${base}/teams`);
-  assert.equal(await page.locator(".team-card").count(), 8);
+  assert.equal(await page.locator(".team-card").count(), 6);
   await page.locator(".team-squad-button").first().click();
   await page.getByText("The first team-up is still to come.").first().waitFor();
   await page.close();
@@ -245,7 +245,7 @@ test("sports scenes, all eight registration choices and tug-of-war controls", as
     "-1",
   );
   await page
-    .getByRole("button", { name: "Pull for Shell Mates", exact: true })
+    .getByRole("button", { name: "Pull for X Force United", exact: true })
     .click();
   assert.equal(
     await page.getByRole("meter").getAttribute("aria-valuenow"),
@@ -260,7 +260,7 @@ test("sports scenes, all eight registration choices and tug-of-war controls", as
     .waitFor();
   assert(
     await page
-      .getByRole("button", { name: "Pull for Shell Mates", exact: true })
+      .getByRole("button", { name: "Pull for X Force United", exact: true })
       .isDisabled(),
   );
   await page.getByRole("button", { name: "Reset tug of war" }).click();
@@ -273,7 +273,7 @@ test("sports scenes, all eight registration choices and tug-of-war controls", as
     await page
       .locator(".tug-squad-left")
       .evaluate((node) => node.style.getPropertyValue("--bolt-jersey")),
-    "#9671a5",
+    "#1f7a3a",
   );
   assert(
     await page.evaluate(

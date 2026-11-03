@@ -72,7 +72,7 @@ export function pageReaction(path: string): MascotReaction | null {
   if (path === "/teams")
     return {
       action: "wave",
-      message: "Eight squads. Open one to meet your people.",
+      message: "Six squads. Open one to meet your people.",
     };
   if (path === "/admin")
     return {

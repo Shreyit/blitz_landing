@@ -24,7 +24,7 @@ npx supabase start
 npx supabase status
 ```
 
-The repository already contains `supabase/config.toml`; there is no need to run `supabase init` again. The initial database migrations create the eight team identities and purses. No student or organiser accounts are seeded.
+The repository already contains `supabase/config.toml`; there is no need to run `supabase init` again. The initial database migrations create eight team identities and purses; migration 023 removes two, leaving six. No student or organiser accounts are seeded.
 
 To recreate the local database while developing:
 

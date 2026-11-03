@@ -1,6 +1,6 @@
 # Architecture
 
-BLITZ contains the public sports website, player/volunteer registration, a spectator Auction Dome, an organiser console, and eight team rosters. Supabase mode is implemented, the hosted project exists, and the Next.js website is deployed on Vercel. Hosted database activation and production rehearsal remain pending. The current `/admin` route focuses on the registration pilot: searchable private profiles, photos, filters, and CSV export. Auction controls will be connected in the next phase.
+BLITZ contains the public sports website, player/volunteer registration, a spectator Auction Dome, an organiser console, and six team rosters. Supabase mode is implemented, the hosted project exists, and the Next.js website is deployed on Vercel. Hosted database activation and production rehearsal remain pending. The current `/admin` route focuses on the registration pilot: searchable private profiles, photos, filters, and CSV export. Auction controls will be connected in the next phase.
 
 ## Supabase mode
 
@@ -61,7 +61,7 @@ Healthy subscribers stop four-second polling. Disconnects or HTTP failure enable
 
 ## Auction lifecycle
 
-Idle → normal queue → ₹10/+₹5 queue → ₹2/+₹2 queue → ₹1/+₹1 queue → final allocation → complete. Only unsold players move to a later round. The eight ₹2,000 purses carry across rounds. The organiser explicitly sells or marks unsold; no timer silently closes a sale.
+Idle → normal queue → ₹10/+₹5 queue → ₹2/+₹2 queue → ₹1/+₹1 queue → final allocation → complete. Only unsold players move to a later round. The six ₹2,000 purses carry across rounds. The organiser explicitly sells or marks unsold; no timer silently closes a sale.
 
 Idempotency keys and expected versions protect repeated/stale commands. The current leader cannot bid against itself. Insufficient purse is rejected. Bid cancellation preserves history and is audited. Final allocation shuffles remaining players and team order for each eight-player cycle, costs ₹0, persists once, and cannot be rerolled. Sold-player undo/reassignment is not exposed.
 
@@ -79,7 +79,7 @@ GSAP owns DOM choreography, Lenis owns fine-pointer smooth scrolling, and Three.
 
 ## Local verification and remaining work
 
-Twenty versioned SQL migrations define the schema and functions; 010–017 only rename confirmed teams and republish the snapshot, 018 adds the private WhatsApp number, 019 adds the service-only Google Sheet export, and 020 changes the second student email domain to stud.tiss.edu. PGlite tests run real PostgreSQL with Supabase platform stubs; adapter/route tests mock network and cookies while exercising actual application handlers. See [verification](VERIFICATION.md), [setup](docs/SUPABASE_SETUP.md), and [SQL lessons](docs/SUPABASE_SQL.md).
+Twenty-three versioned SQL migrations define the schema and functions; 010–017 only rename confirmed teams and republish the snapshot, 018 adds the private WhatsApp number, 019 adds the service-only Google Sheet export, 020 changes the second student email domain to stud.tiss.edu, 021–022 move two registrations to that domain and re-send their receipts, and 023 removes two teams, leaving six. PGlite tests run real PostgreSQL with Supabase platform stubs; adapter/route tests mock network and cookies while exercising actual application handlers. See [verification](VERIFICATION.md), [setup](docs/SUPABASE_SETUP.md), and [SQL lessons](docs/SUPABASE_SQL.md).
 
 Hosted service integration, a real SMTP/provider rehearsal, browser/device checks, and multi-connection/load testing remain pending. Sports fixture/result management and persisted overall standings are separate unfinished features. Existing Python/SQLite data needs an explicit import if any real event data must move to Supabase.
 

@@ -59,7 +59,7 @@ export function Admin() {
         action: "point",
         message:
           tab === "teams"
-            ? "Eight names. Eight colours. Make them yours."
+            ? "Six names. Six colours. Make them yours."
             : tab === "registrations"
               ? "Every player up for auction is here."
               : tab === "emails"
@@ -426,7 +426,7 @@ export function Admin() {
         >
           <h2 className="form-heading">Give the squads their names.</h2>
           <p className="form-subtitle">
-            Set all eight names before starting. Each team begins with ₹2,000;
+            Set all six names before starting. Each team begins with ₹2,000;
             team colours stay consistent.
           </p>
           <div className="field-grid">
@@ -460,7 +460,7 @@ export function Admin() {
               className="button"
               disabled={busy || !connected || state.phase !== "idle"}
             >
-              {busy ? "Saving…" : "Save eight team names"}
+              {busy ? "Saving…" : "Save six team names"}
             </button>
           </div>
         </form>

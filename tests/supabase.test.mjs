@@ -83,11 +83,12 @@ beforeEach(async () => {
 });
 after(async () => db.close());
 
-test('all migrations execute and seed eight teams with one coherent public snapshot', async () => {
-  const s = await state(); assert.equal(s.phase, 'idle'); assert.equal(s.teams.length, 8);
+test('all migrations execute and leave six teams with one coherent public snapshot', async () => {
+  const s = await state(); assert.equal(s.phase, 'idle'); assert.equal(s.teams.length, 6);
   assert.ok(s.teams.every(t => t.purse === 2000 && t.players.length === 0));
   // Confirmed team renames (migrations 010–012) must reach the public snapshot.
-  assert.deepEqual([1, 2, 3, 4, 5, 6, 7, 8].map(id => s.teams.find(t => t.id === id).name), ['The Monarchs', 'United Spartans', 'Shell Mates', 'SlytherWins', 'X Force United', 'Vikings', 'Shadow Strikers', 'The Symbiotes']);
+  // Migration 023 removes Shell Mates (3) and The Symbiotes (8); the other ids stay fixed.
+  assert.deepEqual(s.teams.map(t => [t.id, t.name]), [[1, 'The Monarchs'], [2, 'United Spartans'], [4, 'SlytherWins'], [5, 'X Force United'], [6, 'Vikings'], [7, 'Shadow Strikers']]);
 });
 test('SQL sports and region catalogues match the frontend configuration', async () => {
   const options = JSON.parse(await readFile('shared/registration-options.json', 'utf8'));
@@ -211,6 +212,8 @@ test('team names can be exchanged before start but duplicate names and later edi
   assert.equal(saved.teams[0].name,teams[0].name);
   const duplicate=teams.map(t=>({...t,name:'Same name'}));
   await assert.rejects(command('teams',null,randomUUID(),saved.version,duplicate),/distinct/);
+  const removedTeam=teams.map((t,i)=>i===0?{...t,id:3}:t);
+  await assert.rejects(command('teams',null,randomUUID(),saved.version,removedTeam),/distinct/);
   await eligible(); await command('start');
   await assert.rejects(command('teams',null,randomUUID(),undefined,teams),/fixed/);
 });
@@ -241,7 +244,7 @@ test('sheet export is service-only and includes private details and team assignm
   const volunteer = await register('volunteer');
   await db.exec('update blitz.registrations set verified=true');
   await as('authenticated', organiser);
-  await command('start'); await command('bid', 3); await command('sell');
+  await command('start'); await command('bid', 4); await command('sell');
   for (const role of ['anon', 'authenticated'])
     { await as(role, role === 'authenticated' ? organiser : ''); await assert.rejects(db.query('select public.blitz_sheet_export()'), /permission denied/); }
   await as('service_role');
@@ -440,7 +443,7 @@ test('pilot cleanup is service-only and preserves unrelated registrations, teams
   assert.equal(result.deleted_registrations,1);assert.equal(result.deleted_mail_jobs,1);assert.deepEqual(result.photo_keys,[`${target}.jpg`]);
   await as('postgres');assert.equal(await scalar('select id as value from blitz.registrations'),survivor);
   assert.equal(await scalar('select count(*)::integer as value from blitz.email_outbox'),1);
-  assert.equal(await scalar('select count(*)::integer as value from blitz.teams where purse=2000'),8);
+  assert.equal(await scalar('select count(*)::integer as value from blitz.teams where purse=2000'),6);
   assert.equal(await scalar('select count(*)::integer as value from blitz.organiser_users'),1);
 });
 test('pilot cleanup refuses active mail leases and auction activity, and repeated cleanup is harmless',async()=>{

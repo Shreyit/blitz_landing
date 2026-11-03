@@ -30,13 +30,13 @@ SPORTS = [
     "Tug of war",
     "Dodgeball",
 ]
+# Ids match the live database, where teams 3 and 8 were removed.
 TEAMS = [
-    ("The Monarchs", "#3f6e5a", "MO"),
-    ("United Spartans", "#a8742c", "US"),
-    ("Shell Mates", "#6b4a2e", "SM"),
-    ("SlytherWins", "#1f7a3a", "SW"),
-    ("X Force United", "#c4242b", "XF"),
-    ("Vikings", "#8f1d2a", "VK"),
-    ("Shadow Strikers", "#2b2b30", "SS"),
-    ("The Symbiotes", "#4a4f5c", "SY"),
+    (1, "The Monarchs", "#3f6e5a", "MO"),
+    (2, "United Spartans", "#a8742c", "US"),
+    (4, "SlytherWins", "#1f7a3a", "SW"),
+    (5, "X Force United", "#c4242b", "XF"),
+    (6, "Vikings", "#8f1d2a", "VK"),
+    (7, "Shadow Strikers", "#2b2b30", "SS"),
 ]
+TEAM_IDS = {team[0] for team in TEAMS}

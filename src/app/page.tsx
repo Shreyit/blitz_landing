@@ -97,7 +97,7 @@ export default function Home() {
           <a href="#the-games">
             There’s a game for you <ArrowDown size={16} />
           </a>
-          <span>Eight teams. One campus. All in.</span>
+          <span>Six teams. One campus. All in.</span>
         </div>
       </section>
       <div className="sport-ribbon" aria-hidden="true">
@@ -167,7 +167,7 @@ export default function Home() {
         </div>
       </section>
       <TugOfWar />
-      <section className="auction-invite page-width" data-reveal data-bolt-greeting="Eight teams, one fair shot. Meet your next squad in the Auction Dome.">
+      <section className="auction-invite page-width" data-reveal data-bolt-greeting="Six teams, one fair shot. Meet your next squad in the Auction Dome.">
         <div className="invite-top">
           <span>
             <span className="status-dot" /> Where teams take shape
@@ -184,7 +184,7 @@ export default function Home() {
           </h2>
           <div>
             <p>
-              Eight teams. ₹2,000 each. Every player starts with a chance.
+              Six teams. ₹2,000 each. Every player starts with a chance.
               Follow the bids and watch your campus squads come together.
             </p>
             <Link href="/auction" className="button button-light">
@@ -194,7 +194,7 @@ export default function Home() {
         </div>
         <div className="invite-bottom">
           <span>₹20 opening bid</span>
-          <span>8 team purses</span>
+          <span>6 team purses</span>
           <span>One fair shot for everyone</span>
         </div>
       </section>
