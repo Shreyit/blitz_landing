@@ -9,36 +9,36 @@
 .dome-kpis {
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 8px;
+  gap: 12px;
 }
 .dome-kpi {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   grid-template-rows: auto auto;
-  column-gap: 8px;
+  column-gap: 10px;
   align-items: center;
-  padding: 8px;
+  padding: 12px;
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 16px;
   background: #fff;
   transition: border-color 0.2s ease, background 0.2s ease;
 }
 .dome-kpi .dome-badge {
   grid-row: span 2;
-  width: 34px;
-  height: 34px;
-  border-radius: 9px;
-  font-size: 14px;
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  font-size: 18px;
 }
 .dome-kpi-name {
   overflow: hidden;
-  font-size: 10.5px;
+  font-size: 12px;
   color: var(--muted);
   white-space: nowrap;
   text-overflow: ellipsis;
 }
 .dome-kpi strong {
-  font-size: 15px;
+  font-size: 22px;
   font-weight: 650;
   font-variant-numeric: tabular-nums;
 }
@@ -175,18 +175,18 @@
 .dome-teams {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
+  gap: 14px;
 }
 .dome-team {
   position: relative;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
-  gap: 12px;
+  gap: 18px;
   width: 100%;
-  padding: 10px;
+  padding: 16px;
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: 18px;
   background: #fff;
   color: var(--ink);
   font: inherit;
@@ -214,10 +214,10 @@ button.dome-team.is-leading:disabled {
   cursor: default;
 }
 .dome-team .dome-badge {
-  width: 52px;
-  height: 52px;
-  border-radius: 12px;
-  font-size: 20px;
+  width: 80px;
+  height: 80px;
+  border-radius: 16px;
+  font-size: 28px;
 }
 .dome-team-text {
   min-width: 0;
@@ -230,12 +230,12 @@ button.dome-team.is-leading:disabled {
   text-overflow: ellipsis;
 }
 .dome-team-text strong {
-  font-size: 14px;
+  font-size: 19px;
   font-weight: 650;
 }
 .dome-team-text small {
-  margin-top: 2px;
-  font-size: 11px;
+  margin-top: 4px;
+  font-size: 14px;
   color: var(--muted);
 }
 .dome-team-tag:empty {
@@ -519,8 +519,8 @@ button.dome-team.is-leading:disabled {
   .dome-kpi {
     grid-template-columns: minmax(0, 1fr);
     justify-items: center;
-    row-gap: 4px;
-    padding: 8px 4px;
+    row-gap: 6px;
+    padding: 10px 4px;
     text-align: center;
   }
   .dome-kpi .dome-badge {
@@ -530,7 +530,7 @@ button.dome-team.is-leading:disabled {
     display: none;
   }
   .dome-kpi strong {
-    font-size: 12px;
+    font-size: 17px;
   }
   .dome-team {
     grid-template-columns: minmax(0, 1fr);
@@ -577,20 +577,21 @@ button.dome-team.is-leading:disabled {
     gap: 12px;
   }
   .dome-kpis {
-    gap: 4px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
   }
   .dome-kpi {
-    padding: 6px 2px;
-    border-radius: 9px;
+    padding: 8px 4px;
+    border-radius: 11px;
   }
   .dome-kpi .dome-badge {
-    width: 28px;
-    height: 28px;
-    border-radius: 7px;
-    font-size: 11px;
+    width: 40px;
+    height: 40px;
+    border-radius: 9px;
+    font-size: 14px;
   }
   .dome-kpi strong {
-    font-size: 9.5px;
+    font-size: 15px;
   }
   .dome-meta {
     font-size: 10.5px;
@@ -650,13 +651,13 @@ button.dome-team.is-leading:disabled {
     border-radius: 11px;
   }
   .dome-team .dome-badge {
-    width: 44px;
-    height: 44px;
+    width: 56px;
+    height: 56px;
     border-radius: 10px;
     font-size: 16px;
   }
   .dome-team-text strong {
-    font-size: 10.5px;
+    font-size: 12px;
     white-space: normal;
     display: -webkit-box;
     -webkit-line-clamp: 2;
