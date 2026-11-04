@@ -8,9 +8,9 @@ const { regions } = JSON.parse(readFileSync(new URL("../shared/registration-opti
 const photo = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/l3sAAAAASUVORK5CYII=", "base64");
 const player = { id: "mobile-test", name: "A very long campus participant name for mobile layout", programme: "BSASS", year: 2, sports: ["Football", "Table tennis"], photo: null, price: 1990, source: "auction" };
 const state = {
-  phase: "preview", round: 0, version: 1, current: player, bid: 1990, leader: 1, next_bid: 2000,
+  phase: "active", round: 0, version: 1, current: player, bid: 1990, leader: 1, next_bid: 2000,
   remaining: 1, sold: 1, total: 2,
-  teams: Array.from({ length: 8 }, (_, index) => ({ id: index + 1, name: `Campus sports team with a long name ${index + 1}`, symbol: "BT", color: "#315a36", purse: 2000, players: [player] })),
+  teams: [1, 2, 4, 5, 6, 7].map((id, index) => ({ id, name: `Campus sports team with a long name ${index + 1}`, symbol: "BT", color: "#315a36", purse: 2000, players: [player] })),
   history: [{ name: player.name, team: "Campus sports team with a long name 1", price: 1990, source: "auction" }],
 };
 let browser;
@@ -69,7 +69,7 @@ for (const viewport of [
         await page.locator("#main h1").waitFor();
         await page.evaluate(() => document.fonts.ready);
         if (path === "/register") await page.locator(".region-map").waitFor();
-        if (path === "/teams" || path === "/auction") await page.getByText(state.teams[0].name, { exact: true }).first().waitFor();
+        if (path === "/teams" || path === "/auction") await page.getByText(state.teams[0].name, { exact: true }).filter({ visible: true }).first().waitFor();
         await noOverflow(page, `${path} at ${viewport.width}`);
         const menu = page.getByRole("button", { name: "Open navigation", exact: true });
         await touchTarget(menu);
@@ -123,11 +123,9 @@ test("every sport dialog fits narrow phones and landscape with scrollable rules"
         await dialog.getByRole("button", { name: "Close sport rules" }).tap();
         await dialog.waitFor({ state: "hidden" });
       }
-      await page.locator(".bracket-scroll").scrollIntoViewIfNeeded();
-      assert.equal(await page.locator(".bracket-scroll").evaluate((element) => element.scrollWidth > element.clientWidth), true);
-      await page.locator(".bracket-scroll").evaluate((element) => { element.scrollLeft = element.scrollWidth; });
-      assert((await page.locator(".bracket-champion").boundingBox()).x < viewport.width);
-      await noOverflow(page, "Rules and bracket");
+      await page.locator(".format-final").scrollIntoViewIfNeeded();
+      await touchTarget(page.getByRole("button", { name: "A1 wins" }).first());
+      await noOverflow(page, "Rules and format");
     } finally { await page.close(); }
   }
 });

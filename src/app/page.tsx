@@ -131,7 +131,7 @@ export default function Home() {
         <div className="sports-grid">
           {SPORTS.map((sport, i) => <SportCard key={sport} sport={sport} index={i} />)}
         </div>
-        <div className="sports-rulebook"><p>Eight ways to play.<span>Know your format before you step on court.</span></p><Link href="/rules" className="text-link">The rules & tournament bracket <ArrowUpRight size={17}/></Link></div>
+        <div className="sports-rulebook"><p>Eight ways to play.<span>Know your format before you step on court.</span></p><Link href="/rules" className="text-link">The rules & tournament format <ArrowUpRight size={17}/></Link></div>
       </section>
       <section className="spirit-section page-width" data-reveal data-bolt-greeting="Every superhero needs a team. This one’s yours.">
         <div className="spirit-art">

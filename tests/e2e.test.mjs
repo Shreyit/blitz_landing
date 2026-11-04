@@ -314,12 +314,12 @@ test("sports scenes, all eight registration choices and tug-of-war controls", as
   await page.close();
 });
 
-test("rules deep links open the selected sport and the bracket follows the supplied pairings", async () => {
+test("rules deep links open the selected sport and the pool simulator ranks teams", async () => {
   const page = await browser.newPage({ viewport: { width: 390, height: 844 }, reducedMotion: "reduce" });
   await page.goto(`${base}/rules#power-lifting`);
   const modal = page.getByRole("dialog", { name: "Power lifting", exact: true });
   await modal.waitFor();
-  await modal.getByText("Under 79 kg", { exact: true }).waitFor();
+  await modal.getByText("Under 79 kg", { exact: true }).first().waitFor();
   assert.equal(await page.evaluate(() => document.documentElement.style.overflow), "hidden");
   await modal.getByRole("button", { name: "Close sport rules" }).click();
   await modal.waitFor({ state: "hidden" });
@@ -327,20 +327,27 @@ test("rules deep links open the selected sport and the bracket follows the suppl
   await page.getByRole("dialog", { name: "Chess", exact: true }).waitFor();
   await page.keyboard.press("Escape");
   await page.getByRole("dialog").waitFor({ state: "hidden" });
-  await page.getByRole("button", { name: /QF3 B1 vs A4/ }).click();
-  assert.match(await page.locator('.quarterfinal-winners-round .bracket-match[data-active="true"]').innerText(), /Winner of QF3/);
-  assert.equal(await page.locator('.bracket-connectors path[data-active="true"]').count(), 3);
-  assert.equal(await page.locator('.bracket-champion[data-active="true"]').count(), 1);
-  assert(await page.locator('.bracket-scroll').evaluate((node) => node.scrollWidth > node.clientWidth));
-  const route = await page.locator('.semifinal-round .bracket-match[data-active="true"]').innerText();
-  assert.match(route, /SF2/);
-  assert.match(route, /Winner of QF3/);
-  assert.match(route, /Winner of QF4/);
-  await page.getByText("No third-place or bronze-medal match", { exact: true }).waitFor();
+  const play = page.locator(".format-play");
+  await play.getByRole("button", { name: "A1 wins" }).first().click();
+  await play.getByRole("button", { name: "A2 wins" }).nth(1).click();
+  await play.getByRole("button", { name: "A1 wins" }).nth(1).click();
+  await play.getByText("A1 tops the pool on ranking points.").waitFor();
+  // B1, B2 and B3 each win once: a three-way tie goes to the sport's statistic.
+  await play.getByRole("button", { name: "B1 wins" }).first().click();
+  await play.getByRole("button", { name: "B2 wins" }).nth(1).click();
+  await play.getByRole("button", { name: "B3 wins" }).nth(1).click();
+  await play.getByText("B1, B2, B3 are level. Goal difference decides who goes through.").waitFor();
+  await play.getByRole("group", { name: "Who wins on Goal difference in Pool B?" }).getByRole("button", { name: "B1", exact: true }).click();
+  await play.getByRole("group", { name: "Choose the Final winner" }).getByRole("button", { name: "B1", exact: true }).click();
+  await play.getByText("B1 are Football champions").waitFor();
+  await play.getByRole("button", { name: "Cricket", exact: true }).click();
+  await play.getByText("Net run rate", { exact: true }).waitFor();
+  assert.equal(await play.getByRole("button", { name: "A1 and A2 draw" }).count(), 0);
+  await page.getByText("No third-place match", { exact: true }).waitFor();
   assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
   await page.getByRole("button", { name: "Power lifting rules and format", exact: true }).click();
   await page.getByRole("link", { name: "Register for Power lifting", exact: true }).click();
-  assert(page.url().includes("sport=Weightlifting"));
+  await page.waitForURL(/sport=Weightlifting/);
   await page.close();
 });
 

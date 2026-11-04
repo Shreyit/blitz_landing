@@ -90,7 +90,7 @@ export function pageReaction(path: string): MascotReaction | null {
       message: "Player, volunteer, or cheering from the side. You belong here.",
     };
   if (path === "/rules")
-    return { action: "point", message: "Know the rules. Find your sport, then follow the bracket." };
+    return { action: "point", message: "Know the rules. Find your sport, then top your pool." };
   return { action: "wave", message: "Hey, I’m Bolt. Give me a high-five!" };
 }
 export function registrationReaction({

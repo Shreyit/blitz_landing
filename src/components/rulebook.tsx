@@ -103,7 +103,7 @@ export function Rulebook() {
           </a>
         ))}
         <a href="#event-points">Event points <ArrowUpRight size={14} /></a>
-        <a href="#knockout" className="rules-jump-bracket">Tournament bracket <ArrowUpRight size={14} /></a>
+        <a href="#tournament-format" className="rules-jump-bracket">Tournament format <ArrowUpRight size={14} /></a>
       </nav>
       <div className="rulebook-grid">
         {SPORT_RULES.map((item, index) => (

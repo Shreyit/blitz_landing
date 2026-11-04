@@ -1,4 +1,4 @@
-/* Shared responsive safeguards. Wide tables and the bracket scroll inside their own containers. */
+/* Shared responsive safeguards. Wide tables scroll inside their own containers. */
 html { scroll-padding-top: calc(105px + env(safe-area-inset-top, 0px)); }
 .field-grid,
 .review-fields,

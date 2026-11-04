@@ -13,7 +13,8 @@ import {
 } from "../src/lib/mascot-behavior.ts";
 import { SPORTS } from "../src/lib/event.ts";
 import { INITIAL_TUG, TUG_LIMIT, pullRope } from "../src/lib/tug-of-war.ts";
-import { SPORT_RULES, sportName, sportSlug, QUARTERFINALS, SEMIFINALS } from "../src/lib/sport-rules.ts";
+import { SPORT_RULES, sportName, sportSlug } from "../src/lib/sport-rules.ts";
+import { ENCOUNTERS, poolFixtures, poolTable } from "../src/lib/tournament.ts";
 
 test("every registration sport has a complete rule entry and a unique rules anchor", () => {
   assert.deepEqual(SPORT_RULES.map((rule) => rule.sport), SPORTS);
@@ -30,14 +31,62 @@ test("every registration sport has a complete rule entry and a unique rules anch
     ["Under 53 kg", "Under 59 kg", "Under 66 kg", "Under 74 kg", "Under 79 kg", "Open"]);
 });
 
-test("all eight pool positions play once in the specified quarterfinals and feed the correct semifinals", () => {
-  assert.deepEqual(QUARTERFINALS.map((match) => [...match.teams]), [
-    ["A1", "B4"], ["A2", "B3"], ["B1", "A4"], ["B2", "A3"],
-  ]);
-  assert.equal(new Set(QUARTERFINALS.flatMap((match) => [...match.teams])).size, 8);
-  assert.deepEqual(SEMIFINALS.map((match) => [...match.teams]), [
-    ["Winner of QF1", "Winner of QF2"], ["Winner of QF3", "Winner of QF4"],
-  ]);
+test("pool fixtures follow the rulebook and every team plays twice", () => {
+  assert.deepEqual(poolFixtures("A"), [["A1", "A2"], ["A2", "A3"], ["A3", "A1"]]);
+  assert.deepEqual(poolFixtures("B"), [["B1", "B2"], ["B2", "B3"], ["B3", "B1"]]);
+  for (const team of ["A1", "A2", "A3"]) assert.equal(poolFixtures("A").flat().filter((t) => t === team).length, 2);
+  assert.equal(ENCOUNTERS.pool + ENCOUNTERS.finals, ENCOUNTERS.total);
+});
+
+test("the pool table awards 3-1-0 and only names a winner once all matches are in", () => {
+  const partial = poolTable("A", ["home", null, null]);
+  assert.equal(partial.complete, false);
+  assert.equal(partial.winner, null);
+  assert.deepEqual(partial.rows.map((row) => [row.team, row.points]), [["A1", 3], ["A2", 0], ["A3", 0]]);
+  // A1 beats A2, A2 draws A3, A1 beats A3 (A3 v A1 is won by the away side).
+  const table = poolTable("A", ["home", "draw", "away"]);
+  assert.equal(table.winner, "A1");
+  assert.equal(table.decidedBy, "points");
+  assert.deepEqual(table.rows.map((row) => [row.team, row.points]), [["A1", 6], ["A2", 1], ["A3", 1]]);
+});
+
+test("two teams level after drawing each other go to the sport statistic", () => {
+  // A1 and A2 draw, and both beat A3: level on 4 with no head-to-head winner.
+  const drawn = poolTable("A", ["draw", "home", "away"]);
+  assert.equal(drawn.winner, null);
+  assert.deepEqual([...drawn.tied].sort(), ["A1", "A2"]);
+});
+
+test("across every possible pool, head-to-head never decides first place", () => {
+  // With three teams, a decisive meeting between two leaders forces a three-way tie instead.
+  const outcomes = ["home", "away", "draw"];
+  for (const one of outcomes) for (const two of outcomes) for (const three of outcomes) {
+    const table = poolTable("A", [one, two, three]);
+    assert.notEqual(table.decidedBy, "head-to-head");
+    assert.equal(Boolean(table.winner), table.tied.length === 0);
+  }
+  // Without draws a pool has one 6-point winner or a three-way tie on 3.
+  for (const one of ["home", "away"]) for (const two of ["home", "away"]) for (const three of ["home", "away"]) {
+    const table = poolTable("A", [one, two, three]);
+    assert(table.decidedBy === "points" || table.tied.length === 3);
+  }
+});
+
+test("a three-way tie skips head-to-head and goes to the sport statistic", () => {
+  const circular = poolTable("A", ["home", "home", "home"]); // each team wins once
+  assert.equal(circular.winner, null);
+  assert.equal(circular.decidedBy, null);
+  assert.equal(circular.tied.length, 3);
+  const allDrawn = poolTable("B", ["draw", "draw", "draw"]);
+  assert.equal(allDrawn.tied.length, 3);
+});
+
+test("every pool sport has tie-breakers and a Final rule; power lifting has no pool", () => {
+  for (const rule of SPORT_RULES) {
+    if (rule.sport === "Weightlifting") { assert.equal(rule.pool, undefined); continue; }
+    assert(rule.pool.rankBy.length >= 1 && rule.pool.final);
+  }
+  assert.deepEqual(SPORT_RULES.filter((rule) => rule.pool?.draws).map((rule) => rule.sport), ["Football", "Chess"]);
 });
 
 test("Show a trick cycles four distinct tricks and wraps for repeat play", () => {

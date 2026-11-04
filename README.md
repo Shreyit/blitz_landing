@@ -13,7 +13,7 @@ An interactive campus sports website for the **Bachelor’s in Analytics and Sus
 | Area | What it does |
 | :--- | :--- |
 | Landing & spirit | Oversized BLITZ branding, the supplied TISS logo, illustrated sports equipment, and an interactive tug-of-war warm-up. |
-| Rules & formats | Eight sport dialogs with animated entrances and glass-blurred backdrops, award points, and a connected knockout bracket. |
+| Rules & formats | Eight sport dialogs with animated entrances and glass-blurred backdrops, award points, and an interactive pool simulator with live standings and tie-breakers. |
 | Registration | Separate player and volunteer entries, institutional email selection, demographics, a zoomable India map, and a square photo crop editor. |
 | Auction Dome | Live spectator view: all six team purses in one line, the player on the floor (square photo, course, year, sports), the current bid and leading team, every team's logo and owner, recent sales, and a "Sold!" celebration with confetti. |
 | Auction controls | Organiser-only auctioneer screen at `/admin/auction`: tap a team to raise the bid, then **Sold** (hammer), **Unsold**, or **Clear bids**. The next player loads automatically after a sale. Shows the player's gender, which never reaches the public feed. |
@@ -23,7 +23,7 @@ An interactive campus sports website for the **Bachelor’s in Analytics and Sus
 
 Touch navigation, safe-area spacing, native mobile scrolling, and reduced-motion fallbacks are implemented. Browser and physical-device verification status is recorded in [VERIFICATION.md](VERIFICATION.md).
 
-### Eight sports. One connected bracket.
+### Eight sports. Two pools, one Final.
 
 | Sport | Winner points | Runner-up points | Award categories |
 | :--- | ---: | ---: | :--- |
@@ -38,7 +38,11 @@ Touch navigation, safe-area spacing, native mobile scrolling, and reduced-motion
 
 Power lifting categories: **Under 53, Under 59, Under 66, Under 74, Under 79, and Open**. The API uses `Weightlifting` as its canonical sport name.
 
-The eight-team knockout diagram connects **A1 vs B4**, **A2 vs B3**, **B1 vs A4**, and **B2 vs A3** to four quarterfinal winners. Winners of QF1/QF2 meet in SF1; winners of QF3/QF4 meet in SF2. The two semifinal winners play the final. There is no third-place match or loser bracket. The rules page documents sport-specific formats separately, including Swiss chess.
+![Six teams split into Pool A and Pool B of three. Each pool plays a three-match round robin, the top team of each pool goes to the Final, and the Final winner is champion.](docs/readme/tournament-format.svg)
+
+Six teams play in **two pools of three**. Each team plays both teams in its pool (win 3, draw 1 where allowed, loss 0), and the top team of each pool goes straight to the Final. There are no quarterfinals, semifinals, byes or third-place match. Men's and women's tug of war have separate pools and Finals, and power lifting runs separately by weight category. That makes 56 encounters: 48 pool fixtures and 8 Finals.
+
+The full rulebook is in [docs/TOURNAMENT_RULES.md](docs/TOURNAMENT_RULES.md), a draft awaiting organising committee approval. On the rules page, visitors can pick each match result and watch the standings, tie-breakers and Final update. The ranking logic is in `src/lib/tournament.ts`.
 
 Rules and award points are currently presentation data; fixture management, result entry, and persisted overall standings still need backend implementation.
 
