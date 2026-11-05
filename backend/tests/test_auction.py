@@ -70,8 +70,8 @@ def test_sale_is_atomic_and_idempotent():
     seed(2)
     run("start")
     run("bid", 1)
-    state = run("bid", 2)
-    assert state["bid"] == 25 and state["leader"] == 2
+    state = run("bid", 3)
+    assert state["bid"] == 25 and state["leader"] == 3
     command_id = uuid4()
     before = state["version"]
     sold = run("sell", command_id=command_id)
@@ -97,7 +97,7 @@ def test_purse_leader_and_stale_commands():
     with pytest.raises(HTTPException, match="leading"):
         run("bid", 1)
     with pytest.raises(HTTPException, match="changed"):
-        run("bid", 2, version=state["version"] - 1)
+        run("bid", 3, version=state["version"] - 1)
     with pytest.raises(HTTPException, match="Cancel"):
         run("unsold")
     assert run("sell")["teams"][0]["purse"] == 0
@@ -127,7 +127,7 @@ def test_round_queues_only_include_unsold_players():
     run("unsold")
     state = run("unsold")
     assert state["round"] == 1 and state["remaining"] == 2 and state["next_bid"] == 10
-    run("bid", 2)
+    run("bid", 3)
     run("sell")
     state = run("unsold")
     assert state["round"] == 2 and state["remaining"] == 1 and state["next_bid"] == 2

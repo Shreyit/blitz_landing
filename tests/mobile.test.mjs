@@ -10,7 +10,7 @@ const player = { id: "mobile-test", name: "A very long campus participant name f
 const state = {
   phase: "active", round: 0, version: 1, current: player, bid: 1990, leader: 1, next_bid: 2000,
   remaining: 1, sold: 1, total: 2,
-  teams: [1, 2, 4, 5, 6, 7].map((id, index) => ({ id, name: `Campus sports team with a long name ${index + 1}`, symbol: "BT", color: "#315a36", purse: 2000, players: [player] })),
+  teams: [1, 3, 4, 5, 6, 7].map((id, index) => ({ id, name: `Campus sports team with a long name ${index + 1}`, symbol: "BT", color: "#315a36", purse: 2000, players: [player] })),
   history: [{ name: player.name, team: "Campus sports team with a long name 1", price: 1990, source: "auction" }],
 };
 let browser;

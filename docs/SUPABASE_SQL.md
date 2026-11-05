@@ -51,7 +51,7 @@ Migration 006 replaces the original participant email-verification flow describe
 
 ### Auction records
 
-`teams` seeds eight identities with ₹2,000 purses; migration 023 later removes two, leaving six. `check(purse between 0 and 2000)` protects balances. `name_key` is a generated lowercase name, giving case-insensitive uniqueness. Its unique constraint is deferrable so teams can exchange names within one transaction without a temporary collision.
+`teams` seeds eight identities with ₹2,000 purses; migration 023 later removes two, leaving six, and 024 swaps one. `check(purse between 0 and 2000)` protects balances. `name_key` is a generated lowercase name, giving case-insensitive uniqueness. Its unique constraint is deferrable so teams can exchange names within one transaction without a temporary collision.
 
 `auction` is a singleton: `check(id = 1)` allows one auction state. It stores phase, round, frozen queue, unsold queue, current position, bid, leader, version, and initial player count. A compound check requires bid and leader to agree: either no bid/no leader, or a positive bid with a leader.
 
@@ -235,3 +235,7 @@ PGlite runs actual PostgreSQL but supplies platform stubs. Hosted Auth, Storage,
 ## Migration 023: six teams
 
 [023](../supabase/migrations/202611030023_six_teams.sql) removes Shell Mates (team 3) and The Symbiotes (team 8). A `do` block first refuses to run if the auction has left `idle` or either team has a bid, an assigned player or the current lead, so no auction history can be lost. The other ids (1, 2, 4, 5, 6, 7) stay as they are, so nothing that refers to them moves. It then replaces `blitz_auction_command` with `create or replace` (keeping its grants): the `teams` command and the final random allocation now count the rows in `blitz.teams` instead of assuming eight. Finally it bumps the version and republishes the snapshot, like migration 013.
+
+## Migration 024: Shell Mates returns
+
+[024](../supabase/migrations/202611050024_shell_mates_return.sql) removes United Spartans (team 2) and restores Shell Mates as team 3 with a full purse, so the teams are 1, 3, 4, 5, 6 and 7. A `do` block first refuses to run unless the auction is idle and United Spartans has no bids, players or lead. The version then moves on and the public snapshot is republished.

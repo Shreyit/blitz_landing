@@ -13,7 +13,7 @@ import { reactMascot } from "@/lib/mascot-behavior";
 
 export function TugOfWar() {
   const [state, setState] = useState(INITIAL_TUG);
-  const [leftId, setLeftId] = useState(2);
+  const [leftId, setLeftId] = useState(3);
   const [rightId, setRightId] = useState(5);
   const [pulling, setPulling] = useState<TugSide | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);

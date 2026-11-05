@@ -87,8 +87,8 @@ test('all migrations execute and leave six teams with one coherent public snapsh
   const s = await state(); assert.equal(s.phase, 'idle'); assert.equal(s.teams.length, 6);
   assert.ok(s.teams.every(t => t.purse === 2000 && t.players.length === 0));
   // Confirmed team renames (migrations 010–012) must reach the public snapshot.
-  // Migration 023 removes Shell Mates (3) and The Symbiotes (8); the other ids stay fixed.
-  assert.deepEqual(s.teams.map(t => [t.id, t.name]), [[1, 'The Monarchs'], [2, 'United Spartans'], [4, 'SlytherWins'], [5, 'X Force United'], [6, 'Vikings'], [7, 'Shadow Strikers']]);
+  // Migration 023 removes The Symbiotes (8) and 024 swaps United Spartans (2) for Shell Mates (3); the other ids stay fixed.
+  assert.deepEqual(s.teams.map(t => [t.id, t.name]), [[1, 'The Monarchs'], [3, 'Shell Mates'], [4, 'SlytherWins'], [5, 'X Force United'], [6, 'Vikings'], [7, 'Shadow Strikers']]);
 });
 test('SQL sports and region catalogues match the frontend configuration', async () => {
   const options = JSON.parse(await readFile('shared/registration-options.json', 'utf8'));
@@ -163,18 +163,18 @@ test('a sale atomically changes purse and roster and enqueues exactly one assign
 });
 test('stale versions and reused command IDs with changed requests are rejected', async () => {
   await eligible(); await command('start'); const id=randomUUID(); await command('bid',1,id);
-  await assert.rejects(command('bid',2,randomUUID(),0),/auction changed/);
-  await assert.rejects(command('bid',2,id),/already used/);
+  await assert.rejects(command('bid',3,randomUUID(),0),/auction changed/);
+  await assert.rejects(command('bid',3,id),/already used/);
   await assert.rejects(command('sell',null,id),/already used/);
 });
 test('insufficient purse and self-bidding fail without changing state', async () => {
   await eligible(); await command('start'); await command('bid',1);
   await assert.rejects(command('bid',1),/already leading/);
-  await as('postgres'); await db.exec('update blitz.teams set purse=24 where id=2');
+  await as('postgres'); await db.exec('update blitz.teams set purse=24 where id=3');
   await as('authenticated',organiser); const before=await state();
-  await assert.rejects(command('bid',2),/cannot afford/); assert.deepEqual(await state(),before);
-  await as('postgres'); await db.exec('update blitz.teams set purse=25 where id=2');
-  await as('authenticated',organiser); assert.equal((await command('bid',2)).bid,25);
+  await assert.rejects(command('bid',3),/cannot afford/); assert.deepEqual(await state(),before);
+  await as('postgres'); await db.exec('update blitz.teams set purse=25 where id=3');
+  await as('authenticated',organiser); assert.equal((await command('bid',3)).bid,25);
 });
 test('sale failure rolls back the assignment, purse, audit, outbox and projection', async () => {
   const [player]=await eligible(); await command('start'); await command('bid',1);
@@ -212,7 +212,7 @@ test('team names can be exchanged before start but duplicate names and later edi
   assert.equal(saved.teams[0].name,teams[0].name);
   const duplicate=teams.map(t=>({...t,name:'Same name'}));
   await assert.rejects(command('teams',null,randomUUID(),saved.version,duplicate),/distinct/);
-  const removedTeam=teams.map((t,i)=>i===0?{...t,id:3}:t);
+  const removedTeam=teams.map((t,i)=>i===0?{...t,id:2}:t);
   await assert.rejects(command('teams',null,randomUUID(),saved.version,removedTeam),/distinct/);
   await eligible(); await command('start');
   await assert.rejects(command('teams',null,randomUUID(),undefined,teams),/fixed/);
@@ -364,7 +364,7 @@ test('admin roster includes completed registrations and all submitted details wi
 });
 
 test('sale mail captures the sold team, exact price, sports and source once in the sale transaction',async()=>{
-  const [id]=await eligible();await command('start');await command('bid',2);
+  const [id]=await eligible();await command('start');await command('bid',3);
   const version=(await state()).version,commandId=randomUUID();
   await command('sell',null,commandId,version);await command('sell',null,commandId,version);
   await as('postgres');

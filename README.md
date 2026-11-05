@@ -360,13 +360,13 @@ All six teams are confirmed:
 | Id | Team | Owner | Migration |
 | ---: | :--- | :--- | :--- |
 | 1 | The Monarchs | Monalisa Murmu | `202610230017_the_monarchs.sql` |
-| 2 | United Spartans | Vinayak Sarin | `202610230016_united_spartans_shell_mates.sql` |
+| 3 | Shell Mates | Eesha Mishra | `202610230016_united_spartans_shell_mates.sql`, brought back in `202611050024_shell_mates_return.sql` |
 | 4 | SlytherWins | Merry Geordy | `202610220012_slytherwins.sql`, renamed in `202610230014_shadow_strikers.sql` |
 | 5 | X Force United | Wali Abidi | `202610220010_x_force_united.sql` |
 | 6 | Vikings | Rhea Tripathi | `202610220011_vikings.sql` |
 | 7 | Shadow Strikers | Aditya Gupta | `202610230014_shadow_strikers.sql` |
 
-Shell Mates (id 3) and The Symbiotes (id 8) were removed by `202611030023_six_teams.sql`. The remaining ids were kept so nothing else had to move.
+The Symbiotes (id 8) was removed by `202611030023_six_teams.sql`, and United Spartans (id 2) by `202611050024_shell_mates_return.sql`. The remaining ids were kept so nothing else had to move.
 
 Team names are fixed once the auction starts. Apply new migrations with `npx supabase db push` before then; until a migration is applied, the hosted site keeps showing the old name even though the logo appears.
 
